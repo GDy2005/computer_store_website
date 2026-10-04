@@ -1,0 +1,1 @@
+{"name":"@store/frontend","version":"1.0.0","type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build"},"dependencies":{"react":"^19.2.0","react-dom":"^19.2.0","react-router-dom":"^7.9.4","@mui/material":"^7.3.4","@emotion/react":"^11.14.0","@emotion/styled":"^11.14.1","axios":"^1.12.2"},"devDependencies":{"vite":"^7.1.9","@vitejs/plugin-react":"^5.0.4"}}

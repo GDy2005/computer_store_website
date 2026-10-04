@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {retryDelay,failureTopic} from '@store/kafka-client';
+import {signedContext,internalAuth} from '@store/validation';
+import {ownership,processOnce} from '@store/service-runtime';
+test('bounded exponential backoff and DLQ routing',()=>{assert.deepEqual([1,2,3,10].map(retryDelay),[1000,2000,4000,30000]);assert.equal(failureTopic('topic',1),'topic.retry');assert.equal(failureTopic('topic',3),'topic.dlq');});
+test('five exclusive database owners',()=>assert.equal(new Set(Object.values(ownership)).size,5));
+test('signed context rejects client headers and invalid tokens',()=>{const auth=internalAuth('test-secret');let error;auth({headers:{'x-user-role':'ADMIN'}},{},value=>{error=value;});assert.equal(error.status,401);const req={headers:{'x-internal-token':signedContext('test-secret','request-1')}};auth(req,{},value=>{error=value;});assert.equal(error,undefined);assert.equal(req.context.requestId,'request-1');assert.equal(req.context.exp-req.context.iat,30);});
+test('processed marker skips duplicate delivery',async()=>{let marked=false,effects=0;const connection={transaction:async callback=>callback({})};const processed={exists:()=>({session:async()=>marked}),create:async()=>{marked=true;}};const event={eventId:'id'};assert.equal(await processOnce(connection,processed,event,'consumer',async()=>{effects++;}),true);assert.equal(await processOnce(connection,processed,event,'consumer',async()=>{effects++;}),false);assert.equal(effects,1);});
+test('failed handler does not mark event processed',async()=>{let marked=false;const connection={transaction:async callback=>callback({})};const processed={exists:()=>({session:async()=>false}),create:async()=>{marked=true;}};await assert.rejects(processOnce(connection,processed,{eventId:'id'},'consumer',async()=>{throw new Error('failed');}));assert.equal(marked,false);});

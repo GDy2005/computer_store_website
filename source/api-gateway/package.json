@@ -1,0 +1,1 @@
+{"name":"@store/api-gateway","version":"1.0.0","type":"module","scripts":{"start":"node src/server.js"},"dependencies":{"express":"^5.1.0","express-session":"^1.18.2","connect-redis":"^8.1.0","redis":"^4.7.1","@store/validation":"1.0.0"}}

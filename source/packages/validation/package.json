@@ -1,0 +1,1 @@
+{"name":"@store/validation","version":"1.0.0","type":"module","exports":"./index.js","dependencies":{"ajv":"^8.17.1","ajv-formats":"^3.0.1","jsonwebtoken":"^9.0.2"}}

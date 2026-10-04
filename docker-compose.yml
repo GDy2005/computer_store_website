@@ -1,0 +1,4 @@
+# Convenience entrypoint; the development/submission repository is source/.
+name: computer-store
+include:
+  - path: ./source/docker-compose.yml

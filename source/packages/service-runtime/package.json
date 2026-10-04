@@ -1,0 +1,1 @@
+{"name":"@store/service-runtime","version":"1.0.0","type":"module","exports":"./index.js","dependencies":{"express":"^5.1.0","mongoose":"^8.19.0","@store/event-contracts":"1.0.0","@store/kafka-client":"1.0.0","@store/logger":"1.0.0","@store/validation":"1.0.0"}}

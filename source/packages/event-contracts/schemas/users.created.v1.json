@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "eventType": {
+      "const": "user.created"
+    },
+    "eventVersion": {
+      "const": 1
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "enum": [
+        "identity-service",
+        "catalog-service",
+        "order-service",
+        "notification-service",
+        "analytics-service"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "causationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "CUSTOMER",
+            "ADMIN"
+          ]
+        },
+        "accountStatus": {
+          "enum": [
+            "ACTIVE",
+            "PENDING_ACTIVATION"
+          ]
+        }
+      },
+      "required": [
+        "userId",
+        "email",
+        "fullName",
+        "role",
+        "accountStatus"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "eventId",
+    "eventType",
+    "eventVersion",
+    "occurredAt",
+    "producer",
+    "correlationId",
+    "causationId",
+    "key",
+    "payload"
+  ],
+  "additionalProperties": false
+}

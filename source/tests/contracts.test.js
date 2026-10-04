@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import {domainTopics, topics} from '../packages/event-contracts/topics.js';
+import {createEvent,validateEvent} from '@store/event-contracts';
+const probe=()=>createEvent('foundation.probe.v1',{producer:'identity-service',key:'probe',payload:{probeId:'bda77810-39d1-4b0c-bb93-12d6b44040ed',message:'hello',mode:'normal'}});
+test('all 48 Kafka topics unique and all schemas compile',()=>{assert.equal(topics.length,48);assert.equal(new Set(topics).size,48);const ajv=new Ajv();addFormats(ajv);for(const topic of [...domainTopics,'foundation.probe.v1'])assert.equal(typeof ajv.compile(JSON.parse(readFileSync(new URL(`../packages/event-contracts/schemas/${topic}.json`,import.meta.url)))),'function');});
+test('probe preserves correlation and validates envelope',()=>{const event=probe();assert.equal(event.eventType,'foundation.probe');assert.equal(validateEvent('foundation.probe.v1',event),event);});
+test('rejects malformed IDs, unexpected fields, versions and invalid payloads',()=>{for(const patch of [{eventId:'bad'},{eventVersion:2},{sessionId:'secret'},{payload:{...probe().payload,mode:'wrong'}}])assert.throws(()=>validateEvent('foundation.probe.v1',{...probe(),...patch}));});
+test('domain event type is singular and schema rejects wrong payload',()=>{const event=createEvent('users.created.v1',{producer:'identity-service',key:'user-1',payload:{userId:'user-1',email:'customer@example.com',fullName:'Customer',role:'CUSTOMER',accountStatus:'ACTIVE'}});assert.equal(event.eventType,'user.created');assert.throws(()=>validateEvent('orders.created.v1',event));});
