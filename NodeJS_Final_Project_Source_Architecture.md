@@ -1,6 +1,5 @@
 # NODEJS FINAL PROJECT - SOURCE ARCHITECTURE SPECIFICATION
 
-> Tài liệu ngữ cảnh dành cho Codex trong VS Code  
 > Phạm vi: chỉ mô tả cấu trúc mã nguồn trong thư mục `source/`, kiến trúc microservices + Kafka, MongoDB collections, API, luồng nghiệp vụ, bonus features, seed data, Docker và thứ tự triển khai.
 
 ---
