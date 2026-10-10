@@ -88,7 +88,8 @@ export async function startService(name, buildApp, handleProbe) {
   }
   async function pump() { try { await publishBatch(); } catch (error) { log('error', 'Outbox unavailable', {service: name, error: error.message}); } if (!stopping) timer = setTimeout(pump, 500); }
   let timer = setTimeout(pump, 500);
-  const app = buildApp(); app.use(express.json({limit: '32kb'}));
+  const app = express();
+  app.use(express.json({limit:'32kb'}));
   app.get('/health/live', (req, res) => res.json({success: true, data: {service: name}}));
   app.get('/health/ready', async (req, res, next) => {
     try { await connection.db.command({ping: 1}); const admin = kafka.admin(); await admin.connect(); try { await admin.listTopics(); } finally { await admin.disconnect(); }
@@ -113,7 +114,9 @@ export async function startService(name, buildApp, handleProbe) {
     });
     res.status(202).json({success: true, data: {probeId, eventId: event.eventId, correlationId: event.correlationId}});
   });
-  app.use((req, res, next) => next(new AppError(404, 'NOT_FOUND', 'Endpoint not implemented in Phase 1'))); app.use(errorHandler);
+  app.use(buildApp({connection, models: {Outbox, Processed, Probe, Dead}}));
+  app.use((req, res, next) => next(new AppError(404, 'NOT_FOUND', 'Endpoint not found')));
+  app.use(errorHandler);
   const server = app.listen(Number(process.env.PORT || 5001), '0.0.0.0');
   async function shutdown() { stopping = true; ready = false; clearTimeout(timer); server.close(); await consumer.disconnect(); await producer.disconnect(); await connection.close(); }
   process.on('SIGTERM', () => shutdown().then(() => process.exit(0))); process.on('SIGINT', () => shutdown().then(() => process.exit(0)));

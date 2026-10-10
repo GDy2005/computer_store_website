@@ -2,7 +2,8 @@ COMPUTER STORE — PHASE 1 FOUNDATION
 
 Architecture: API Gateway + five independently deployed microservices + Kafka.
 Phase 1 accepted locally on 2026-10-03: Compose startup, 12 healthy containers,
-2 successful init jobs, real Kafka smoke and event integration checks passed.
+real Kafka smoke and event integration checks passed. The catalog increment adds
+an idempotent category seed job and a public featured-category API.
 Source repository root: this source/ directory. Initialize Git here when ready;
 the GitHub Actions workflow assumes source/ is the checkout root.
 The full architecture specification is included unchanged at
@@ -11,6 +12,7 @@ docs/NodeJS_Final_Project_Source_Architecture.md for a standalone checkout.
 RUN
   docker compose up -d
 Then open http://localhost and http://localhost/foundation.
+Featured categories are available at http://localhost/api/v1/categories?featured=true.
 The parent directory also has a forwarding Compose file for the same command.
 No .env file, host Node installation or manual initialization is required.
 Verified images: Kafka 3.9.2, MongoDB 7.0.26, Redis 7.4-bookworm,
@@ -41,6 +43,8 @@ POST /probes accepts {"message":"hello","mode":"normal|retry|poison"}.
 GET /probes/{probeId} reads the local effect. GET /api/v1/foundation/status
 reads each service over signed internal HTTP, never another service's database.
 Probes are demo tools: set FOUNDATION_PROBES_ENABLED=false outside development.
+GET /api/v1/categories lists active categories; add ?featured=true for the
+five category cards displayed on the landing page.
 
 PHASE BOUNDARY
 No registration/login, products, checkout, email delivery, dashboard business

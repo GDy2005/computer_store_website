@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Laptop",
+    "slug": "laptop",
+    "description": "Máy tính xách tay cho học tập, văn phòng và gaming",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Màn hình",
+    "slug": "man-hinh",
+    "description": "Màn hình làm việc, đồ họa và gaming",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Bàn phím",
+    "slug": "ban-phim",
+    "description": "Bàn phím cơ và bàn phím văn phòng",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Chuột",
+    "slug": "chuot",
+    "description": "Chuột văn phòng và chuột gaming",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "SSD và lưu trữ",
+    "slug": "ssd-luu-tru",
+    "description": "SSD và thiết bị lưu trữ cho máy tính",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
+  }
+]

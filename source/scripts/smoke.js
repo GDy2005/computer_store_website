@@ -5,6 +5,7 @@ async function request(path, options={}) {const response=await fetch(`${base}${p
 const names=['identity','catalog','order','notification','analytics'];
 await eventually(async()=>{try{const r=await fetch(`${base}/health/ready`,{signal:AbortSignal.timeout(10000)});return r.ok;}catch{return false;}},180000);
 let status=await request('/api/v1/foundation/status');assert.equal(status.length,5);
+const categories=await request('/api/v1/categories?featured=true');assert.equal(categories.items.length,5);assert.ok(categories.items.every(category=>category.isFeatured));
 for(const mode of ['normal','retry','poison']){
  const before=await request('/api/v1/foundation/status');
  const probe=await request('/api/v1/foundation/identity/probes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:`Smoke ${mode}`,mode})});
@@ -16,3 +17,4 @@ status=await request('/api/v1/foundation/status');assert.ok(status.every(service
 const invalid=await fetch(`${base}/api/v1/foundation/identity/probes`,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"mode":"invalid"}'});assert.equal(invalid.status,400);
 const gateways=new Set();for(let i=0;i<8;i++){const r=await fetch(`${base}/health/live`);gateways.add(r.headers.get('x-gateway-instance'));}assert.equal(gateways.size,2);
 console.log('PASS Phase 1: 5 services, real Kafka, transactions, retry, DLQ, 2 gateways');
+console.log('PASS Catalog categories: 5 featured categories through Gateway');

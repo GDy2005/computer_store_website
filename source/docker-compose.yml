@@ -97,6 +97,20 @@ services:
       PORT: 5001
       DB_NAME: identity_db
     depends_on: *core-deps
+  catalog-seed:
+    build:
+      context: .
+      dockerfile: services/catalog-service/Dockerfile
+      args: {SERVICE_PATH: services/catalog-service}
+    command: [node, services/catalog-service/src/seeds/seedCategories.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      DB_NAME: catalog_db
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
   catalog-service:
     <<: *app
     build:
@@ -107,7 +121,10 @@ services:
       <<: *core-env
       PORT: 5002
       DB_NAME: catalog_db
-    depends_on: *core-deps
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
+      kafka-init: {condition: service_completed_successfully}
+      catalog-seed: {condition: service_completed_successfully}
   order-service:
     <<: *app
     build:

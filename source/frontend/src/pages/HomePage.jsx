@@ -1,14 +1,12 @@
-import {Box,Chip,Paper,Stack,Typography} from '@mui/material';
+import {useCallback,useEffect,useState} from 'react';
+import axios from 'axios';
+import {Alert,Box,Button,Chip,Paper,Skeleton,Stack,Typography} from '@mui/material';
 
-const categories = [
-  {code:'LT',name:'Laptop',description:'Học tập, văn phòng và gaming'},
-  {code:'MN',name:'Màn hình',description:'Không gian hiển thị sắc nét'},
-  {code:'KB',name:'Bàn phím',description:'Làm việc và giải trí thoải mái'},
-  {code:'MS',name:'Chuột',description:'Điều khiển chính xác mỗi ngày'},
-  {code:'SSD',name:'Lưu trữ',description:'Nâng cấp tốc độ và dung lượng'}
-];
+function getCategoryCode(name) {
+  return name.split(/\s+/).map(word => word[0]).join('').slice(0,3).toUpperCase();
+}
 
-function CategoryCard({code,name,description}) {
+function CategoryCard({name,description}) {
   return (
     <Paper
       component="article"
@@ -20,7 +18,7 @@ function CategoryCard({code,name,description}) {
           aria-hidden="true"
           sx={{display:'grid',width:48,height:48,placeItems:'center',borderRadius:2,bgcolor:'primary.main',color:'primary.contrastText',fontSize:14,fontWeight:800}}
         >
-          {code}
+          {getCategoryCode(name)}
         </Box>
         <Typography component="h3" variant="h6" fontWeight={700}>{name}</Typography>
         <Typography color="text.secondary" variant="body2">{description}</Typography>
@@ -30,6 +28,29 @@ function CategoryCard({code,name,description}) {
 }
 
 export default function HomePage() {
+  const [categories,setCategories] = useState([]);
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState('');
+
+  const loadCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await axios.get('/api/v1/categories', {params:{featured:true}});
+      const items = response.data?.data?.items;
+      if (!Array.isArray(items)) throw new Error('Invalid category response');
+      setCategories(items);
+    } catch {
+      setError('Không tải được danh mục sản phẩm.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
   return (
     <Stack spacing={{xs:5,md:8}}>
       <Paper
@@ -51,11 +72,24 @@ export default function HomePage() {
       <Box component="section" aria-labelledby="category-heading">
         <Stack spacing={1} sx={{mb:3}}>
           <Typography id="category-heading" component="h2" variant="h4" fontWeight={800}>Danh mục nổi bật</Typography>
-          <Typography color="text.secondary">Năm nhóm sản phẩm chính đang được chuẩn bị cho danh mục cửa hàng.</Typography>
+          <Typography color="text.secondary">Khám phá các nhóm máy tính và linh kiện đang có tại cửa hàng.</Typography>
         </Stack>
-        <Box sx={{display:'grid',gridTemplateColumns:{xs:'1fr',sm:'repeat(2, 1fr)',md:'repeat(5, 1fr)'},gap:2}}>
-          {categories.map(category => <CategoryCard key={category.name} {...category}/>)}
-        </Box>
+        {loading && (
+          <Box aria-label="Đang tải danh mục" sx={{display:'grid',gridTemplateColumns:{xs:'1fr',sm:'repeat(2, 1fr)',md:'repeat(5, 1fr)'},gap:2}}>
+            {Array.from({length:5}, (_, index) => <Skeleton key={index} variant="rounded" height={170}/>)}
+          </Box>
+        )}
+        {error && (
+          <Alert severity="error" action={<Button color="inherit" onClick={loadCategories}>Thử lại</Button>}>
+            {error}
+          </Alert>
+        )}
+        {!loading && !error && categories.length === 0 && <Alert severity="info">Chưa có danh mục sản phẩm.</Alert>}
+        {!loading && !error && categories.length > 0 && (
+          <Box sx={{display:'grid',gridTemplateColumns:{xs:'1fr',sm:'repeat(2, 1fr)',md:'repeat(5, 1fr)'},gap:2}}>
+            {categories.map(category => <CategoryCard key={category._id || category.slug} {...category}/>)}
+          </Box>
+        )}
       </Box>
 
       <Paper component="section" variant="outlined" sx={{p:{xs:3,md:4},bgcolor:'background.paper'}}>
