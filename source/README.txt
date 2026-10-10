@@ -20,7 +20,7 @@ Nginx 1.28-bookworm. This avoids the damaged images from the interrupted run.
 Demo secrets have non-sensitive local defaults. Override before production.
 Kafka topic initialization creates 48 topics and can take several minutes.
 
-VERIFY (Node 22.12+)
+VERIFY (Node >= 22.12)
   npm ci --ignore-scripts
   npm run lint
   npm test
