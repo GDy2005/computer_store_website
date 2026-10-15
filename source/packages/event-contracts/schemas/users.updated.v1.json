@@ -18,11 +18,7 @@
     },
     "producer": {
       "enum": [
-        "identity-service",
-        "catalog-service",
-        "order-service",
-        "notification-service",
-        "analytics-service"
+        "identity-service"
       ]
     },
     "correlationId": {

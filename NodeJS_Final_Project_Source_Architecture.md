@@ -143,7 +143,10 @@ flowchart TD
 
 ## 3. Cấu trúc thư mục `source/`
 
-Trong quá trình phát triển, thư mục `source/` được xem là Git repository root để `.github/workflows/ci.yml` hoạt động. Khi đóng gói bài nộp, giữ nguyên toàn bộ cây thư mục này bên trong thư mục `source` theo yêu cầu đề.
+Trong checkout hiện tại, thư mục cha `project/` là Git repository root, còn
+`source/` là application/npm workspace root và là thư mục mã nguồn dùng khi
+đóng gói bài nộp. GitHub Actions nằm tại `project/.github/workflows/ci.yml` và
+chạy các lệnh ứng dụng với `working-directory: source`.
 
 ```text
 source/
@@ -197,69 +200,78 @@ source/
 │
 ├── services/
 │   ├── identity-service/
-│   │   ├── src/modules/auth/
-│   │   ├── src/modules/users/
-│   │   ├── src/modules/addresses/
-│   │   ├── src/events/producers/
-│   │   ├── src/events/consumers/
-│   │   ├── src/outbox/
-│   │   ├── seeds/
-│   │   ├── tests/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/middlewares/
+│   │   ├── src/events/
+│   │   ├── src/seeds/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   ├── catalog-service/
-│   │   ├── src/modules/categories/
-│   │   ├── src/modules/products/
-│   │   ├── src/modules/inventory/
-│   │   ├── src/modules/comments/
-│   │   ├── src/modules/ratings/
-│   │   ├── src/modules/uploads/
-│   │   ├── src/events/producers/
-│   │   ├── src/events/consumers/
-│   │   ├── src/outbox/
-│   │   ├── seeds/
-│   │   ├── tests/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/middlewares/
+│   │   ├── src/clients/
+│   │   ├── src/events/
+│   │   ├── src/seeds/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   ├── order-service/
-│   │   ├── src/modules/carts/
-│   │   ├── src/modules/coupons/
-│   │   ├── src/modules/checkout/
-│   │   ├── src/modules/orders/
-│   │   ├── src/modules/loyalty/
-│   │   ├── src/events/producers/
-│   │   ├── src/events/consumers/
-│   │   ├── src/outbox/
-│   │   ├── seeds/
-│   │   ├── tests/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/middlewares/
+│   │   ├── src/clients/
+│   │   ├── src/events/
+│   │   ├── src/seeds/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   ├── notification-service/
-│   │   ├── src/modules/emails/
-│   │   ├── src/events/consumers/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/events/
 │   │   ├── src/templates/
-│   │   ├── tests/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   ├── analytics-service/
-│   │   ├── src/modules/dashboard/
-│   │   ├── src/events/consumers/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/events/
 │   │   ├── src/projections/
-│   │   ├── tests/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   ├── search-service/                 # Bonus Elasticsearch
-│   │   ├── src/modules/search/
-│   │   ├── src/events/consumers/
+│   │   ├── src/controllers/
+│   │   ├── src/models/
+│   │   ├── src/services/
+│   │   ├── src/routes/
+│   │   ├── src/validations/
+│   │   ├── src/events/
 │   │   ├── src/indexers/
-│   │   ├── tests/
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   └── ai-service/                     # Bonus AI chatbot
-│       ├── src/modules/chatbot/
-│       ├── src/clients/search.client.js
+│       ├── src/controllers/
+│       ├── src/models/
+│       ├── src/services/
+│       ├── src/routes/
+│       ├── src/validations/
+│       ├── src/clients/
 │       ├── src/prompts/
-│       ├── tests/
 │       ├── Dockerfile
 │       └── package.json
 │
@@ -291,37 +303,34 @@ source/
 ├── tests/
 │   ├── contract/
 │   └── end-to-end/
-├── .github/workflows/
-│   └── ci.yml
 ├── .env.example
 ├── docker-compose.yml
 ├── package.json
 └── README.txt
 ```
 
-### 3.1. Cấu trúc chuẩn bên trong một service
+### 3.1. Cấu trúc MVC/layered bắt buộc cho backend service
 
-Ví dụ `catalog-service`:
+Tất cả business service hiện tại và tạo ở phase sau đều dùng cùng một cấu trúc
+MVC/layered. Không tạo lại `src/modules/` hoặc chia mỗi nghiệp vụ thành một cây
+MVC lồng riêng. Tên miền nghiệp vụ được phân biệt bằng tên file như
+`product.controller.js`, `order.service.js` và `rating.model.js`.
 
 ```text
-catalog-service/src/
+<service>/src/
 ├── config/
+├── controllers/
+├── models/
+├── services/
+├── routes/
+├── validations/
 ├── middlewares/
-├── modules/
-│   └── products/
-│       ├── product.model.js
-│       ├── product.repository.js
-│       ├── product.service.js
-│       ├── product.controller.js
-│       ├── product.validation.js
-│       └── product.routes.js
+├── clients/
 ├── events/
-│   ├── producers/
-│   ├── consumers/
-│   └── handlers/
-├── outbox/
-│   ├── outbox.model.js
-│   └── outbox.publisher.js
+├── seeds/
+├── templates/       # chỉ service cần template, ví dụ Notification
+├── projections/     # chỉ service có read model, ví dụ Analytics
+├── prompts/         # chỉ AI Service
 ├── utils/
 ├── app.js
 └── server.js
@@ -329,18 +338,32 @@ catalog-service/src/
 
 Trách nhiệm:
 
-- `model`: Mongoose schema và indexes thuộc database của service.
-- `repository`: truy vấn database nội bộ.
-- `service`: nghiệp vụ và local transaction.
-- `controller`: nhận HTTP request và trả response.
-- `validation`: kiểm tra params, query và body.
-- `routes`: định nghĩa endpoint và middleware.
-- `events/producers`: phát domain events qua Kafka.
-- `events/consumers`: đăng ký topic và consumer group.
-- `events/handlers`: xử lý event theo cách idempotent.
-- `outbox`: bảo đảm thay đổi database và event không bị lệch nhau.
+- `models`: Mongoose schema, indexes và thao tác dữ liệu cơ bản thuộc database
+  của chính service.
+- `services`: toàn bộ nghiệp vụ, truy vấn model, local transaction và tạo Outbox.
+- `controllers`: chỉ nhận HTTP request, gọi service và tạo HTTP response.
+- `validations`: kiểm tra và normalize params, query, body trước controller.
+- `routes`: khai báo endpoint và nối validation/middleware/controller.
+- `middlewares`: authentication, authorization và middleware dùng lại.
+- `clients`: signed HTTP client gọi service khác; không truy cập database của
+  service khác.
+- `events`: producer, consumer registration và handler Kafka. Event handler là
+  một inbound adapter giống controller nhưng phải gọi service, không chứa nghiệp
+  vụ dài và không gọi controller.
+- `seeds`: chứa các script seed idempotent của database service đó; dữ liệu
+  tĩnh đặt riêng trong `seeds/data/*.json`. File điều phối (ví dụ
+  `seedCatalog.js`) chỉ kết nối database và gọi các hàm seed theo thứ tự, còn
+  `seedCategories.js`, `seedProducts.js` chỉ chứa logic của từng loại dữ liệu.
 
-Controller không chứa nghiệp vụ dài, không gọi Mongoose trực tiếp và không đọc database của service khác.
+Luồng HTTP bắt buộc là `Route -> Validation/Middleware -> Controller -> Service
+-> Model`. Luồng Kafka/worker là `Consumer/Worker -> Service -> Model`. Controller
+không gọi Mongoose trực tiếp; route không chứa nghiệp vụ; model không tạo HTTP
+response. React frontend là View hiển thị, còn JSON response là representation
+của backend nên business service không render View server-side.
+
+API Gateway không sở hữu business database nên không cần `models/`; nó vẫn tách
+`routes/`, `controllers/`, `services/clients` và `middlewares/`. Các thư mục tùy
+chọn chỉ được thêm khi có trách nhiệm thật, không tạo file rỗng để đủ hình thức.
 
 ### 3.2. Monorepo workspace
 
@@ -1516,8 +1539,8 @@ IDENTITY_SERVICE_URL=http://identity-service:5001
 CATALOG_SERVICE_URL=http://catalog-service:5002
 ORDER_SERVICE_URL=http://order-service:5003
 ANALYTICS_SERVICE_URL=http://analytics-service:5004
-SEARCH_SERVICE_URL=http://search-service:5005
-AI_SERVICE_URL=http://ai-service:5006
+SEARCH_SERVICE_URL=http://search-service:5006
+AI_SERVICE_URL=http://ai-service:5007
 INTERNAL_SERVICE_SECRET=change-me
 
 MONGODB_URI=mongodb://mongo:27017/?replicaSet=rs0
@@ -1606,7 +1629,8 @@ MongoDB transaction cần replica set. Docker Compose cấu hình one-node repli
 
 ### 17.1. Bonus A - CI/CD
 
-File `.github/workflows/ci.yml` chạy khi push và pull request:
+File `.github/workflows/ci.yml` tại Git repository root chạy khi push và pull
+request; các bước npm và Docker dùng `source/` làm working directory:
 
 1. Install dependencies từ lockfile.
 2. Lint toàn monorepo.
@@ -1838,7 +1862,7 @@ Khi viết hoặc sửa code, Codex cần tuân theo các nguyên tắc sau:
 3. Không tự thêm chức năng Admin ngoài danh sách trong tài liệu.
 4. Microservices và Kafka là kiến trúc bắt buộc từ Phase 1, không được đổi lại thành monolith.
 5. Mỗi service chỉ được đọc/ghi database do nó sở hữu.
-6. Không import trực tiếp business module từ service khác để né Kafka/HTTP contract.
+6. Không import trực tiếp business code từ service khác để né Kafka/HTTP contract.
 7. Mọi thay đổi business + event phải dùng local transaction và Outbox Pattern.
 8. Mọi Kafka consumer có side effect phải idempotent.
 9. Không tin giá, giảm giá, điểm hoặc tổng tiền do frontend gửi lên.
@@ -1877,7 +1901,7 @@ Source được xem là sẵn sàng khi:
 - Loyalty earn/redeem không làm số dư âm hoặc cộng trùng.
 - Comment guest và rating authenticated hoạt động.
 - WebSocket cập nhật comment/rating không reload.
-- Admin chỉ có các module được đề bài cho phép.
+- Admin chỉ có các chức năng được đề bài cho phép.
 - Dashboard trả đúng dữ liệu theo year/quarter/month/week/custom range.
 - Gateway chạy ít nhất hai replicas sau Nginx.
 - Session và realtime hoạt động xuyên qua nhiều Gateway/service replicas.

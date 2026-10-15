@@ -1,0 +1,14 @@
+{
+  "name": "@store/search-service",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "reindex": "node src/scripts/reindex-products.js"
+  },
+  "dependencies": {
+    "@store/service-runtime": "1.0.0",
+    "@store/validation": "1.0.0",
+    "express": "^5.1.0"
+  }
+}

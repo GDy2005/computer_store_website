@@ -1,0 +1,27 @@
+{
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "productId": {"type": "keyword"},
+      "slug": {"type": "keyword"},
+      "name": {
+        "type": "text",
+        "fields": {"keyword": {"type": "keyword"}}
+      },
+      "description": {"type": "text"},
+      "shortDescription": {"type": "text"},
+      "brand": {"type": "keyword"},
+      "category": {"type": "keyword"},
+      "tags": {"type": "keyword"},
+      "minPrice": {"type": "long"},
+      "maxPrice": {"type": "long"},
+      "averageRating": {"type": "float"},
+      "ratingCount": {"type": "integer"},
+      "soldCount": {"type": "long"},
+      "isActive": {"type": "boolean"},
+      "imageUrl": {"type": "keyword", "index": false},
+      "createdAt": {"type": "date"},
+      "suggest": {"type": "completion"}
+    }
+  }
+}

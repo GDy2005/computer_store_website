@@ -52,6 +52,21 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    restart: unless-stopped
+    networks: [private]
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    volumes: [elasticsearch-data:/usr/share/elasticsearch/data]
+    healthcheck:
+      test: [CMD-SHELL, "curl -fsS http://localhost:9200/_cluster/health?wait_for_status=yellow || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
   kafka:
     image: apache/kafka:3.9.2
     restart: unless-stopped
@@ -86,6 +101,22 @@ services:
       kafka: {condition: service_healthy}
     volumes: [./infra/kafka/create-topics.sh:/create-topics.sh:ro]
     entrypoint: [sh, /create-topics.sh]
+  identity-seed:
+    build:
+      context: .
+      dockerfile: services/identity-service/Dockerfile
+      args: {SERVICE_PATH: services/identity-service}
+    command: [node, services/identity-service/src/seeds/seed-admin.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      DB_NAME: identity_db
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
   identity-service:
     <<: *app
     build:
@@ -96,13 +127,18 @@ services:
       <<: *core-env
       PORT: 5001
       DB_NAME: identity_db
-    depends_on: *core-deps
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      PASSWORD_TOKEN_TTL_MINUTES: ${PASSWORD_TOKEN_TTL_MINUTES:-30}
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
+      kafka-init: {condition: service_completed_successfully}
+      identity-seed: {condition: service_completed_successfully}
   catalog-seed:
     build:
       context: .
       dockerfile: services/catalog-service/Dockerfile
       args: {SERVICE_PATH: services/catalog-service}
-    command: [node, services/catalog-service/src/seeds/seedCategories.js]
+    command: [node, services/catalog-service/src/seeds/seedCatalog.js]
     init: true
     restart: "no"
     networks: [private]
@@ -121,10 +157,49 @@ services:
       <<: *core-env
       PORT: 5002
       DB_NAME: catalog_db
+      IDENTITY_SERVICE_URL: http://identity-service:5001
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
       kafka-init: {condition: service_completed_successfully}
       catalog-seed: {condition: service_completed_successfully}
+  search-reindex:
+    build:
+      context: .
+      dockerfile: services/search-service/Dockerfile
+      args: {SERVICE_PATH: services/search-service}
+    command: [node, services/search-service/src/scripts/reindex-products.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_PRODUCT_INDEX: products_v1
+      CATALOG_SERVICE_URL: http://catalog-service:5002
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+    depends_on:
+      elasticsearch: {condition: service_healthy}
+      catalog-service: {condition: service_healthy}
+  search-service:
+    <<: *app
+    build:
+      context: .
+      dockerfile: services/search-service/Dockerfile
+      args: {SERVICE_PATH: services/search-service}
+    environment:
+      <<: *core-env
+      PORT: 5006
+      DB_NAME: search_db
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_PRODUCT_INDEX: products_v1
+      CATALOG_SERVICE_URL: http://catalog-service:5002
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
+      kafka-init: {condition: service_completed_successfully}
+      elasticsearch: {condition: service_healthy}
+      search-reindex: {condition: service_completed_successfully}
   order-service:
     <<: *app
     build:
@@ -146,6 +221,12 @@ services:
       <<: *core-env
       PORT: 5004
       DB_NAME: notification_db
+      EMAIL_TRANSPORT: ${EMAIL_TRANSPORT:-json}
+      EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
     depends_on: *core-deps
   analytics-service:
     <<: *app
@@ -172,6 +253,10 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
       INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
       FOUNDATION_PROBES_ENABLED: ${FOUNDATION_PROBES_ENABLED:-true}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/v1/auth/google/callback}
+      SEARCH_SERVICE_URL: http://search-service:5006
     depends_on:
       redis: {condition: service_healthy}
       identity-service: {condition: service_healthy}
@@ -179,6 +264,7 @@ services:
       order-service: {condition: service_healthy}
       notification-service: {condition: service_healthy}
       analytics-service: {condition: service_healthy}
+      search-service: {condition: service_healthy}
   gateway-2:
     <<: *app
     build:
@@ -193,6 +279,10 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
       INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
       FOUNDATION_PROBES_ENABLED: ${FOUNDATION_PROBES_ENABLED:-true}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/v1/auth/google/callback}
+      SEARCH_SERVICE_URL: http://search-service:5006
     depends_on:
       redis: {condition: service_healthy}
       identity-service: {condition: service_healthy}
@@ -200,6 +290,7 @@ services:
       order-service: {condition: service_healthy}
       notification-service: {condition: service_healthy}
       analytics-service: {condition: service_healthy}
+      search-service: {condition: service_healthy}
   frontend:
     build:
       context: .
@@ -233,4 +324,5 @@ volumes:
   mongo-data:
   redis-data:
   kafka-data:
+  elasticsearch-data:
 

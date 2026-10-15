@@ -1,9 +1,11 @@
 # Phase 1 foundation
 
-**Status: ACCEPTED locally on 2026-10-03 (Asia/Saigon).**
-`docker compose up -d` now exits 0. All 12 long-running containers are healthy;
-the two initialization jobs exit 0. Real broker/database smoke and integration
-checks passed. Phase 2 has not been implemented.
+**Historical runtime acceptance: 2026-10-03 (Asia/Saigon).**
+At that revision, `docker compose up -d` exited 0, all 12 long-running containers
+were healthy, and the two initialization jobs exited 0. Real broker/database
+smoke and integration checks passed. A later catalog increment added a third
+one-shot job, `catalog-seed`; see the current recheck below. Phase 2 has not been
+implemented.
 
 The original architecture specification is authoritative. Microservices and
 Kafka are required now. Five service entrypoints build into five separate
@@ -24,7 +26,8 @@ Phase 2 may begin only after `docker compose up -d` and the smoke pass.
 ## Files
 
 Root manifests, lockfile, ESLint configuration, ignore files, env example,
-Compose file, README, this document and CI workflow. Each gateway/core service
+Compose file, README and this document. The active CI workflow is stored at the
+parent Git repository root. Each gateway/core service
 has package.json, Dockerfile and src/app.js + src/server.js. Each core service
 has src/events/handlers.js for its local probe handler. Shared packages are
 event-contracts (topics, envelope, 16 schemas), kafka-client, logger, validation,
@@ -38,8 +41,9 @@ initial generation; do not rerun it over edited files.
 
 frontend, nginx, gateway-1, gateway-2, identity-service, catalog-service,
 order-service, notification-service, analytics-service, kafka, kafka-init,
-mongo, mongo-init, redis. Init jobs must exit 0; remaining containers have
-healthchecks. Search/AI/Elasticsearch are later-phase features, not claimed here.
+mongo, mongo-init, redis and catalog-seed. The three one-shot jobs must exit 0;
+remaining containers have healthchecks. Search/AI/Elasticsearch are later-phase
+features, not claimed here.
 
 ## Ownership
 
@@ -161,9 +165,8 @@ PASS replay after DB commit without offset commit is idempotent (real transactio
 ```
 
 The replay test simulates the DB-commit/offset-acknowledgement gap using real
-MongoDB transactions; it does not forcibly crash a process. No hosted GitHub
-Actions execution is claimed: the workspace has not been connected to a remote
-GitHub repository. The workflow assumes source/ is the repository checkout root.
+MongoDB transactions; it does not forcibly crash a process. At the time of this
+historical acceptance, no hosted GitHub Actions execution was claimed.
 
 ### Recovery from the interrupted Docker run
 
@@ -200,10 +203,11 @@ integration checks together. Database credentials must never point these
 verification scripts at production. Normal startup does not require npm on the
 host; local verification does.
 
-## Git readiness review — 2026-10-04
+## Historical Git readiness review — 2026-10-04
 
-Phase 1 is ready to commit/push with source/ as the Git repository root.
-The workspace has no initialized Git repository or configured remote yet.
+At the time of this historical review, Phase 1 was considered ready to
+commit/push with `source/` as the Git repository root. The workspace did not yet
+have an initialized Git repository or configured remote.
 
 Rechecked successfully: lint, all 9 tests, frontend build, npm audit (0 reported
 vulnerabilities), exact `docker compose up -d` (exit 0), all 12 running containers
@@ -222,3 +226,19 @@ The full original architecture document is included at
 docs/NodeJS_Final_Project_Source_Architecture.md; its SHA-256 matches the original.
 No remote push or hosted GitHub Actions run is claimed. Phase 2 remains outside
 the implemented scope.
+
+## Current repository and CI update — 2026-10-13
+
+The initialized Git repository root is the parent `project/` directory; `source/`
+is the application/npm workspace root. The active workflow is therefore stored
+at `project/.github/workflows/ci.yml` and uses `working-directory: source`.
+Branch `main` and remote `origin` are configured.
+
+Current static verification passes: clean lockfile install, lint, all 13 tests,
+frontend production build (989 modules), npm audit with zero reported
+vulnerabilities, and `docker compose config --quiet`. The current Compose model
+contains 12 long-running containers plus three one-shot jobs (`mongo-init`,
+`kafka-init`, and `catalog-seed`). Docker runtime was unavailable during this
+recheck, so Compose startup, smoke, and real Kafka/MongoDB integration must be
+rerun before the current revision is marked runtime-accepted. A successful hosted
+GitHub Actions run must also be captured after the workflow change is pushed.

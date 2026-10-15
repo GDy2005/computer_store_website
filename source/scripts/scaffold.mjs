@@ -26,9 +26,15 @@ const payloads = {
  'email.requested.v1': obj({userId:id,recipientEmail:{type:'string',format:'email'},type:{enum:['PASSWORD_RESET','ACCOUNT_ACTIVATION','ORDER_CONFIRMATION']},templateData:{type:'object'}}),
  'foundation.probe.v1': obj({probeId:{type:'string',format:'uuid'},message:{type:'string',maxLength:200},mode:{enum:['normal','retry','poison']}})
 };
+const allProducers = ['identity-service','catalog-service','order-service','notification-service','analytics-service'];
+const producersByTopic = {
+ 'users.created.v1': ['identity-service'],
+ 'users.updated.v1': ['identity-service'],
+ 'email.requested.v1': ['identity-service','order-service']
+};
 for (const [topic, payload] of Object.entries(payloads)) {
  const eventType = topic.replace(/\.v1$/, '').replace(/^(users|products|comments|ratings|orders)\./, (_, p) => `${p.slice(0,-1)}.`);
- const schema = obj({eventId:{type:'string',format:'uuid'},eventType:{const:eventType},eventVersion:{const:1},occurredAt:{type:'string',format:'date-time'},producer:{enum:['identity-service','catalog-service','order-service','notification-service','analytics-service']},correlationId:str,causationId:{anyOf:[{type:'string',format:'uuid'},{type:'null'}]},key:id,payload});
+ const schema = obj({eventId:{type:'string',format:'uuid'},eventType:{const:eventType},eventVersion:{const:1},occurredAt:{type:'string',format:'date-time'},producer:{enum:producersByTopic[topic] || allProducers},correlationId:str,causationId:{anyOf:[{type:'string',format:'uuid'},{type:'null'}]},key:id,payload});
  put(`packages/event-contracts/schemas/${topic}.json`, JSON.stringify({$schema:'http://json-schema.org/draft-07/schema#',...schema},null,2)+'\n');
 }
 const dockerfile = `FROM node:22-bookworm-slim\nWORKDIR /app\nCOPY . .\nRUN npm ci --omit=dev --ignore-scripts\nUSER node\nARG SERVICE_PATH\nENV SERVICE_PATH=$SERVICE_PATH\nCMD ["sh", "-c", "node $SERVICE_PATH/src/server.js"]\n`;

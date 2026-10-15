@@ -1,4 +1,16 @@
 import {startService} from '@store/service-runtime';
+
 import {buildApp} from './app.js';
 import {handleProbe} from './events/handlers.js';
-await startService('catalog-service', buildApp, handleProbe);
+import {
+  configureCatalogRuntime
+} from './catalog.runtime.js';
+
+await startService(
+  'catalog-service',
+  buildApp,
+  handleProbe,
+  {
+    configure: configureCatalogRuntime
+  }
+);

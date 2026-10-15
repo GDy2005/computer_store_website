@@ -4,7 +4,22 @@ import session from 'express-session';
 import {RedisStore} from 'connect-redis';
 import http from 'node:http';
 import {AppError, errorHandler, signedContext} from '@store/validation';
-export const serviceUrls = Object.fromEntries(['identity','catalog','order','notification','analytics'].map((name, index) => [name, process.env[`${name.toUpperCase()}_SERVICE_URL`] || `http://${name}-service:${5001+index}`]));
+import {createAuthController} from './controllers/auth.controller.js';
+import {createGoogleOAuthRouter} from './controllers/google-oauth.controller.js';
+import {createIdentityClient} from './services/identity-client.service.js';
+export const serviceUrls = {
+  ...Object.fromEntries(
+    ['identity', 'catalog', 'order', 'notification', 'analytics']
+      .map((name, index) => [
+        name,
+        process.env[`${name.toUpperCase()}_SERVICE_URL`] ||
+          `http://${name}-service:${5001 + index}`
+      ])
+  ),
+  search:
+    process.env.SEARCH_SERVICE_URL ||
+    'http://search-service:5006'
+};
 export function buildApp(redis) {
   const app = express();
   app.set('trust proxy', 1);
@@ -29,9 +44,31 @@ export function buildApp(redis) {
       })); res.json({success:true,data});
     } catch(error) {next(error);}
   });
+
+  const identityClient = createIdentityClient({
+    identityUrl: serviceUrls.identity,
+    secret: process.env.INTERNAL_SERVICE_SECRET
+  });
+
+  const authController =
+    createAuthController(identityClient);
+
+  app.use(createGoogleOAuthRouter(identityClient));
+
+  app.post(
+    '/api/v1/auth/login',
+    express.json({limit: '32kb'}),
+    authController.login
+  );
+
+  app.post(
+    '/api/v1/auth/logout',
+    authController.logout
+  );
+
   const proxy = (name, rewrite) => (req,res,next) => {
     const target = new URL(serviceUrls[name]);
-    const headers = {...req.headers, host:target.host, 'x-internal-token':signedContext(process.env.INTERNAL_SERVICE_SECRET,req.requestId),'x-request-id':req.requestId};
+    const headers = {...req.headers, host:target.host, 'x-internal-token':signedContext(process.env.INTERNAL_SERVICE_SECRET,req.requestId,req.session),'x-request-id':req.requestId};
     for(const key of ['x-user-id','x-user-role','cookie','connection','upgrade']) delete headers[key];
     const upstream = http.request({hostname:target.hostname,port:target.port,path:rewrite(req.url),method:req.method,headers},response=>{res.status(response.statusCode);for(const [key,value] of Object.entries(response.headers))if(!['connection','transfer-encoding'].includes(key) && value!==undefined)res.setHeader(key,value);response.pipe(res);});
     upstream.setTimeout(10000,()=>upstream.destroy(new Error('Upstream timeout')));
@@ -43,7 +80,7 @@ export function buildApp(redis) {
     const name=req.params.service; if(!serviceUrls[name]) return next(new AppError(404,'NOT_FOUND','Unknown service'));
     return proxy(name, path=>`/internal/foundation${path}`)(req,res,next);
   });
-  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','orders','admin/orders','admin/coupons'],analytics:['admin/dashboard']};
+  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','orders','admin/orders','admin/coupons'],analytics:['admin/dashboard'],search:['search']};
   for(const [name, prefixes] of Object.entries(routes)) for(const prefix of prefixes) app.use(`/api/v1/${prefix}`,proxy(name,path=>`/api/v1/${prefix}${path}`));
   app.use((req,res,next)=>next(new AppError(404,'NOT_FOUND','Endpoint not found')));app.use(errorHandler);return app;
 }

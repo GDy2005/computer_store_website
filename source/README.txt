@@ -1,24 +1,24 @@
-COMPUTER STORE — PHASE 1 FOUNDATION
+COMPUTER STORE — PHASE 1 TO PHASE 3
 
-Architecture: API Gateway + five independently deployed microservices + Kafka.
-Phase 1 accepted locally on 2026-10-03: Compose startup, 12 healthy containers,
-real Kafka smoke and event integration checks passed. The catalog increment adds
-an idempotent category seed job and a public featured-category API.
-Source repository root: this source/ directory. Initialize Git here when ready;
-the GitHub Actions workflow assumes source/ is the checkout root.
-The full architecture specification is included unchanged at
-docs/NodeJS_Final_Project_Source_Architecture.md for a standalone checkout.
+Architecture: React frontend, Nginx, two API Gateway replicas, six Node.js
+microservices, Kafka, MongoDB replica set, Redis and Elasticsearch.
+Run npm and Docker commands from this source/ directory. The Git repository
+root is the parent project/ directory.
 
 RUN
-  docker compose up -d
-Then open http://localhost and http://localhost/foundation.
-Featured categories are available at http://localhost/api/v1/categories?featured=true.
-The parent directory also has a forwarding Compose file for the same command.
-No .env file, host Node installation or manual initialization is required.
-Verified images: Kafka 3.9.2, MongoDB 7.0.26, Redis 7.4-bookworm,
-Nginx 1.28-bookworm. This avoids the damaged images from the interrupted run.
-Demo secrets have non-sensitive local defaults. Override before production.
-Kafka topic initialization creates 48 topics and can take several minutes.
+  docker compose up -d --build
+
+Then open:
+  http://localhost
+  http://localhost/products
+  http://localhost/products/steelseries-apex-pro-tkl-gen-3
+  http://localhost/api/v1/products?page=1&limit=12
+  http://localhost/api/v1/search?search=gaming&page=1&limit=12
+
+The startup graph runs the idempotent catalog seed and Elasticsearch reindex
+jobs before Search Service and the gateways become ready. The seed currently
+contains 5 categories and 40 products. Kafka topic initialization can take a
+few minutes on the first start.
 
 VERIFY (Node >= 22.12)
   npm ci --ignore-scripts
@@ -26,50 +26,34 @@ VERIFY (Node >= 22.12)
   npm test
   npm run build
   npm run smoke
-Or use scripts/verify-compose.ps1 on Windows after installing dependencies.
-Additional real broker/database checks:
-  docker compose exec -T identity-service node scripts/event-integration.js
-For another HTTP port set HTTP_PORT in source/.env and APP_BASE_URL for smoke.
 
-INSPECT
+Useful Docker checks:
   docker compose ps -a
-  docker compose logs identity-service catalog-service order-service notification-service analytics-service
-  docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
-  docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server kafka:9092 --list
-  docker compose exec mongo mongosh --quiet --eval "rs.status()"
+  docker compose logs catalog-service search-service search-reindex
+  docker compose exec -T elasticsearch curl -s http://localhost:9200/products_v1/_count
 
-Probe endpoints use /api/v1/foundation/{identity|catalog|order|notification|analytics}.
-POST /probes accepts {"message":"hello","mode":"normal|retry|poison"}.
-GET /probes/{probeId} reads the local effect. GET /api/v1/foundation/status
-reads each service over signed internal HTTP, never another service's database.
-Probes are demo tools: set FOUNDATION_PROBES_ENABLED=false outside development.
-GET /api/v1/categories lists active categories; add ?featured=true for the
-five category cards displayed on the landing page.
+PHASE STATUS
+  Phase 1: infrastructure, service runtime, contracts, Kafka reliability.
+  Phase 2: local/Google auth, Redis sessions, profile, addresses, password flows,
+           notification email jobs and authentication frontend screens.
+  Phase 3: category/product/comment/rating backend, 40-product seed, inventory
+           consumer, landing/catalog/detail UI, filter/sort/pagination and the
+           Elasticsearch Search Service synchronized through Kafka.
+  Phase 4: cart, coupon, checkout and order Saga are the next implementation.
 
-PHASE BOUNDARY
-No registration/login, products, checkout, email delivery, dashboard business
-projections, Elasticsearch or AI functionality is implemented yet. Domain topics
-and draft v1 schemas are foundations for their respective later phases.
-The real Kafka probe proves local transaction + outbox + independent consumers.
-Read docs/phase-1.md for ownership, contracts, checks and limitations.
+The current product images are placeholders. Replace the image URLs/publicIds
+in services/catalog-service/src/seeds/data/products.json or use the protected
+Cloudinary upload API after configuring credentials. Real Google OAuth and SMTP
+delivery also require local credentials in .env.
+
+Read docs/phase-1.md, docs/phase-2.md and docs/phase-3.md for ownership,
+commands, API checks and remaining limitations.
 
 PERSISTENCE
-MongoDB rs0, Kafka KRaft and Redis AOF each use a named volume.
-Only Nginx publishes a host port; service/database ports stay on Compose network.
-docker compose down retains data. Avoid down -v unless deleting demo data is intended.
+MongoDB rs0, Kafka KRaft, Redis AOF and Elasticsearch use named volumes.
+Only Nginx publishes a host port. docker compose down retains data; avoid
+docker compose down -v unless deleting all local demo data is intentional.
 
 CI
-The included workflow installs from lockfile, runs lint/contracts/unit tests,
-builds frontend and containers, then runs the real Compose integration smoke.
-A workflow file alone is not evidence of a successful hosted GitHub Actions run.
-
-GIT
-Use source/ as the Git repository root so .github/workflows/ci.yml is discovered.
-From C:\nodejs_finalterm\source:
-  git init -b main
-  git add .
-  git status --short
-  git commit -m "Implement Phase 1 microservices foundation"
-Then add your repository URL as origin and push main.
-Commit package-lock.json, .env.example, .gitattributes and source files.
-node_modules, dist, logs and real .env variants are ignored.
+../.github/workflows/ci.yml installs from the lockfile, runs lint/tests/build,
+builds containers and runs the Compose integration smoke from source/.

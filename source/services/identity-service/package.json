@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed:admin": "node src/seeds/seed-admin.js"
   },
   "dependencies": {
+    "@store/service-runtime": "1.0.0",
+    "bcryptjs": "^3.0.3",
     "express": "^5.1.0",
-    "@store/service-runtime": "1.0.0"
+    "mongoose": "^8.24.4"
   }
 }

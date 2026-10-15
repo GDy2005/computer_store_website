@@ -1,0 +1,2411 @@
+[
+  {
+    "name": "Apple MacBook Air 13 M4 2025",
+    "slug": "apple-macbook-air-13-m4-2025",
+    "brand": "Apple",
+    "categorySlug": "laptop",
+    "tags": [
+      "apple",
+      "macbook",
+      "m4",
+      "ultrabook"
+    ],
+    "shortDescription": "Laptop mỏng nhẹ 13 inch dùng chip Apple M4, phù hợp học tập và làm việc.",
+    "description": "Laptop mỏng nhẹ 13 inch dùng chip Apple M4, phù hợp học tập và làm việc. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-front",
+        "publicId": "seed/products/apple-macbook-air-13-m4-2025-front",
+        "alt": "Apple MacBook Air 13 M4 2025 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-side",
+        "publicId": "seed/products/apple-macbook-air-13-m4-2025-side",
+        "alt": "Apple MacBook Air 13 M4 2025 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-detail",
+        "publicId": "seed/products/apple-macbook-air-13-m4-2025-detail",
+        "alt": "Apple MacBook Air 13 M4 2025 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "MBA13-M4-16-256",
+        "name": "16GB RAM - 256GB SSD",
+        "attributes": {
+          "ram": "16GB",
+          "storage": "256GB",
+          "color": "Midnight"
+        },
+        "price": 26990000,
+        "costPrice": 24500000,
+        "stock": 20,
+        "isActive": true
+      },
+      {
+        "sku": "MBA13-M4-16-512",
+        "name": "16GB RAM - 512GB SSD",
+        "attributes": {
+          "ram": "16GB",
+          "storage": "512GB",
+          "color": "Starlight"
+        },
+        "price": 31990000,
+        "costPrice": 28900000,
+        "stock": 15,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "ASUS Vivobook 15 X1504VA",
+    "slug": "asus-vivobook-15-x1504va",
+    "brand": "ASUS",
+    "categorySlug": "laptop",
+    "tags": [
+      "asus",
+      "vivobook",
+      "office",
+      "15-inch"
+    ],
+    "shortDescription": "Laptop văn phòng 15.6 inch, bàn phím số và cấu hình Intel Core.",
+    "description": "Laptop văn phòng 15.6 inch, bàn phím số và cấu hình Intel Core. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-front",
+        "publicId": "seed/products/asus-vivobook-15-x1504va-front",
+        "alt": "ASUS Vivobook 15 X1504VA mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-side",
+        "publicId": "seed/products/asus-vivobook-15-x1504va-side",
+        "alt": "ASUS Vivobook 15 X1504VA góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-detail",
+        "publicId": "seed/products/asus-vivobook-15-x1504va-detail",
+        "alt": "ASUS Vivobook 15 X1504VA ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ASUS-X1504VA-I5",
+        "name": "Core i5 - 16GB - 512GB",
+        "attributes": {
+          "cpu": "Intel Core i5",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 15490000,
+        "costPrice": 13900000,
+        "stock": 24,
+        "isActive": true
+      },
+      {
+        "sku": "ASUS-X1504VA-I7",
+        "name": "Core i7 - 16GB - 512GB",
+        "attributes": {
+          "cpu": "Intel Core i7",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 18990000,
+        "costPrice": 17100000,
+        "stock": 12,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Dell Inspiron 14 5440",
+    "slug": "dell-inspiron-14-5440",
+    "brand": "Dell",
+    "categorySlug": "laptop",
+    "tags": [
+      "dell",
+      "inspiron",
+      "office",
+      "14-inch"
+    ],
+    "shortDescription": "Laptop 14 inch gọn nhẹ dành cho công việc, học tập và di chuyển.",
+    "description": "Laptop 14 inch gọn nhẹ dành cho công việc, học tập và di chuyển. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-front",
+        "publicId": "seed/products/dell-inspiron-14-5440-front",
+        "alt": "Dell Inspiron 14 5440 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-side",
+        "publicId": "seed/products/dell-inspiron-14-5440-side",
+        "alt": "Dell Inspiron 14 5440 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-detail",
+        "publicId": "seed/products/dell-inspiron-14-5440-detail",
+        "alt": "Dell Inspiron 14 5440 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "DELL-5440-I5",
+        "name": "Core i5 - 16GB - 512GB",
+        "attributes": {
+          "cpu": "Intel Core i5",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 17990000,
+        "costPrice": 16100000,
+        "stock": 18,
+        "isActive": true
+      },
+      {
+        "sku": "DELL-5440-I7",
+        "name": "Core i7 - 16GB - 1TB",
+        "attributes": {
+          "cpu": "Intel Core i7",
+          "ram": "16GB",
+          "storage": "1TB"
+        },
+        "price": 22990000,
+        "costPrice": 20700000,
+        "stock": 10,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Lenovo LOQ 15IRX9",
+    "slug": "lenovo-loq-15irx9",
+    "brand": "Lenovo",
+    "categorySlug": "laptop",
+    "tags": [
+      "lenovo",
+      "loq",
+      "gaming",
+      "rtx"
+    ],
+    "shortDescription": "Laptop gaming 15.6 inch với CPU Intel HX và GPU NVIDIA GeForce RTX.",
+    "description": "Laptop gaming 15.6 inch với CPU Intel HX và GPU NVIDIA GeForce RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-front",
+        "publicId": "seed/products/lenovo-loq-15irx9-front",
+        "alt": "Lenovo LOQ 15IRX9 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-side",
+        "publicId": "seed/products/lenovo-loq-15irx9-side",
+        "alt": "Lenovo LOQ 15IRX9 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-detail",
+        "publicId": "seed/products/lenovo-loq-15irx9-detail",
+        "alt": "Lenovo LOQ 15IRX9 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "LOQ-15IRX9-RTX3050",
+        "name": "RTX 3050 - 16GB - 512GB",
+        "attributes": {
+          "gpu": "GeForce RTX 3050",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 23990000,
+        "costPrice": 21600000,
+        "stock": 14,
+        "isActive": true
+      },
+      {
+        "sku": "LOQ-15IRX9-RTX4050",
+        "name": "RTX 4050 - 24GB - 1TB",
+        "attributes": {
+          "gpu": "GeForce RTX 4050",
+          "ram": "24GB",
+          "storage": "1TB"
+        },
+        "price": 28990000,
+        "costPrice": 26200000,
+        "stock": 9,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Acer Nitro V 15",
+    "slug": "acer-nitro-v-15",
+    "brand": "Acer",
+    "categorySlug": "laptop",
+    "tags": [
+      "acer",
+      "nitro",
+      "gaming",
+      "rtx"
+    ],
+    "shortDescription": "Laptop gaming phổ thông với màn hình tần số quét cao và GPU RTX.",
+    "description": "Laptop gaming phổ thông với màn hình tần số quét cao và GPU RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-front",
+        "publicId": "seed/products/acer-nitro-v-15-front",
+        "alt": "Acer Nitro V 15 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-side",
+        "publicId": "seed/products/acer-nitro-v-15-side",
+        "alt": "Acer Nitro V 15 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-detail",
+        "publicId": "seed/products/acer-nitro-v-15-detail",
+        "alt": "Acer Nitro V 15 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "NITRO-V15-RTX4050",
+        "name": "RTX 4050 - 16GB - 512GB",
+        "attributes": {
+          "gpu": "GeForce RTX 4050",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 24990000,
+        "costPrice": 22500000,
+        "stock": 16,
+        "isActive": true
+      },
+      {
+        "sku": "NITRO-V15-RTX4060",
+        "name": "RTX 4060 - 32GB - 1TB",
+        "attributes": {
+          "gpu": "GeForce RTX 4060",
+          "ram": "32GB",
+          "storage": "1TB"
+        },
+        "price": 31990000,
+        "costPrice": 28900000,
+        "stock": 8,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "HP Victus 15",
+    "slug": "hp-victus-15",
+    "brand": "HP",
+    "categorySlug": "laptop",
+    "tags": [
+      "hp",
+      "victus",
+      "gaming",
+      "rtx"
+    ],
+    "shortDescription": "Laptop gaming thiết kế trung tính, phù hợp cả chơi game và làm việc.",
+    "description": "Laptop gaming thiết kế trung tính, phù hợp cả chơi game và làm việc. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-front",
+        "publicId": "seed/products/hp-victus-15-front",
+        "alt": "HP Victus 15 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-side",
+        "publicId": "seed/products/hp-victus-15-side",
+        "alt": "HP Victus 15 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-detail",
+        "publicId": "seed/products/hp-victus-15-detail",
+        "alt": "HP Victus 15 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "VICTUS-15-RTX3050",
+        "name": "RTX 3050 - 16GB - 512GB",
+        "attributes": {
+          "gpu": "GeForce RTX 3050",
+          "ram": "16GB",
+          "storage": "512GB"
+        },
+        "price": 22490000,
+        "costPrice": 20200000,
+        "stock": 13,
+        "isActive": true
+      },
+      {
+        "sku": "VICTUS-15-RTX4050",
+        "name": "RTX 4050 - 16GB - 1TB",
+        "attributes": {
+          "gpu": "GeForce RTX 4050",
+          "ram": "16GB",
+          "storage": "1TB"
+        },
+        "price": 27990000,
+        "costPrice": 25200000,
+        "stock": 11,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "MSI Katana 15 HX B14W",
+    "slug": "msi-katana-15-hx-b14w",
+    "brand": "MSI",
+    "categorySlug": "laptop",
+    "tags": [
+      "msi",
+      "katana",
+      "gaming",
+      "rtx"
+    ],
+    "shortDescription": "Laptop gaming hiệu năng cao với CPU Intel HX và card đồ họa RTX.",
+    "description": "Laptop gaming hiệu năng cao với CPU Intel HX và card đồ họa RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-front",
+        "publicId": "seed/products/msi-katana-15-hx-b14w-front",
+        "alt": "MSI Katana 15 HX B14W mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-side",
+        "publicId": "seed/products/msi-katana-15-hx-b14w-side",
+        "alt": "MSI Katana 15 HX B14W góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-detail",
+        "publicId": "seed/products/msi-katana-15-hx-b14w-detail",
+        "alt": "MSI Katana 15 HX B14W ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "KATANA-B14W-RTX5060",
+        "name": "RTX 5060 - 16GB - 1TB",
+        "attributes": {
+          "gpu": "GeForce RTX 5060",
+          "ram": "16GB",
+          "storage": "1TB"
+        },
+        "price": 35990000,
+        "costPrice": 32500000,
+        "stock": 7,
+        "isActive": true
+      },
+      {
+        "sku": "KATANA-B14W-RTX5070",
+        "name": "RTX 5070 - 32GB - 1TB",
+        "attributes": {
+          "gpu": "GeForce RTX 5070",
+          "ram": "32GB",
+          "storage": "1TB"
+        },
+        "price": 44990000,
+        "costPrice": 40700000,
+        "stock": 5,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "ASUS ROG Zephyrus G14 GA403",
+    "slug": "asus-rog-zephyrus-g14-ga403",
+    "brand": "ASUS",
+    "categorySlug": "laptop",
+    "tags": [
+      "asus",
+      "rog",
+      "zephyrus",
+      "gaming"
+    ],
+    "shortDescription": "Laptop gaming 14 inch cao cấp với thiết kế nhỏ gọn và màn hình chất lượng cao.",
+    "description": "Laptop gaming 14 inch cao cấp với thiết kế nhỏ gọn và màn hình chất lượng cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-front",
+        "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-front",
+        "alt": "ASUS ROG Zephyrus G14 GA403 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-side",
+        "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-side",
+        "alt": "ASUS ROG Zephyrus G14 GA403 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-detail",
+        "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-detail",
+        "alt": "ASUS ROG Zephyrus G14 GA403 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ROG-GA403-16-1TB",
+        "name": "16GB RAM - 1TB SSD",
+        "attributes": {
+          "ram": "16GB",
+          "storage": "1TB",
+          "color": "Eclipse Gray"
+        },
+        "price": 42990000,
+        "costPrice": 38900000,
+        "stock": 8,
+        "isActive": true
+      },
+      {
+        "sku": "ROG-GA403-32-1TB",
+        "name": "32GB RAM - 1TB SSD",
+        "attributes": {
+          "ram": "32GB",
+          "storage": "1TB",
+          "color": "Platinum White"
+        },
+        "price": 49990000,
+        "costPrice": 45200000,
+        "stock": 6,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Samsung Odyssey G5 G55C",
+    "slug": "samsung-odyssey-g5-g55c",
+    "brand": "Samsung",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "samsung",
+      "odyssey",
+      "gaming",
+      "qhd"
+    ],
+    "shortDescription": "Màn hình gaming cong QHD, tần số quét cao cho trải nghiệm chơi game mượt.",
+    "description": "Màn hình gaming cong QHD, tần số quét cao cho trải nghiệm chơi game mượt. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-front",
+        "publicId": "seed/products/samsung-odyssey-g5-g55c-front",
+        "alt": "Samsung Odyssey G5 G55C mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-side",
+        "publicId": "seed/products/samsung-odyssey-g5-g55c-side",
+        "alt": "Samsung Odyssey G5 G55C góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-detail",
+        "publicId": "seed/products/samsung-odyssey-g5-g55c-detail",
+        "alt": "Samsung Odyssey G5 G55C ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ODYSSEY-G55C-27",
+        "name": "27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "refreshRate": "165Hz"
+        },
+        "price": 6290000,
+        "costPrice": 5580000,
+        "stock": 22,
+        "isActive": true
+      },
+      {
+        "sku": "ODYSSEY-G55C-32",
+        "name": "32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "refreshRate": "165Hz"
+        },
+        "price": 7590000,
+        "costPrice": 6790000,
+        "stock": 17,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "LG UltraGear GP850",
+    "slug": "lg-ultragear-gp850",
+    "brand": "LG",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "lg",
+      "ultragear",
+      "gaming",
+      "nano-ips"
+    ],
+    "shortDescription": "Màn hình gaming Nano IPS QHD với màu sắc tốt và phản hồi nhanh.",
+    "description": "Màn hình gaming Nano IPS QHD với màu sắc tốt và phản hồi nhanh. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-front",
+        "publicId": "seed/products/lg-ultragear-gp850-front",
+        "alt": "LG UltraGear GP850 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-side",
+        "publicId": "seed/products/lg-ultragear-gp850-side",
+        "alt": "LG UltraGear GP850 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-detail",
+        "publicId": "seed/products/lg-ultragear-gp850-detail",
+        "alt": "LG UltraGear GP850 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "LG-27GP850-B",
+        "name": "27GP850-B 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "panel": "Nano IPS"
+        },
+        "price": 8490000,
+        "costPrice": 7580000,
+        "stock": 18,
+        "isActive": true
+      },
+      {
+        "sku": "LG-32GP850-B",
+        "name": "32GP850-B 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "panel": "Nano IPS"
+        },
+        "price": 10490000,
+        "costPrice": 9390000,
+        "stock": 12,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Dell UltraSharp U Series",
+    "slug": "dell-ultrasharp-u-series",
+    "brand": "Dell",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "dell",
+      "ultrasharp",
+      "4k",
+      "office"
+    ],
+    "shortDescription": "Màn hình 4K cao cấp dành cho văn phòng, thiết kế và xử lý nội dung.",
+    "description": "Màn hình 4K cao cấp dành cho văn phòng, thiết kế và xử lý nội dung. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-front",
+        "publicId": "seed/products/dell-ultrasharp-u-series-front",
+        "alt": "Dell UltraSharp U Series mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-side",
+        "publicId": "seed/products/dell-ultrasharp-u-series-side",
+        "alt": "Dell UltraSharp U Series góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-detail",
+        "publicId": "seed/products/dell-ultrasharp-u-series-detail",
+        "alt": "Dell UltraSharp U Series ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "DELL-U2723QE",
+        "name": "U2723QE 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "3840x2160",
+          "panel": "IPS Black"
+        },
+        "price": 13990000,
+        "costPrice": 12500000,
+        "stock": 13,
+        "isActive": true
+      },
+      {
+        "sku": "DELL-U3223QE",
+        "name": "U3223QE 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "3840x2160",
+          "panel": "IPS Black"
+        },
+        "price": 18990000,
+        "costPrice": 17100000,
+        "stock": 8,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "ASUS TUF Gaming VG Series",
+    "slug": "asus-tuf-gaming-vg-series",
+    "brand": "ASUS",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "asus",
+      "tuf",
+      "gaming",
+      "qhd"
+    ],
+    "shortDescription": "Màn hình gaming QHD tần số quét cao thuộc dòng ASUS TUF Gaming.",
+    "description": "Màn hình gaming QHD tần số quét cao thuộc dòng ASUS TUF Gaming. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-front",
+        "publicId": "seed/products/asus-tuf-gaming-vg-series-front",
+        "alt": "ASUS TUF Gaming VG Series mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-side",
+        "publicId": "seed/products/asus-tuf-gaming-vg-series-side",
+        "alt": "ASUS TUF Gaming VG Series góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-detail",
+        "publicId": "seed/products/asus-tuf-gaming-vg-series-detail",
+        "alt": "ASUS TUF Gaming VG Series ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ASUS-VG27AQ3A",
+        "name": "VG27AQ3A 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "refreshRate": "180Hz"
+        },
+        "price": 6990000,
+        "costPrice": 6250000,
+        "stock": 19,
+        "isActive": true
+      },
+      {
+        "sku": "ASUS-VG32AQA1A",
+        "name": "VG32AQA1A 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "refreshRate": "170Hz"
+        },
+        "price": 8490000,
+        "costPrice": 7590000,
+        "stock": 14,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Gigabyte M Series",
+    "slug": "gigabyte-m-series-monitor",
+    "brand": "Gigabyte",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "gigabyte",
+      "gaming",
+      "kvm",
+      "qhd"
+    ],
+    "shortDescription": "Màn hình gaming QHD tích hợp KVM, phù hợp dùng chung nhiều thiết bị.",
+    "description": "Màn hình gaming QHD tích hợp KVM, phù hợp dùng chung nhiều thiết bị. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-front",
+        "publicId": "seed/products/gigabyte-m-series-monitor-front",
+        "alt": "Gigabyte M Series mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-side",
+        "publicId": "seed/products/gigabyte-m-series-monitor-side",
+        "alt": "Gigabyte M Series góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-detail",
+        "publicId": "seed/products/gigabyte-m-series-monitor-detail",
+        "alt": "Gigabyte M Series ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "GIGABYTE-M27Q",
+        "name": "M27Q 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "feature": "KVM"
+        },
+        "price": 7490000,
+        "costPrice": 6690000,
+        "stock": 16,
+        "isActive": true
+      },
+      {
+        "sku": "GIGABYTE-M32Q",
+        "name": "M32Q 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "feature": "KVM"
+        },
+        "price": 9990000,
+        "costPrice": 8950000,
+        "stock": 10,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "MSI MAG Gaming Monitor",
+    "slug": "msi-mag-gaming-monitor",
+    "brand": "MSI",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "msi",
+      "mag",
+      "gaming",
+      "qhd"
+    ],
+    "shortDescription": "Màn hình gaming QHD với màu sắc rộng và tần số quét cao.",
+    "description": "Màn hình gaming QHD với màu sắc rộng và tần số quét cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-front",
+        "publicId": "seed/products/msi-mag-gaming-monitor-front",
+        "alt": "MSI MAG Gaming Monitor mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-side",
+        "publicId": "seed/products/msi-mag-gaming-monitor-side",
+        "alt": "MSI MAG Gaming Monitor góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-detail",
+        "publicId": "seed/products/msi-mag-gaming-monitor-detail",
+        "alt": "MSI MAG Gaming Monitor ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "MSI-274QRF-QD-E2",
+        "name": "MAG 274QRF QD E2",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "panel": "Rapid IPS"
+        },
+        "price": 8990000,
+        "costPrice": 8050000,
+        "stock": 15,
+        "isActive": true
+      },
+      {
+        "sku": "MSI-325CQRF-QD",
+        "name": "MAG 325CQRF QD",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "panel": "Rapid VA"
+        },
+        "price": 10990000,
+        "costPrice": 9850000,
+        "stock": 9,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "AOC Gaming QHD Series",
+    "slug": "aoc-gaming-qhd-series",
+    "brand": "AOC",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "aoc",
+      "gaming",
+      "qhd",
+      "high-refresh-rate"
+    ],
+    "shortDescription": "Màn hình gaming QHD có tần số quét cao với hai kiểu phẳng và cong.",
+    "description": "Màn hình gaming QHD có tần số quét cao với hai kiểu phẳng và cong. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-front",
+        "publicId": "seed/products/aoc-gaming-qhd-series-front",
+        "alt": "AOC Gaming QHD Series mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-side",
+        "publicId": "seed/products/aoc-gaming-qhd-series-side",
+        "alt": "AOC Gaming QHD Series góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-detail",
+        "publicId": "seed/products/aoc-gaming-qhd-series-detail",
+        "alt": "AOC Gaming QHD Series ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "AOC-Q27G3XMN",
+        "name": "Q27G3XMN 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "type": "Flat"
+        },
+        "price": 7990000,
+        "costPrice": 7150000,
+        "stock": 17,
+        "isActive": true
+      },
+      {
+        "sku": "AOC-CQ32G3SE",
+        "name": "CQ32G3SE 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "type": "Curved"
+        },
+        "price": 8790000,
+        "costPrice": 7860000,
+        "stock": 11,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "BenQ MOBIUZ EX Series",
+    "slug": "benq-mobiuz-ex-series",
+    "brand": "BenQ",
+    "categorySlug": "man-hinh",
+    "tags": [
+      "benq",
+      "mobiuz",
+      "gaming",
+      "hdr"
+    ],
+    "shortDescription": "Màn hình gaming MOBIUZ tích hợp loa và các chế độ hiển thị HDR.",
+    "description": "Màn hình gaming MOBIUZ tích hợp loa và các chế độ hiển thị HDR. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-front",
+        "publicId": "seed/products/benq-mobiuz-ex-series-front",
+        "alt": "BenQ MOBIUZ EX Series mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-side",
+        "publicId": "seed/products/benq-mobiuz-ex-series-side",
+        "alt": "BenQ MOBIUZ EX Series góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-detail",
+        "publicId": "seed/products/benq-mobiuz-ex-series-detail",
+        "alt": "BenQ MOBIUZ EX Series ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "BENQ-EX2710Q",
+        "name": "EX2710Q 27 inch",
+        "attributes": {
+          "size": "27 inch",
+          "resolution": "2560x1440",
+          "type": "Flat"
+        },
+        "price": 9490000,
+        "costPrice": 8490000,
+        "stock": 12,
+        "isActive": true
+      },
+      {
+        "sku": "BENQ-EX3210R",
+        "name": "EX3210R 32 inch",
+        "attributes": {
+          "size": "32 inch",
+          "resolution": "2560x1440",
+          "type": "Curved"
+        },
+        "price": 12490000,
+        "costPrice": 11200000,
+        "stock": 8,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Keychron K2 Pro",
+    "slug": "keychron-k2-pro",
+    "brand": "Keychron",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "keychron",
+      "mechanical",
+      "wireless",
+      "75-percent"
+    ],
+    "shortDescription": "Bàn phím cơ không dây layout 75%, hỗ trợ nhiều hệ điều hành.",
+    "description": "Bàn phím cơ không dây layout 75%, hỗ trợ nhiều hệ điều hành. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-front",
+        "publicId": "seed/products/keychron-k2-pro-front",
+        "alt": "Keychron K2 Pro mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-side",
+        "publicId": "seed/products/keychron-k2-pro-side",
+        "alt": "Keychron K2 Pro góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-detail",
+        "publicId": "seed/products/keychron-k2-pro-detail",
+        "alt": "Keychron K2 Pro ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "K2PRO-RED",
+        "name": "K Pro Red Switch",
+        "attributes": {
+          "switch": "K Pro Red",
+          "layout": "75%",
+          "connection": "Bluetooth/USB-C"
+        },
+        "price": 2490000,
+        "costPrice": 1980000,
+        "stock": 28,
+        "isActive": true
+      },
+      {
+        "sku": "K2PRO-BROWN",
+        "name": "K Pro Brown Switch",
+        "attributes": {
+          "switch": "K Pro Brown",
+          "layout": "75%",
+          "connection": "Bluetooth/USB-C"
+        },
+        "price": 2490000,
+        "costPrice": 1980000,
+        "stock": 25,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Akko 5075B Plus",
+    "slug": "akko-5075b-plus",
+    "brand": "Akko",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "akko",
+      "mechanical",
+      "wireless",
+      "rgb"
+    ],
+    "shortDescription": "Bàn phím cơ 75% hỗ trợ ba chế độ kết nối và hot-swap.",
+    "description": "Bàn phím cơ 75% hỗ trợ ba chế độ kết nối và hot-swap. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-front",
+        "publicId": "seed/products/akko-5075b-plus-front",
+        "alt": "Akko 5075B Plus mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-side",
+        "publicId": "seed/products/akko-5075b-plus-side",
+        "alt": "Akko 5075B Plus góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-detail",
+        "publicId": "seed/products/akko-5075b-plus-detail",
+        "alt": "Akko 5075B Plus ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "AKKO-5075B-CREAM",
+        "name": "Cream Yellow Switch",
+        "attributes": {
+          "switch": "Cream Yellow",
+          "layout": "75%",
+          "connection": "Tri-mode"
+        },
+        "price": 1990000,
+        "costPrice": 1550000,
+        "stock": 30,
+        "isActive": true
+      },
+      {
+        "sku": "AKKO-5075B-PIANO",
+        "name": "Piano Pro Switch",
+        "attributes": {
+          "switch": "Piano Pro",
+          "layout": "75%",
+          "connection": "Tri-mode"
+        },
+        "price": 2090000,
+        "costPrice": 1630000,
+        "stock": 22,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Logitech G Pro X TKL Lightspeed",
+    "slug": "logitech-g-pro-x-tkl-lightspeed",
+    "brand": "Logitech",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "logitech",
+      "gaming",
+      "tkl",
+      "lightspeed"
+    ],
+    "shortDescription": "Bàn phím gaming TKL không dây Lightspeed dành cho thi đấu.",
+    "description": "Bàn phím gaming TKL không dây Lightspeed dành cho thi đấu. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-front",
+        "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-front",
+        "alt": "Logitech G Pro X TKL Lightspeed mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-side",
+        "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-side",
+        "alt": "Logitech G Pro X TKL Lightspeed góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-detail",
+        "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-detail",
+        "alt": "Logitech G Pro X TKL Lightspeed ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "GPROX-TKL-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "layout": "TKL",
+          "connection": "Lightspeed"
+        },
+        "price": 4890000,
+        "costPrice": 3980000,
+        "stock": 18,
+        "isActive": true
+      },
+      {
+        "sku": "GPROX-TKL-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "layout": "TKL",
+          "connection": "Lightspeed"
+        },
+        "price": 4990000,
+        "costPrice": 4070000,
+        "stock": 14,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Razer BlackWidow V4 75%",
+    "slug": "razer-blackwidow-v4-75",
+    "brand": "Razer",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "razer",
+      "blackwidow",
+      "gaming",
+      "75-percent"
+    ],
+    "shortDescription": "Bàn phím cơ gaming 75% có hot-swap và hệ thống LED Chroma RGB.",
+    "description": "Bàn phím cơ gaming 75% có hot-swap và hệ thống LED Chroma RGB. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-front",
+        "publicId": "seed/products/razer-blackwidow-v4-75-front",
+        "alt": "Razer BlackWidow V4 75% mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-side",
+        "publicId": "seed/products/razer-blackwidow-v4-75-side",
+        "alt": "Razer BlackWidow V4 75% góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-detail",
+        "publicId": "seed/products/razer-blackwidow-v4-75-detail",
+        "alt": "Razer BlackWidow V4 75% ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "BW-V4-75-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "layout": "75%",
+          "switch": "Razer Orange"
+        },
+        "price": 4790000,
+        "costPrice": 3890000,
+        "stock": 16,
+        "isActive": true
+      },
+      {
+        "sku": "BW-V4-75-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "layout": "75%",
+          "switch": "Razer Orange"
+        },
+        "price": 4990000,
+        "costPrice": 4060000,
+        "stock": 12,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Corsair K70 RGB Pro",
+    "slug": "corsair-k70-rgb-pro",
+    "brand": "Corsair",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "corsair",
+      "k70",
+      "mechanical",
+      "rgb"
+    ],
+    "shortDescription": "Bàn phím cơ full-size khung nhôm với LED RGB từng phím.",
+    "description": "Bàn phím cơ full-size khung nhôm với LED RGB từng phím. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-front",
+        "publicId": "seed/products/corsair-k70-rgb-pro-front",
+        "alt": "Corsair K70 RGB Pro mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-side",
+        "publicId": "seed/products/corsair-k70-rgb-pro-side",
+        "alt": "Corsair K70 RGB Pro góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-detail",
+        "publicId": "seed/products/corsair-k70-rgb-pro-detail",
+        "alt": "Corsair K70 RGB Pro ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "K70-RGB-MXRED",
+        "name": "Cherry MX Red",
+        "attributes": {
+          "switch": "Cherry MX Red",
+          "layout": "Full-size",
+          "connection": "USB"
+        },
+        "price": 3990000,
+        "costPrice": 3220000,
+        "stock": 20,
+        "isActive": true
+      },
+      {
+        "sku": "K70-RGB-MXBROWN",
+        "name": "Cherry MX Brown",
+        "attributes": {
+          "switch": "Cherry MX Brown",
+          "layout": "Full-size",
+          "connection": "USB"
+        },
+        "price": 4090000,
+        "costPrice": 3300000,
+        "stock": 17,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "SteelSeries Apex Pro TKL Gen 3",
+    "slug": "steelseries-apex-pro-tkl-gen-3",
+    "brand": "SteelSeries",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "steelseries",
+      "apex-pro",
+      "tkl",
+      "gaming"
+    ],
+    "shortDescription": "Bàn phím gaming TKL dùng switch từ tính có thể điều chỉnh điểm nhận phím.",
+    "description": "Bàn phím gaming TKL dùng switch từ tính có thể điều chỉnh điểm nhận phím. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-front",
+        "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-front",
+        "alt": "SteelSeries Apex Pro TKL Gen 3 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-side",
+        "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-side",
+        "alt": "SteelSeries Apex Pro TKL Gen 3 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-detail",
+        "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-detail",
+        "alt": "SteelSeries Apex Pro TKL Gen 3 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "APEX-PRO-TKL-WIRED",
+        "name": "Bản có dây",
+        "attributes": {
+          "connection": "USB",
+          "layout": "TKL",
+          "switch": "OmniPoint"
+        },
+        "price": 5790000,
+        "costPrice": 4700000,
+        "stock": 14,
+        "isActive": true
+      },
+      {
+        "sku": "APEX-PRO-TKL-WL",
+        "name": "Bản không dây",
+        "attributes": {
+          "connection": "Wireless",
+          "layout": "TKL",
+          "switch": "OmniPoint"
+        },
+        "price": 7290000,
+        "costPrice": 5980000,
+        "stock": 9,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "ASUS ROG Strix Scope II 96 Wireless",
+    "slug": "asus-rog-strix-scope-ii-96-wireless",
+    "brand": "ASUS",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "asus",
+      "rog",
+      "wireless",
+      "96-percent"
+    ],
+    "shortDescription": "Bàn phím gaming không dây layout 96%, đầy đủ phím trong thân máy gọn.",
+    "description": "Bàn phím gaming không dây layout 96%, đầy đủ phím trong thân máy gọn. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-front",
+        "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-front",
+        "alt": "ASUS ROG Strix Scope II 96 Wireless mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-side",
+        "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-side",
+        "alt": "ASUS ROG Strix Scope II 96 Wireless góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-detail",
+        "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-detail",
+        "alt": "ASUS ROG Strix Scope II 96 Wireless ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ROG-SCOPE-II-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "layout": "96%",
+          "connection": "Tri-mode"
+        },
+        "price": 4490000,
+        "costPrice": 3650000,
+        "stock": 16,
+        "isActive": true
+      },
+      {
+        "sku": "ROG-SCOPE-II-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "layout": "96%",
+          "connection": "Tri-mode"
+        },
+        "price": 4590000,
+        "costPrice": 3730000,
+        "stock": 13,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Logitech MX Mechanical",
+    "slug": "logitech-mx-mechanical",
+    "brand": "Logitech",
+    "categorySlug": "ban-phim",
+    "tags": [
+      "logitech",
+      "mx",
+      "mechanical",
+      "office"
+    ],
+    "shortDescription": "Bàn phím cơ low-profile không dây dành cho làm việc đa thiết bị.",
+    "description": "Bàn phím cơ low-profile không dây dành cho làm việc đa thiết bị. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-front",
+        "publicId": "seed/products/logitech-mx-mechanical-front",
+        "alt": "Logitech MX Mechanical mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-side",
+        "publicId": "seed/products/logitech-mx-mechanical-side",
+        "alt": "Logitech MX Mechanical góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-detail",
+        "publicId": "seed/products/logitech-mx-mechanical-detail",
+        "alt": "Logitech MX Mechanical ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "MX-MECH-FULL",
+        "name": "Full-size",
+        "attributes": {
+          "layout": "Full-size",
+          "switch": "Tactile Quiet",
+          "connection": "Bluetooth/Logi Bolt"
+        },
+        "price": 3990000,
+        "costPrice": 3240000,
+        "stock": 21,
+        "isActive": true
+      },
+      {
+        "sku": "MX-MECH-MINI",
+        "name": "Mini",
+        "attributes": {
+          "layout": "75%",
+          "switch": "Tactile Quiet",
+          "connection": "Bluetooth/Logi Bolt"
+        },
+        "price": 3490000,
+        "costPrice": 2820000,
+        "stock": 24,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Logitech G Pro X Superlight 2",
+    "slug": "logitech-g-pro-x-superlight-2",
+    "brand": "Logitech",
+    "categorySlug": "chuot",
+    "tags": [
+      "logitech",
+      "superlight",
+      "wireless",
+      "gaming"
+    ],
+    "shortDescription": "Chuột gaming không dây siêu nhẹ dành cho game thủ thi đấu.",
+    "description": "Chuột gaming không dây siêu nhẹ dành cho game thủ thi đấu. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-front",
+        "publicId": "seed/products/logitech-g-pro-x-superlight-2-front",
+        "alt": "Logitech G Pro X Superlight 2 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-side",
+        "publicId": "seed/products/logitech-g-pro-x-superlight-2-side",
+        "alt": "Logitech G Pro X Superlight 2 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-detail",
+        "publicId": "seed/products/logitech-g-pro-x-superlight-2-detail",
+        "alt": "Logitech G Pro X Superlight 2 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "SUPERLIGHT2-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "Lightspeed",
+          "sensor": "HERO 2"
+        },
+        "price": 3490000,
+        "costPrice": 2790000,
+        "stock": 32,
+        "isActive": true
+      },
+      {
+        "sku": "SUPERLIGHT2-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "Lightspeed",
+          "sensor": "HERO 2"
+        },
+        "price": 3590000,
+        "costPrice": 2870000,
+        "stock": 27,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Razer Viper V3 Pro",
+    "slug": "razer-viper-v3-pro",
+    "brand": "Razer",
+    "categorySlug": "chuot",
+    "tags": [
+      "razer",
+      "viper",
+      "wireless",
+      "esports"
+    ],
+    "shortDescription": "Chuột gaming đối xứng siêu nhẹ, tối ưu cho FPS và esports.",
+    "description": "Chuột gaming đối xứng siêu nhẹ, tối ưu cho FPS và esports. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-front",
+        "publicId": "seed/products/razer-viper-v3-pro-front",
+        "alt": "Razer Viper V3 Pro mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-side",
+        "publicId": "seed/products/razer-viper-v3-pro-side",
+        "alt": "Razer Viper V3 Pro góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-detail",
+        "publicId": "seed/products/razer-viper-v3-pro-detail",
+        "alt": "Razer Viper V3 Pro ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "VIPER-V3-PRO-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "HyperSpeed Wireless",
+          "sensor": "Focus Pro"
+        },
+        "price": 3990000,
+        "costPrice": 3210000,
+        "stock": 24,
+        "isActive": true
+      },
+      {
+        "sku": "VIPER-V3-PRO-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "HyperSpeed Wireless",
+          "sensor": "Focus Pro"
+        },
+        "price": 4090000,
+        "costPrice": 3290000,
+        "stock": 20,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Razer DeathAdder V3 Pro",
+    "slug": "razer-deathadder-v3-pro",
+    "brand": "Razer",
+    "categorySlug": "chuot",
+    "tags": [
+      "razer",
+      "deathadder",
+      "wireless",
+      "ergonomic"
+    ],
+    "shortDescription": "Chuột gaming công thái học không dây dành cho người thuận tay phải.",
+    "description": "Chuột gaming công thái học không dây dành cho người thuận tay phải. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-front",
+        "publicId": "seed/products/razer-deathadder-v3-pro-front",
+        "alt": "Razer DeathAdder V3 Pro mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-side",
+        "publicId": "seed/products/razer-deathadder-v3-pro-side",
+        "alt": "Razer DeathAdder V3 Pro góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-detail",
+        "publicId": "seed/products/razer-deathadder-v3-pro-detail",
+        "alt": "Razer DeathAdder V3 Pro ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "DAV3-PRO-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "shape": "Ergonomic",
+          "connection": "HyperSpeed Wireless"
+        },
+        "price": 3290000,
+        "costPrice": 2630000,
+        "stock": 23,
+        "isActive": true
+      },
+      {
+        "sku": "DAV3-PRO-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "shape": "Ergonomic",
+          "connection": "HyperSpeed Wireless"
+        },
+        "price": 3390000,
+        "costPrice": 2710000,
+        "stock": 18,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Logitech G502 X Plus",
+    "slug": "logitech-g502-x-plus",
+    "brand": "Logitech",
+    "categorySlug": "chuot",
+    "tags": [
+      "logitech",
+      "g502",
+      "wireless",
+      "rgb"
+    ],
+    "shortDescription": "Chuột gaming không dây nhiều nút, LED RGB và con lăn hai chế độ.",
+    "description": "Chuột gaming không dây nhiều nút, LED RGB và con lăn hai chế độ. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-front",
+        "publicId": "seed/products/logitech-g502-x-plus-front",
+        "alt": "Logitech G502 X Plus mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-side",
+        "publicId": "seed/products/logitech-g502-x-plus-side",
+        "alt": "Logitech G502 X Plus góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-detail",
+        "publicId": "seed/products/logitech-g502-x-plus-detail",
+        "alt": "Logitech G502 X Plus ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "G502X-PLUS-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "Lightspeed",
+          "lighting": "Lightsync RGB"
+        },
+        "price": 3690000,
+        "costPrice": 2960000,
+        "stock": 19,
+        "isActive": true
+      },
+      {
+        "sku": "G502X-PLUS-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "Lightspeed",
+          "lighting": "Lightsync RGB"
+        },
+        "price": 3790000,
+        "costPrice": 3040000,
+        "stock": 15,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "ASUS ROG Harpe Ace Aim Lab Edition",
+    "slug": "asus-rog-harpe-ace-aim-lab",
+    "brand": "ASUS",
+    "categorySlug": "chuot",
+    "tags": [
+      "asus",
+      "rog",
+      "aim-lab",
+      "wireless"
+    ],
+    "shortDescription": "Chuột gaming siêu nhẹ hợp tác cùng Aim Lab, hướng đến game FPS.",
+    "description": "Chuột gaming siêu nhẹ hợp tác cùng Aim Lab, hướng đến game FPS. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-front",
+        "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-front",
+        "alt": "ASUS ROG Harpe Ace Aim Lab Edition mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-side",
+        "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-side",
+        "alt": "ASUS ROG Harpe Ace Aim Lab Edition góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-detail",
+        "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-detail",
+        "alt": "ASUS ROG Harpe Ace Aim Lab Edition ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "HARPE-ACE-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "Tri-mode",
+          "sensor": "ROG AimPoint"
+        },
+        "price": 2790000,
+        "costPrice": 2210000,
+        "stock": 20,
+        "isActive": true
+      },
+      {
+        "sku": "HARPE-ACE-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "Tri-mode",
+          "sensor": "ROG AimPoint"
+        },
+        "price": 2890000,
+        "costPrice": 2290000,
+        "stock": 16,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "SteelSeries Aerox 5",
+    "slug": "steelseries-aerox-5",
+    "brand": "SteelSeries",
+    "categorySlug": "chuot",
+    "tags": [
+      "steelseries",
+      "aerox",
+      "lightweight",
+      "gaming"
+    ],
+    "shortDescription": "Chuột gaming nhẹ nhiều nút, phù hợp nhiều thể loại trò chơi.",
+    "description": "Chuột gaming nhẹ nhiều nút, phù hợp nhiều thể loại trò chơi. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-front",
+        "publicId": "seed/products/steelseries-aerox-5-front",
+        "alt": "SteelSeries Aerox 5 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-side",
+        "publicId": "seed/products/steelseries-aerox-5-side",
+        "alt": "SteelSeries Aerox 5 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-detail",
+        "publicId": "seed/products/steelseries-aerox-5-detail",
+        "alt": "SteelSeries Aerox 5 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "AEROX5-WIRED",
+        "name": "Bản có dây",
+        "attributes": {
+          "connection": "USB",
+          "color": "Black",
+          "lighting": "RGB"
+        },
+        "price": 1890000,
+        "costPrice": 1470000,
+        "stock": 25,
+        "isActive": true
+      },
+      {
+        "sku": "AEROX5-WIRELESS",
+        "name": "Bản không dây",
+        "attributes": {
+          "connection": "Wireless",
+          "color": "Black",
+          "lighting": "RGB"
+        },
+        "price": 2990000,
+        "costPrice": 2380000,
+        "stock": 18,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Pulsar X2V2",
+    "slug": "pulsar-x2v2",
+    "brand": "Pulsar",
+    "categorySlug": "chuot",
+    "tags": [
+      "pulsar",
+      "x2v2",
+      "wireless",
+      "lightweight"
+    ],
+    "shortDescription": "Chuột gaming không dây nhẹ với form đối xứng và cảm biến chính xác.",
+    "description": "Chuột gaming không dây nhẹ với form đối xứng và cảm biến chính xác. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-front",
+        "publicId": "seed/products/pulsar-x2v2-front",
+        "alt": "Pulsar X2V2 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-side",
+        "publicId": "seed/products/pulsar-x2v2-side",
+        "alt": "Pulsar X2V2 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-detail",
+        "publicId": "seed/products/pulsar-x2v2-detail",
+        "alt": "Pulsar X2V2 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "PULSAR-X2V2-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "2.4GHz Wireless",
+          "shape": "Symmetrical"
+        },
+        "price": 2390000,
+        "costPrice": 1880000,
+        "stock": 21,
+        "isActive": true
+      },
+      {
+        "sku": "PULSAR-X2V2-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "2.4GHz Wireless",
+          "shape": "Symmetrical"
+        },
+        "price": 2390000,
+        "costPrice": 1880000,
+        "stock": 19,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Corsair M75 Wireless",
+    "slug": "corsair-m75-wireless",
+    "brand": "Corsair",
+    "categorySlug": "chuot",
+    "tags": [
+      "corsair",
+      "m75",
+      "wireless",
+      "gaming"
+    ],
+    "shortDescription": "Chuột gaming không dây đối xứng với nút cạnh có thể tùy chỉnh.",
+    "description": "Chuột gaming không dây đối xứng với nút cạnh có thể tùy chỉnh. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-front",
+        "publicId": "seed/products/corsair-m75-wireless-front",
+        "alt": "Corsair M75 Wireless mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-side",
+        "publicId": "seed/products/corsair-m75-wireless-side",
+        "alt": "Corsair M75 Wireless góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-detail",
+        "publicId": "seed/products/corsair-m75-wireless-detail",
+        "alt": "Corsair M75 Wireless ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "CORSAIR-M75-BLACK",
+        "name": "Màu đen",
+        "attributes": {
+          "color": "Black",
+          "connection": "Slipstream Wireless",
+          "shape": "Ambidextrous"
+        },
+        "price": 2690000,
+        "costPrice": 2130000,
+        "stock": 17,
+        "isActive": true
+      },
+      {
+        "sku": "CORSAIR-M75-WHITE",
+        "name": "Màu trắng",
+        "attributes": {
+          "color": "White",
+          "connection": "Slipstream Wireless",
+          "shape": "Ambidextrous"
+        },
+        "price": 2790000,
+        "costPrice": 2210000,
+        "stock": 14,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Samsung 990 PRO",
+    "slug": "samsung-990-pro",
+    "brand": "Samsung",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "samsung",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "performance"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Samsung 990 PRO dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Samsung 990 PRO dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-front",
+        "publicId": "seed/products/samsung-990-pro-front",
+        "alt": "Samsung 990 PRO mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-side",
+        "publicId": "seed/products/samsung-990-pro-side",
+        "alt": "Samsung 990 PRO góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-detail",
+        "publicId": "seed/products/samsung-990-pro-detail",
+        "alt": "Samsung 990 PRO ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "990PRO-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2590000,
+        "costPrice": 2080000,
+        "stock": 40,
+        "isActive": true
+      },
+      {
+        "sku": "990PRO-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 4290000,
+        "costPrice": 3470000,
+        "stock": 31,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "WD_BLACK SN850X",
+    "slug": "wd-black-sn850x",
+    "brand": "Western Digital",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "western-digital",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "gaming"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 WD_BLACK SN850X dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 WD_BLACK SN850X dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-front",
+        "publicId": "seed/products/wd-black-sn850x-front",
+        "alt": "WD_BLACK SN850X mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-side",
+        "publicId": "seed/products/wd-black-sn850x-side",
+        "alt": "WD_BLACK SN850X góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-detail",
+        "publicId": "seed/products/wd-black-sn850x-detail",
+        "alt": "WD_BLACK SN850X ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "SN850X-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2390000,
+        "costPrice": 1910000,
+        "stock": 38,
+        "isActive": true
+      },
+      {
+        "sku": "SN850X-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3990000,
+        "costPrice": 3220000,
+        "stock": 29,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Crucial T500",
+    "slug": "crucial-t500",
+    "brand": "Crucial",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "crucial",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "performance"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Crucial T500 dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Crucial T500 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-front",
+        "publicId": "seed/products/crucial-t500-front",
+        "alt": "Crucial T500 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-side",
+        "publicId": "seed/products/crucial-t500-side",
+        "alt": "Crucial T500 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-detail",
+        "publicId": "seed/products/crucial-t500-detail",
+        "alt": "Crucial T500 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "CRUCIAL-T500-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2190000,
+        "costPrice": 1740000,
+        "stock": 35,
+        "isActive": true
+      },
+      {
+        "sku": "CRUCIAL-T500-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3690000,
+        "costPrice": 2960000,
+        "stock": 27,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Kingston KC3000",
+    "slug": "kingston-kc3000",
+    "brand": "Kingston",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "kingston",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "workstation"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Kingston KC3000 dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Kingston KC3000 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-front",
+        "publicId": "seed/products/kingston-kc3000-front",
+        "alt": "Kingston KC3000 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-side",
+        "publicId": "seed/products/kingston-kc3000-side",
+        "alt": "Kingston KC3000 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-detail",
+        "publicId": "seed/products/kingston-kc3000-detail",
+        "alt": "Kingston KC3000 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "KC3000-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2090000,
+        "costPrice": 1660000,
+        "stock": 42,
+        "isActive": true
+      },
+      {
+        "sku": "KC3000-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3490000,
+        "costPrice": 2780000,
+        "stock": 30,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Seagate FireCuda 530R",
+    "slug": "seagate-firecuda-530r",
+    "brand": "Seagate",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "seagate",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "gaming"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Seagate FireCuda 530R dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Seagate FireCuda 530R dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-front",
+        "publicId": "seed/products/seagate-firecuda-530r-front",
+        "alt": "Seagate FireCuda 530R mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-side",
+        "publicId": "seed/products/seagate-firecuda-530r-side",
+        "alt": "Seagate FireCuda 530R góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-detail",
+        "publicId": "seed/products/seagate-firecuda-530r-detail",
+        "alt": "Seagate FireCuda 530R ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "FIRECUDA-530R-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2490000,
+        "costPrice": 1980000,
+        "stock": 28,
+        "isActive": true
+      },
+      {
+        "sku": "FIRECUDA-530R-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 4190000,
+        "costPrice": 3370000,
+        "stock": 20,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Lexar NM790",
+    "slug": "lexar-nm790",
+    "brand": "Lexar",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "lexar",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "efficient"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Lexar NM790 dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Lexar NM790 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-front",
+        "publicId": "seed/products/lexar-nm790-front",
+        "alt": "Lexar NM790 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-side",
+        "publicId": "seed/products/lexar-nm790-side",
+        "alt": "Lexar NM790 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-detail",
+        "publicId": "seed/products/lexar-nm790-detail",
+        "alt": "Lexar NM790 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "LEXAR-NM790-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 1890000,
+        "costPrice": 1490000,
+        "stock": 45,
+        "isActive": true
+      },
+      {
+        "sku": "LEXAR-NM790-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3090000,
+        "costPrice": 2450000,
+        "stock": 34,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Corsair MP600 PRO LPX",
+    "slug": "corsair-mp600-pro-lpx",
+    "brand": "Corsair",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "corsair",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "heatsink"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 Corsair MP600 PRO LPX dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 Corsair MP600 PRO LPX dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-front",
+        "publicId": "seed/products/corsair-mp600-pro-lpx-front",
+        "alt": "Corsair MP600 PRO LPX mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-side",
+        "publicId": "seed/products/corsair-mp600-pro-lpx-side",
+        "alt": "Corsair MP600 PRO LPX góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-detail",
+        "publicId": "seed/products/corsair-mp600-pro-lpx-detail",
+        "alt": "Corsair MP600 PRO LPX ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "MP600-LPX-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2290000,
+        "costPrice": 1820000,
+        "stock": 31,
+        "isActive": true
+      },
+      {
+        "sku": "MP600-LPX-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3790000,
+        "costPrice": 3020000,
+        "stock": 23,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "SK hynix Platinum P41",
+    "slug": "sk-hynix-platinum-p41",
+    "brand": "SK hynix",
+    "categorySlug": "ssd-luu-tru",
+    "tags": [
+      "sk-hynix",
+      "ssd",
+      "nvme",
+      "pcie-4",
+      "efficient"
+    ],
+    "shortDescription": "SSD NVMe PCIe 4.0 SK hynix Platinum P41 dành cho nâng cấp máy tính và lưu trữ tốc độ cao.",
+    "description": "SSD NVMe PCIe 4.0 SK hynix Platinum P41 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-front",
+        "publicId": "seed/products/sk-hynix-platinum-p41-front",
+        "alt": "SK hynix Platinum P41 mặt trước"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-side",
+        "publicId": "seed/products/sk-hynix-platinum-p41-side",
+        "alt": "SK hynix Platinum P41 góc nghiêng"
+      },
+      {
+        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-detail",
+        "publicId": "seed/products/sk-hynix-platinum-p41-detail",
+        "alt": "SK hynix Platinum P41 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "P41-PLATINUM-1TB",
+        "name": "Dung lượng 1TB",
+        "attributes": {
+          "capacity": "1TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 2290000,
+        "costPrice": 1810000,
+        "stock": 26,
+        "isActive": true
+      },
+      {
+        "sku": "P41-PLATINUM-2TB",
+        "name": "Dung lượng 2TB",
+        "attributes": {
+          "capacity": "2TB",
+          "interface": "PCIe 4.0 x4",
+          "formFactor": "M.2 2280"
+        },
+        "price": 3890000,
+        "costPrice": 3090000,
+        "stock": 18,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  }
+]
+

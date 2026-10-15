@@ -8,12 +8,17 @@ export const theme = createTheme({
     background:{default:'#f4f5f1',paper:'#ffffff'}
   },
   typography:{
-    fontFamily:'Inter, Arial, sans-serif',
-    h3:{fontWeight:700}
+    fontFamily:'Inter, "Segoe UI", Arial, sans-serif',
+    h3:{fontWeight:800,letterSpacing:'-0.035em'},
+    h4:{letterSpacing:'-0.025em'}
   },
-  shape:{borderRadius:12},
+  shape:{borderRadius:14},
   components:{
-    MuiButton:{defaultProps:{disableElevation:true}},
+    MuiButton:{
+      defaultProps:{disableElevation:true},
+      styleOverrides:{root:{borderRadius:10,fontWeight:750,textTransform:'none'}}
+    },
+    MuiCard:{styleOverrides:{root:{backgroundImage:'none'}}},
     MuiPaper:{styleOverrides:{root:{backgroundImage:'none'}}}
   }
 });
