@@ -5,6 +5,33 @@ microservices, Kafka, MongoDB replica set, Redis and Elasticsearch.
 Run npm and Docker commands from this source/ directory. The Git repository
 root is the parent project/ directory.
 
+ENVIRONMENT SETUP
+Before the first run, create source/.env from the example. Run one of the
+following commands from source/ only if .env does not already exist:
+
+  Windows CMD:  copy .env.example .env
+  PowerShell:   Copy-Item .env.example .env
+  Linux/macOS:  cp .env.example .env
+
+Edit .env for your local setup:
+  - Set INTERNAL_SERVICE_SECRET and SESSION_SECRET to separate random values.
+  - Set ADMIN_EMAIL and ADMIN_INITIAL_PASSWORD before the first startup;
+    these credentials are used to create the initial admin account.
+  - HTTP_PORT defaults to 80. If you change it (for example, to 8080), update
+    FRONTEND_URL to http://localhost:8080 and GOOGLE_CALLBACK_URL to
+    http://localhost:8080/api/v1/auth/google/callback, and use that port in
+    the browser URLs below.
+  - Google sign-in requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.
+  - EMAIL_TRANSPORT=json is suitable for local testing without SMTP delivery.
+    To send real email, set EMAIL_TRANSPORT=smtp and configure SMTP_HOST,
+    SMTP_PORT, SMTP_USER, SMTP_PASS and EMAIL_FROM.
+  - Cloudinary uploads require CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and
+    CLOUDINARY_API_SECRET. Leave optional credentials blank when not in use.
+
+Docker Compose reads source/.env automatically when run from source/.
+The .env file is ignored by Git; keep credentials local and commit only
+the .env.example template when documenting new environment variables.
+
 RUN
   docker compose up -d --build
 
