@@ -34,8 +34,11 @@ const sortOptions = [
 ];
 
 function queryFromParams(params) {
+  const rawPage = params.get('page') || '';
+  const page = /^\d+$/.test(rawPage) ? Number(rawPage) : NaN;
+
   return {
-    page: Math.max(1, Number(params.get('page')) || 1),
+    page: Number.isSafeInteger(page) && page >= 1 ? page : 1,
     limit: 12,
     search: params.get('search') || '',
     category: params.get('category') || '',
