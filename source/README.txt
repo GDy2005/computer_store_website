@@ -1,4 +1,4 @@
-COMPUTER STORE — PHASE 1 TO PHASE 3
+COMPUTER STORE — PHASE 1 TO PHASE 4
 
 Architecture: React frontend, Nginx, two API Gateway replicas, six Node.js
 microservices, Kafka, MongoDB replica set, Redis and Elasticsearch.
@@ -39,6 +39,8 @@ Then open:
   http://localhost
   http://localhost/products
   http://localhost/products/steelseries-apex-pro-tkl-gen-3
+  http://localhost/cart
+  http://localhost/checkout
   http://localhost/api/v1/products?page=1&limit=12
   http://localhost/api/v1/search?search=gaming&page=1&limit=12
 
@@ -53,6 +55,7 @@ VERIFY (Node >= 22.12)
   npm test
   npm run build
   npm run smoke
+  npm run order:integration
 
 Useful Docker checks:
   docker compose ps -a
@@ -66,14 +69,16 @@ PHASE STATUS
   Phase 3: category/product/comment/rating backend, 40-product seed, inventory
            consumer, landing/catalog/detail UI, filter/sort/pagination and the
            Elasticsearch Search Service synchronized through Kafka.
-  Phase 4: cart, coupon, checkout and order Saga are the next implementation.
+  Phase 4: guest/user cart, coupon, checkout, guest account resolution,
+           Kafka inventory Saga, order confirmation email and responsive UI.
+  Phase 5: customer order history/detail, order lifecycle and loyalty are next.
 
 The current product images are placeholders. Replace the image URLs/publicIds
 in services/catalog-service/src/seeds/data/products.json or use the protected
 Cloudinary upload API after configuring credentials. Real Google OAuth and SMTP
 delivery also require local credentials in .env.
 
-Read docs/phase-1.md, docs/phase-2.md and docs/phase-3.md for ownership,
+Read docs/phase-1.md through docs/phase-4.md for ownership,
 commands, API checks and remaining limitations.
 
 PERSISTENCE

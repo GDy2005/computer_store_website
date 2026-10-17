@@ -66,7 +66,12 @@ export function buildApp({connection, models}) {
     createPasswordTokenService({PasswordToken});
 
   const internalUserService =
-    createInternalUserService({User});
+    createInternalUserService({
+      connection,
+      User,
+      Outbox: models.Outbox,
+      passwordTokenService
+    });
 
   const authService = createAuthService({
     connection,

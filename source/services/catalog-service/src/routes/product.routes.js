@@ -1,6 +1,7 @@
 import {Router} from 'express';
 
 import {
+  validateInternalQuote,
   validateProductList,
   validateProductSlug
 } from '../validations/product.validation.js';
@@ -17,6 +18,12 @@ export function createProductRouter(controller) {
   router.get(
     '/api/v1/products/filters',
     controller.filters
+  );
+
+  router.post(
+    '/internal/catalog/quote',
+    validateInternalQuote,
+    controller.quote
   );
 
   router.get(

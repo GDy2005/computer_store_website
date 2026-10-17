@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed:coupons": "node src/seeds/seed-coupons.js"
   },
   "dependencies": {
+    "@store/event-contracts": "1.0.0",
+    "@store/service-runtime": "1.0.0",
+    "@store/validation": "1.0.0",
     "express": "^5.1.0",
-    "@store/service-runtime": "1.0.0"
+    "mongoose": "^8.24.4"
   }
 }

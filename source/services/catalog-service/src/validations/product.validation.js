@@ -395,3 +395,47 @@ export function validateAdminProductList(req, res, next) {
     next(error);
   }
 }
+
+export function validateInternalQuote(req, res, next) {
+  try {
+    if (
+      !req.body ||
+      !Array.isArray(req.body.items) ||
+      req.body.items.length < 1 ||
+      req.body.items.length > 50
+    ) {
+      throw validationError('Invalid quote items');
+    }
+
+    req.body = {
+      items: req.body.items.map(item => {
+        assertObject(item);
+        allowOnly(item, [
+          'productId',
+          'variantId',
+          'quantity'
+        ]);
+
+        return {
+          productId: parseObjectId(
+            item.productId,
+            'productId'
+          ),
+          variantId: parseObjectId(
+            item.variantId,
+            'variantId'
+          ),
+          quantity: parseInteger(
+            item.quantity,
+            'quantity',
+            {minimum: 1, maximum: 99}
+          )
+        };
+      })
+    };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}

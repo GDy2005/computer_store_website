@@ -200,6 +200,20 @@ services:
       kafka-init: {condition: service_completed_successfully}
       elasticsearch: {condition: service_healthy}
       search-reindex: {condition: service_completed_successfully}
+  order-seed:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+      args: {SERVICE_PATH: services/order-service}
+    command: [node, services/order-service/src/seeds/seed-coupons.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      DB_NAME: order_db
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
   order-service:
     <<: *app
     build:
@@ -210,7 +224,14 @@ services:
       <<: *core-env
       PORT: 5003
       DB_NAME: order_db
-    depends_on: *core-deps
+      CATALOG_SERVICE_URL: http://catalog-service:5002
+      IDENTITY_SERVICE_URL: http://identity-service:5001
+    depends_on:
+      mongo-init: {condition: service_completed_successfully}
+      kafka-init: {condition: service_completed_successfully}
+      order-seed: {condition: service_completed_successfully}
+      identity-service: {condition: service_healthy}
+      catalog-service: {condition: service_healthy}
   notification-service:
     <<: *app
     build:

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createEmailRequestedHandler} from '../services/notification-service/src/events/email-requested.consumer.js';
 import {createEmailService} from '../services/notification-service/src/services/email.service.js';
 import {createEmailWorker} from '../services/notification-service/src/services/email-worker.service.js';
+import {createOrderConfirmedHandler} from '../services/notification-service/src/events/order-confirmed.consumer.js';
 
 test('email requested handler creates an idempotent job by event ID', async () => {
   let operation;
@@ -20,6 +21,39 @@ test('email requested handler creates an idempotent job by event ID', async () =
   }, {});
   assert.deepEqual(operation[0], {eventId: 'event-1'});
   assert.equal(operation[1].$setOnInsert.status, 'PENDING');
+  assert.equal(operation[2].upsert, true);
+});
+
+test('confirmed order creates an idempotent confirmation email job', async () => {
+  let operation;
+  const handler = createOrderConfirmedHandler({
+    EmailJob: {
+      async updateOne(...args) {
+        operation = args;
+      }
+    }
+  });
+
+  await handler({
+    eventId: 'event-order-1',
+    payload: {
+      orderNumber: 'ORD-20261016-ABC123',
+      customer: {
+        fullName: 'User',
+        email: 'user@example.com'
+      }
+    }
+  }, {});
+
+  assert.deepEqual(operation[0], {eventId: 'event-order-1'});
+  assert.equal(
+    operation[1].$setOnInsert.template,
+    'ORDER_CONFIRMATION'
+  );
+  assert.equal(
+    operation[1].$setOnInsert.templateData.orderNumber,
+    'ORD-20261016-ABC123'
+  );
   assert.equal(operation[2].upsert, true);
 });
 

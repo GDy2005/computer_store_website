@@ -448,6 +448,62 @@ export function createProductService({
     });
   }
 
+  async function quote(items) {
+    const productIds = [
+      ...new Set(items.map(item => item.productId))
+    ];
+
+    const products = await Product.find({
+      _id: {$in: productIds},
+      isActive: true
+    }).populate('categoryId', 'name');
+
+    const productMap = new Map(
+      products.map(product => [
+        product._id.toString(),
+        product
+      ])
+    );
+
+    return items.map(item => {
+      const product = productMap.get(item.productId);
+      const variant = product?.variants.id(item.variantId);
+
+      if (!product || !variant || !variant.isActive) {
+        throw new AppError(
+          409,
+          'PRODUCT_UNAVAILABLE',
+          'Product or variant is unavailable'
+        );
+      }
+
+      const availableStock =
+        variant.stock - variant.reservedStock;
+
+      if (availableStock < item.quantity) {
+        throw new AppError(
+          409,
+          'INSUFFICIENT_STOCK',
+          `Insufficient stock for ${variant.sku}`
+        );
+      }
+
+      return {
+        productId: product._id.toString(),
+        variantId: variant._id.toString(),
+        sku: variant.sku,
+        productName: product.name,
+        variantName: variant.name,
+        imageUrl: product.images[0]?.url || '',
+        brand: product.brand,
+        categoryName: product.categoryId.name,
+        unitPrice: variant.price,
+        unitCost: variant.costPrice,
+        availableStock
+      };
+    });
+  }
+
   return {
     listPublic,
     getPublicBySlug,
@@ -456,6 +512,7 @@ export function createProductService({
     getAdminById,
     create,
     update,
-    deactivate
+    deactivate,
+    quote
   };
 }

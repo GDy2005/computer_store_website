@@ -1,6 +1,7 @@
-import {AppBar,Button,CircularProgress,Container,Stack,Toolbar,Typography} from '@mui/material';
+import {AppBar,Badge,Button,CircularProgress,Container,Stack,Toolbar,Typography} from '@mui/material';
 import {Link,useLocation,useNavigate} from 'react-router-dom';
 import {useAuth} from '../features/auth/AuthContext.jsx';
+import {useCart} from '../features/cart/CartContext.jsx';
 
 const navigation = [
   {label:'Trang chủ',to:'/'},
@@ -12,6 +13,7 @@ export default function SiteHeader() {
   const {pathname} = useLocation();
   const navigate = useNavigate();
   const {user,loading,logout} = useAuth();
+  const {cart} = useCart();
 
   async function signOut() {
     try {
@@ -47,6 +49,17 @@ export default function SiteHeader() {
                 {item.label}
               </Button>
             ))}
+            <Button
+              color="inherit"
+              component={Link}
+              to="/cart"
+              aria-current={pathname.startsWith('/cart') || pathname.startsWith('/checkout') ? 'page' : undefined}
+              sx={{fontWeight:pathname.startsWith('/cart') || pathname.startsWith('/checkout') ? 700 : 500,minWidth:{xs:'auto',sm:64},px:{xs:0.75,sm:2}}}
+            >
+              <Badge badgeContent={cart.totalItems} color="secondary" max={99}>
+                Giỏ hàng
+              </Badge>
+            </Button>
             {loading && <CircularProgress size={22} color="inherit" sx={{m:1}}/>}
             {!loading && !user && (
               <Button color="inherit" component={Link} to="/login">Đăng nhập</Button>

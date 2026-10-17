@@ -23,14 +23,20 @@ import {
   formatVnd,
   handleImageError
 } from '../../features/products/productFormat.js';
+import {cartErrorMessage} from '../../features/cart/cartApi.js';
+import {useCart} from '../../features/cart/CartContext.jsx';
 
 export default function ProductDetailPage() {
   const {slug} = useParams();
+  const {add} = useCart();
   const [product, setProduct] = useState(null);
   const [selectedSku, setSelectedSku] = useState('');
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cartMessage, setCartMessage] = useState('');
+  const [cartError, setCartError] = useState('');
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -58,6 +64,31 @@ export default function ProductDetailPage() {
     () => product?.variants?.find(variant => variant.sku === selectedSku),
     [product, selectedSku]
   );
+
+  async function addToCart() {
+    if (!product || !selectedVariant) return;
+
+    try {
+      setAdding(true);
+      setCartMessage('');
+      setCartError('');
+      await add({
+        productId: product._id,
+        variantId: selectedVariant._id,
+        quantity: 1
+      });
+      setCartMessage('Đã thêm sản phẩm vào giỏ hàng.');
+    } catch (requestError) {
+      setCartError(
+        cartErrorMessage(
+          requestError,
+          'Không thể thêm sản phẩm vào giỏ hàng.'
+        )
+      );
+    } finally {
+      setAdding(false);
+    }
+  }
 
   if (loading) {
     return <Box sx={{display: 'grid', minHeight: 460, placeItems: 'center'}}><CircularProgress/></Box>;
@@ -170,7 +201,16 @@ export default function ProductDetailPage() {
               </Stack>
             </Paper>
           )}
-          <Alert severity="info">Chức năng thêm vào giỏ hàng sẽ được triển khai trong Phase 4.</Alert>
+          {cartMessage && <Alert severity="success">{cartMessage}</Alert>}
+          {cartError && <Alert severity="error">{cartError}</Alert>}
+          <Button
+            variant="contained"
+            size="large"
+            disabled={adding || !selectedVariant || selectedVariant.availableStock < 1}
+            onClick={addToCart}
+          >
+            {adding ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+          </Button>
         </Stack>
       </Box>
 

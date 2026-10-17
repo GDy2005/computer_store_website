@@ -115,6 +115,21 @@ export function createProductController({
       } catch (error) {
         next(error);
       }
+    },
+
+    async quote(req, res, next) {
+      try {
+        const items = await productService.quote(
+          req.body.items
+        );
+
+        res.json({
+          success: true,
+          data: {items}
+        });
+      } catch (error) {
+        next(error);
+      }
     }
   };
 }

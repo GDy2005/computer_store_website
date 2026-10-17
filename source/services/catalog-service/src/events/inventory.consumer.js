@@ -4,7 +4,7 @@ export function createInventoryConsumers({
   return [
     {
       topic: 'orders.created.v1',
-      groupId: 'catalog-inventory-group',
+      groupId: 'catalog-order-created-group',
       handler(event, session) {
         return inventoryService.reserve(
           event,
@@ -14,9 +14,19 @@ export function createInventoryConsumers({
     },
     {
       topic: 'inventory.release-requested.v1',
-      groupId: 'catalog-inventory-group',
+      groupId: 'catalog-inventory-release-group',
       handler(event, session) {
         return inventoryService.release(
+          event,
+          session
+        );
+      }
+    },
+    {
+      topic: 'orders.confirmed.v1',
+      groupId: 'catalog-order-confirmed-group',
+      handler(event, session) {
+        return inventoryService.commit(
           event,
           session
         );

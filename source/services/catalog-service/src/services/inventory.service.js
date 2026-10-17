@@ -224,5 +224,74 @@ export function createInventoryService({
     return reservation;
   }
 
-  return {reserve, release};
+  async function commit(event, session) {
+    const reservation =
+      await InventoryReservation.findOne({
+        orderId: event.payload.orderId
+      }).session(session);
+
+    if (
+      !reservation ||
+      reservation.status === 'COMMITTED'
+    ) {
+      return reservation;
+    }
+
+    if (reservation.status !== 'RESERVED') {
+      return reservation;
+    }
+
+    const productIds = [
+      ...new Set(
+        reservation.items.map(item =>
+          item.productId.toString()
+        )
+      )
+    ];
+
+    const products = await Product.find({
+      _id: {$in: productIds}
+    }).session(session);
+
+    const productMap = new Map(
+      products.map(product => [
+        product._id.toString(),
+        product
+      ])
+    );
+
+    for (const item of reservation.items) {
+      const product = productMap.get(
+        item.productId.toString()
+      );
+
+      const variant = product?.variants.id(
+        item.variantId
+      );
+
+      if (
+        !variant ||
+        variant.stock < item.quantity ||
+        variant.reservedStock < item.quantity
+      ) {
+        throw new Error(
+          'Reserved inventory is inconsistent'
+        );
+      }
+
+      variant.stock -= item.quantity;
+      variant.reservedStock -= item.quantity;
+    }
+
+    await Promise.all(
+      products.map(product => product.save({session}))
+    );
+
+    reservation.status = 'COMMITTED';
+    await reservation.save({session});
+
+    return reservation;
+  }
+
+  return {reserve, release, commit};
 }

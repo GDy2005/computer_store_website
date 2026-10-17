@@ -1,0 +1,164 @@
+export function createOrderController({
+  cartService,
+  couponService,
+  checkoutService
+}) {
+  return {
+    async getCart(req, res, next) {
+      try {
+        const data = await cartService.get(
+          req.cartOwner,
+          req.context.requestId
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async addItem(req, res, next) {
+      try {
+        const data = await cartService.add(
+          req.cartOwner,
+          req.body,
+          req.context.requestId
+        );
+
+        res.status(201).json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async updateItem(req, res, next) {
+      try {
+        const data = await cartService.update(
+          req.cartOwner,
+          req.params.variantId,
+          req.body.quantity,
+          req.context.requestId
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async removeItem(req, res, next) {
+      try {
+        const data = await cartService.remove(
+          req.cartOwner,
+          req.params.variantId,
+          req.context.requestId
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async clearCart(req, res, next) {
+      try {
+        const data = await cartService.clear(
+          req.cartOwner,
+          req.context.requestId
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async mergeCart(req, res, next) {
+      try {
+        const data = await cartService.merge(
+          req.context.userId,
+          req.get('x-guest-cart-token'),
+          req.context.requestId
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async validateCoupon(req, res, next) {
+      try {
+        const cart = await cartService.get(
+          req.cartOwner,
+          req.context.requestId
+        );
+
+        const result = await couponService.preview(
+          req.body.code,
+          cart.subtotal
+        );
+
+        res.json({
+          success: true,
+          data: {
+            code: result.coupon.code,
+            discountAmount:
+              result.discountAmount
+          }
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async preview(req, res, next) {
+      try {
+        const data = await checkoutService.preview({
+          owner: req.cartOwner,
+          couponCode: req.body.couponCode,
+          requestId: req.context.requestId
+        });
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async place(req, res, next) {
+      try {
+        const order = await checkoutService.place({
+          owner: req.cartOwner,
+          input: req.body,
+          requestId: req.context.requestId
+        });
+
+        res.status(202).json({
+          success: true,
+          data: {
+            orderNumber: order.orderNumber,
+            status: order.status,
+            workflowStatus:
+              order.workflowStatus
+          }
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async orderStatus(req, res, next) {
+      try {
+        const data = await checkoutService.status(
+          req.params.orderNumber,
+          req.cartOwner
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    }
+  };
+}

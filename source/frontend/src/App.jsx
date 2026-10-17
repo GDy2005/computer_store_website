@@ -13,6 +13,9 @@ import AddressesPage from './pages/profile/AddressesPage.jsx';
 import ProtectedRoute from './features/auth/ProtectedRoute.jsx';
 import ProductsPage from './pages/products/ProductsPage.jsx';
 import ProductDetailPage from './pages/products/ProductDetailPage.jsx';
+import CartPage from './pages/cart/CartPage.jsx';
+import CheckoutPage from './pages/checkout/CheckoutPage.jsx';
+import OrderProcessingPage from './pages/checkout/OrderProcessingPage.jsx';
 
 export default function App() {
   return (
@@ -23,6 +26,9 @@ export default function App() {
           <Route path="/" element={<HomePage/>}/>
           <Route path="/products" element={<ProductsPage/>}/>
           <Route path="/products/:slug" element={<ProductDetailPage/>}/>
+          <Route path="/cart" element={<CartPage/>}/>
+          <Route path="/checkout" element={<CheckoutPage/>}/>
+          <Route path="/checkout/:orderNumber" element={<OrderProcessingPage/>}/>
           <Route path="/foundation" element={<FoundationPage/>}/>
           <Route path="/login" element={<LoginPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
