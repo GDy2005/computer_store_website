@@ -530,7 +530,7 @@ frontend/src/features/auth/
 frontend/src/pages/auth/LoginPage.jsx
 frontend/src/pages/auth/RegisterPage.jsx
 frontend/src/pages/auth/ForgotPasswordPage.jsx
-frontend/src/pages/auth/ResetPasswordPage.jsx
+frontend/src/pages/auth/PasswordActionPage.jsx
 frontend/src/pages/profile/ProfilePage.jsx
 frontend/src/pages/profile/AddressesPage.jsx
 ```
