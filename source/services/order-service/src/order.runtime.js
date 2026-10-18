@@ -9,6 +9,7 @@ import {
 import {
   createOrderWorkflowConsumers
 } from './events/order-workflow.consumer.js';
+import {createCheckoutTimeoutWorker} from './services/checkout-timeout.service.js';
 
 export async function configureOrderRuntime({
   connection,
@@ -24,9 +25,14 @@ export async function configureOrderRuntime({
     ...orderModels,
     Outbox: models.Outbox
   });
+  const timeoutWorker = createCheckoutTimeoutWorker({
+    connection, Order: orderModels.Order, workflowService
+  });
 
   return {
     models: orderModels,
+    start: () => timeoutWorker.start(),
+    stop: () => timeoutWorker.stop(),
     consumers: createOrderWorkflowConsumers({workflowService})
   };
 }

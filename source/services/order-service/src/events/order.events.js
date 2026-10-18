@@ -90,3 +90,15 @@ export function enqueueOrderCancelled({
     }
   });
 }
+
+export function enqueueInventoryRelease({reservationId, reason, ...options}) {
+  return enqueue({
+    ...options,
+    topic: 'inventory.release-requested.v1',
+    payload: {
+      orderId: options.order._id.toString(),
+      reservationId,
+      reason
+    }
+  });
+}

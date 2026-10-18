@@ -86,13 +86,13 @@ export default function OrderProcessingPage() {
 
         {!confirmed && !rejected && (
           <Alert severity="info" sx={{width: '100%'}}>
-            Hệ thống đang giữ tồn kho qua Kafka. Bạn không cần gửi lại đơn hàng.
+            Đơn hàng đang được xử lý. Bạn không cần gửi lại đơn hàng.
           </Alert>
         )}
 
         {confirmed && (
           <Alert severity="success" sx={{width: '100%'}}>
-            Tồn kho đã được xác nhận. Email xác nhận đang được Notification Service xử lý.
+            Đơn hàng đã được xác nhận. Email xác nhận sẽ được gửi đến bạn.
           </Alert>
         )}
 

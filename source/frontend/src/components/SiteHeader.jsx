@@ -66,6 +66,7 @@ export default function SiteHeader() {
             )}
             {!loading && user && (
               <>
+                <Button color="inherit" component={Link} to="/orders">Đơn hàng</Button>
                 <Button color="inherit" component={Link} to="/profile">Hồ sơ</Button>
                 <Button color="inherit" onClick={signOut}>Đăng xuất</Button>
               </>

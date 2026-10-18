@@ -19,6 +19,7 @@ import {
 import {
   createCheckoutService
 } from './services/checkout.service.js';
+import {createCustomerOrderService} from './services/customer-order.service.js';
 
 import {
   createOrderController
@@ -69,10 +70,15 @@ export function buildApp({
       identityClient
     });
 
+  const customerOrderService = createCustomerOrderService({
+    Order: models.Order
+  });
+
   const controller = createOrderController({
     cartService,
     couponService,
-    checkoutService
+    checkoutService,
+    customerOrderService
   });
 
   router.use(createOrderRouter(controller));

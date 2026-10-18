@@ -173,6 +173,7 @@ const orderSchema = new Schema(
 
 orderSchema.index({userId: 1, createdAt: -1});
 orderSchema.index({status: 1, createdAt: -1});
+orderSchema.index({workflowStatus: 1, createdAt: 1});
 
 export function getOrderModel(connection) {
   return connection.models.Order ||

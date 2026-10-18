@@ -15,7 +15,51 @@ Phase 4 đã có luồng hoàn chỉnh từ giao diện đến Kafka Saga:
 - Catalog commit tồn kho sau `orders.confirmed.v1`; Notification Service tạo email xác nhận đơn.
 - Trang trạng thái tự poll cho tới khi đơn `CONFIRMED` hoặc `REJECTED`.
 
+Trạng thái kiểm tra ngày 18/10/2026: đã triển khai mã nguồn Phase 4; `npm test` đạt 54/54, lint và frontend build đạt (build cảnh báo bundle lớn hơn 500 kB). Đã khởi động Docker Desktop nhưng `docker compose up -d --build` bị chặn khi giải nén image Elasticsearch 8.15.3 (`unexpected EOF`, sau đó `blob not found`). Vì vậy chưa xác nhận lại checkout end-to-end trên Kafka/MongoDB thật trong lần kiểm tra này; cần chạy `npm run order:integration` sau khi Docker tải image thành công.
+
 ## Vai trò ngắn gọn của các phần
+
+### Bổ sung hoàn thiện ngày 18/10/2026
+
+- Checkout quá 120 giây chưa nhận kết quả tồn kho sẽ chuyển sang `REJECTED` / `CANCELLED`, hoàn lượt coupon và giữ nguyên giỏ hàng để khách thử lại. Worker quét tối đa 100 đơn mỗi 5 giây, kiểm tra lại trạng thái trong MongoDB transaction; chạy lại an toàn sau restart hoặc khi có nhiều replicas.
+- Nếu `inventory.reserved.v1` đến sau khi đơn đã bị hủy, Order phát `inventory.release-requested.v1` qua Outbox. Catalog giải phóng `reservedStock` một lần; đơn không bị xác nhận lại.
+- Checkout online mô phỏng bị từ chối sẽ chuyển payment sang `FAILED`; đây không phải tích hợp hoàn tiền của cổng thanh toán thật.
+- Retry `checkoutId` được ràng buộc với user hoặc guest cart token ban đầu. Hai request cùng `checkoutId` gặp unique-key conflict trả về đơn đã commit nếu đúng chủ sở hữu.
+- Trang xử lý đơn hiển thị thông báo nghiệp vụ bằng tiếng Việt.
+
+### Bản đồ mã nguồn để đọc và trình bày Phase 4
+
+Các đường dẫn dưới đây tính từ `source/`:
+
+| Yêu cầu | File chính |
+|---|---|
+| API giỏ hàng, coupon, preview, đặt đơn, trạng thái | `services/order-service/src/routes/order.routes.js` và `controllers/order.controller.js` |
+| Lưu giỏ guest/user, thêm/sửa/xóa/gộp giỏ | `services/order-service/src/models/cart.model.js` và `services/cart.service.js` |
+| Kiểm tra coupon và giữ lượt sử dụng | `services/order-service/src/services/coupon.service.js` |
+| Seed `WELCOME10`, `SAVE200K` | `services/order-service/src/seeds/seed-coupons.js` |
+| Tính tiền, snapshot đơn, retry checkoutId, lưu order + Outbox | `services/order-service/src/services/checkout.service.js` |
+| Model đơn, lịch sử trạng thái, index quét timeout | `services/order-service/src/models/order.model.js` |
+| Xác nhận/từ chối, hoàn coupon, bù trừ kết quả giữ kho đến muộn | `services/order-service/src/services/order-workflow.service.js` |
+| Quét checkout quá hạn, lifecycle worker | `services/order-service/src/services/checkout-timeout.service.js` và `order.runtime.js` |
+| Producer order/release events và consumer inventory | `services/order-service/src/events/order.events.js` và `order-workflow.consumer.js` |
+| Báo giá thật, giữ/commit/giải phóng tồn kho | `services/catalog-service/src/services/product.service.js`, `inventory.service.js` và `events/inventory.consumer.js` |
+| Tìm/tạo guest account và email activation | `services/identity-service/src/services/internal-user.service.js` |
+| Email xác nhận sau event confirmed | `services/notification-service/src/events/order-confirmed.consumer.js`, `services/email-worker.service.js` |
+| Transaction, processed marker, Outbox publisher, retry/DLQ dùng chung | `packages/service-runtime/index.js` |
+| UI giỏ hàng và badge không reload | `frontend/src/features/cart/CartContext.jsx` và `pages/cart/CartPage.jsx` |
+| Form checkout và trang theo dõi kết quả | `frontend/src/pages/checkout/CheckoutPage.jsx` và `OrderProcessingPage.jsx` |
+| Test nghiệp vụ và các nhánh recovery | `tests/order-phase4.test.js` và `tests/order-recovery-phase4.test.js` |
+| Guest checkout qua Nginx/Gateway/Kafka | `scripts/order-integration.js` |
+
+Để đọc theo luồng: `order.routes.js` → `order.controller.js` → `checkout.service.js` → `order.events.js` → Catalog `inventory.consumer.js` / `inventory.service.js` → Order `order-workflow.service.js` → Notification `order-confirmed.consumer.js`.
+
+Kiểm tra riêng Phase 4 khi phát triển:
+
+```powershell
+node --test tests/order-phase4.test.js tests/order-recovery-phase4.test.js
+```
+
+Test tự động dùng mock kiểm tra timeout, hoàn coupon một lần, kết quả giữ kho đến muộn, giải phóng kho một lần, quyền retry và unique-key conflict. Kiểm thử tích hợp Kafka/MongoDB thật vẫn cần Docker hoạt động; lệnh `order:integration` hiện kiểm tra nhánh checkout thành công, chưa tự động gây lỗi timeout/race trên hạ tầng thật.
 
 ### Order Service
 
@@ -91,7 +135,7 @@ npm run build
 npm run order:integration
 ```
 
-`order:integration` chạy một guest checkout thật qua Nginx/Gateway, kiểm tra coupon, idempotency và Kafka inventory Saga. Mỗi lần chạy sẽ tạo một user/đơn demo, dùng một lượt `WELCOME10` và giảm tồn kho một sản phẩm.
+`order:integration` chạy một guest checkout thật qua Nginx/Gateway, kiểm tra coupon, hai request cùng `checkoutId` gửi đồng thời, Kafka inventory Saga và tồn kho đã commit giảm đúng một sản phẩm. Mỗi lần chạy sẽ tạo một user/đơn demo, dùng một lượt `WELCOME10` và giảm tồn kho một sản phẩm. Khi kiểm tra tồn kho, nên chạy trên dữ liệu demo không có người khác đặt cùng variant.
 
 ## Kiểm tra bằng Postman
 

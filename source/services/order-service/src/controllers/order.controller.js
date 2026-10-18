@@ -1,7 +1,8 @@
 export function createOrderController({
   cartService,
   couponService,
-  checkoutService
+  checkoutService,
+  customerOrderService
 }) {
   return {
     async getCart(req, res, next) {
@@ -153,6 +154,36 @@ export function createOrderController({
         const data = await checkoutService.status(
           req.params.orderNumber,
           req.cartOwner
+        );
+
+        res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async listMyOrders(req, res, next) {
+      try {
+        const result = await customerOrderService.list(
+          req.context.userId,
+          req.validatedQuery
+        );
+
+        res.json({
+          success: true,
+          data: {items: result.items},
+          meta: result.meta
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async myOrderDetail(req, res, next) {
+      try {
+        const data = await customerOrderService.detail(
+          req.context.userId,
+          req.params.orderNumber
         );
 
         res.json({success: true, data});

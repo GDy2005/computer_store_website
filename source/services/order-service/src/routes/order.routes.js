@@ -11,7 +11,8 @@ import {
   validateCoupon,
   validatePlaceOrder,
   validatePreview,
-  validateQuantity
+  validateQuantity,
+  validateOrderListQuery
 } from '../validations/order.validation.js';
 
 function validateVariantId(req, res, next) {
@@ -124,6 +125,20 @@ export function createOrderRouter(controller) {
     '/api/v1/checkout/place-order',
     validatePlaceOrder,
     controller.place
+  );
+
+  router.get(
+    '/api/v1/orders/me',
+    requireUser,
+    validateOrderListQuery,
+    controller.listMyOrders
+  );
+
+  router.get(
+    '/api/v1/orders/me/:orderNumber',
+    requireUser,
+    validateOrderNumber,
+    controller.myOrderDetail
   );
 
   router.get(

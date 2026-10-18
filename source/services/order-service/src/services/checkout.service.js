@@ -118,27 +118,25 @@ export function createCheckoutService({
     input,
     requestId
   }) {
-    const identity = await resolveCustomer(
-      owner,
-      input,
-      requestId
-    );
+    function assertOwner(order) {
+      const allowed = owner.userId
+        ? order.userId === owner.userId
+        : order.guestToken === owner.guestToken;
+      if (!allowed) {
+        throw new AppError(403, 'FORBIDDEN', 'Checkout does not belong to this user');
+      }
+      return order;
+    }
 
     const previous = await Order.findOne({
       checkoutId: input.checkoutId
     });
 
     if (previous) {
-      if (previous.userId !== identity.userId) {
-        throw new AppError(
-          403,
-          'FORBIDDEN',
-          'Checkout does not belong to this user'
-        );
-      }
-
-      return previous;
+      return assertOwner(previous);
     }
+
+    const identity = await resolveCustomer(owner, input, requestId);
 
     const cart = await cartService.get(
       owner,
@@ -153,89 +151,97 @@ export function createCheckoutService({
       );
     }
 
-    return connection.transaction(async session => {
-      const existing = await Order.findOne({
-        checkoutId: input.checkoutId
-      }).session(session);
+    try {
+      return await connection.transaction(async session => {
+        const existing = await Order.findOne({
+          checkoutId: input.checkoutId
+        }).session(session);
 
-      if (existing) return existing;
+        if (existing) return assertOwner(existing);
 
-      const reservedCoupon =
-        await couponService.reserve(
-          input.couponCode,
-          cart.subtotal,
-          session
+        const reservedCoupon =
+          await couponService.reserve(
+            input.couponCode,
+            cart.subtotal,
+            session
+          );
+
+        const pricing = calculatePricing(
+          cart,
+          reservedCoupon.discountAmount
         );
 
-      const pricing = calculatePricing(
-        cart,
-        reservedCoupon.discountAmount
-      );
+        const coupon = reservedCoupon.coupon
+          ? {
+              couponId: reservedCoupon.coupon._id,
+              code: reservedCoupon.coupon.code,
+              discountType:
+                reservedCoupon.coupon.discountType,
+              discountValue:
+                reservedCoupon.coupon.discountValue,
+              discountAmount:
+                reservedCoupon.discountAmount,
+              status: 'RESERVED'
+            }
+          : null;
 
-      const coupon = reservedCoupon.coupon
-        ? {
-            couponId: reservedCoupon.coupon._id,
-            code: reservedCoupon.coupon.code,
-            discountType:
-              reservedCoupon.coupon.discountType,
-            discountValue:
-              reservedCoupon.coupon.discountValue,
-            discountAmount:
-              reservedCoupon.discountAmount,
-            status: 'RESERVED'
-          }
-        : null;
-
-      const [order] = await Order.create(
-        [{
-          orderNumber: orderNumber(),
-          checkoutId: input.checkoutId,
-          cartId: cart.cartId,
-          userId: identity.userId,
-          guestToken: owner.guestToken,
-          customer: {
-            fullName:
-              identity.fullName ||
-              input.customer.fullName,
-            email:
-              identity.email ||
-              input.customer.email,
-            phone:
-              input.customer.phone
-          },
-          shippingAddress:
-            input.shippingAddress,
-          items: cart.items,
-          pricing,
-          coupon,
-          payment: {
-            method: input.paymentMethod,
-            status:
-              input.paymentMethod ===
-              'SIMULATED_ONLINE'
-                ? 'PAID'
-                : 'PENDING'
-          },
-          workflowStatus:
-            'AWAITING_INVENTORY',
-          status: 'PENDING',
-          statusHistory: [{
+        const [order] = await Order.create(
+          [{
+            orderNumber: orderNumber(),
+            checkoutId: input.checkoutId,
+            cartId: cart.cartId,
+            userId: identity.userId,
+            guestToken: owner.guestToken,
+            customer: {
+              fullName:
+                identity.fullName ||
+                input.customer.fullName,
+              email:
+                identity.email ||
+                input.customer.email,
+              phone:
+                input.customer.phone
+            },
+            shippingAddress:
+              input.shippingAddress,
+            items: cart.items,
+            pricing,
+            coupon,
+            payment: {
+              method: input.paymentMethod,
+              status:
+                input.paymentMethod ===
+                'SIMULATED_ONLINE'
+                  ? 'PAID'
+                  : 'PENDING'
+            },
+            workflowStatus:
+              'AWAITING_INVENTORY',
             status: 'PENDING',
-            note: 'Waiting for inventory'
-          }]
-        }],
-        {session}
-      );
+            statusHistory: [{
+              status: 'PENDING',
+              note: 'Waiting for inventory'
+            }]
+          }],
+          {session}
+        );
 
-      await enqueueOrderCreated({
-        Outbox,
-        order,
-        correlationId: requestId,
-        session
+        await enqueueOrderCreated({
+          Outbox,
+          order,
+          correlationId: requestId,
+          session
+        });
+
+        return order;
       });
-
-      return order;
-    });
+    } catch (error) {
+      // Concurrent retries may lose the unique checkoutId race after rollback.
+      if (error.code !== 11000) throw error;
+      const existing = await Order.findOne({checkoutId: input.checkoutId});
+      if (!existing) throw error;
+      return assertOwner(existing);
+    }
   }
 
   async function status(orderNumberValue, owner) {

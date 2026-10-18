@@ -184,3 +184,34 @@ export const validatePlaceOrder = middleware(body => {
     }
   };
 });
+
+export function validateOrderListQuery(req, res, next) {
+  try {
+    const allowed = ['page', 'limit'];
+    const unknown = Object.keys(req.query).filter(
+      key => !allowed.includes(key)
+    );
+
+    if (unknown.length > 0) {
+      fail(`Unknown query parameters: ${unknown.join(', ')}`);
+    }
+
+    const parseInteger = (value, fallback, maximum, name) => {
+      if (value === undefined) return fallback;
+      if (!/^\d+$/.test(value)) fail(`Invalid ${name}`);
+      const result = Number(value);
+      if (!Number.isSafeInteger(result) || result < 1 || result > maximum) {
+        fail(`Invalid ${name}`);
+      }
+      return result;
+    };
+
+    req.validatedQuery = {
+      page: parseInteger(req.query.page, 1, 100000, 'page'),
+      limit: parseInteger(req.query.limit, 10, 50, 'limit')
+    };
+    next();
+  } catch (error) {
+    next(error);
+  }
+}

@@ -114,17 +114,13 @@ const placeInput = {
   }
 };
 
-const placed = await request('/api/v1/checkout/place-order', {
-  method: 'POST',
-  status: 202,
-  body: placeInput
-});
-
-const duplicate = await request('/api/v1/checkout/place-order', {
-  method: 'POST',
-  status: 202,
-  body: placeInput
-});
+const [placed, duplicate] = await Promise.all(
+  [1, 2].map(() => request('/api/v1/checkout/place-order', {
+    method: 'POST',
+    status: 202,
+    body: placeInput
+  }))
+);
 
 assert.equal(duplicate.orderNumber, placed.orderNumber);
 
@@ -148,6 +144,14 @@ assert.equal(
 
 cart = await request('/api/v1/cart');
 assert.equal(cart.items.length, 0);
+
+// CONFIRMED is emitted before Catalog commits stock; wait for that consumer too.
+await eventually(async () => {
+  const updated = await request(`/api/v1/products/${product.slug}`);
+  const updatedVariant = updated.variants.find(item => item._id === variant._id);
+  return updatedVariant.stock === variant.stock - 1 &&
+    updatedVariant.availableStock === variant.availableStock - 1;
+}, 30000);
 
 console.log(
   `PASS Phase 4: cart, coupon, guest checkout, idempotency and Kafka inventory Saga (${placed.orderNumber})`

@@ -1,6 +1,7 @@
 import {
   enqueueOrderCancelled,
-  enqueueOrderConfirmed
+  enqueueOrderConfirmed,
+  enqueueInventoryRelease
 } from '../events/order.events.js';
 
 export function createOrderWorkflowService({
@@ -42,11 +43,23 @@ export function createOrderWorkflowService({
 
   async function reserved(event, session) {
     const order = await Order.findOne({
-      _id: event.payload.orderId,
-      workflowStatus: 'AWAITING_INVENTORY'
+      _id: event.payload.orderId
     }).session(session);
 
     if (!order) return;
+
+    // A reservation may arrive after the timeout transaction cancelled the order.
+    if (order.workflowStatus === 'REJECTED') {
+      await enqueueInventoryRelease({
+        Outbox, order, session,
+        reservationId: event.payload.reservationId,
+        reason: order.cancellationReason || 'Checkout cancelled',
+        correlationId: event.correlationId,
+        causationId: event.eventId
+      });
+      return;
+    }
+    if (order.workflowStatus !== 'AWAITING_INVENTORY') return;
 
     order.inventoryReservationId =
       event.payload.reservationId;
@@ -98,6 +111,9 @@ export function createOrderWorkflowService({
 
     order.workflowStatus = 'REJECTED';
     order.status = 'CANCELLED';
+    if (order.payment?.method === 'SIMULATED_ONLINE') {
+      order.payment.status = 'FAILED';
+    }
     order.cancellationReason =
       event.payload.reason;
 
@@ -118,5 +134,21 @@ export function createOrderWorkflowService({
     });
   }
 
-  return {reserved, rejected};
+  async function expire(orderId, cutoff, session) {
+    const order = await Order.findOne({
+      _id: orderId,
+      workflowStatus: 'AWAITING_INVENTORY',
+      createdAt: {$lte: cutoff}
+    }).session(session);
+
+    if (!order) return;
+
+    // Reuse the cancellation path so coupon and order changes share one transaction.
+    await rejected({
+      correlationId: `checkout-timeout:${orderId}`,
+      payload: {orderId, reason: 'Checkout timed out while waiting for inventory'}
+    }, session);
+  }
+
+  return {reserved, rejected, expire};
 }
