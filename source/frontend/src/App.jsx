@@ -18,6 +18,7 @@ import CheckoutPage from './pages/checkout/CheckoutPage.jsx';
 import OrderProcessingPage from './pages/checkout/OrderProcessingPage.jsx';
 import OrdersPage from './pages/orders/OrdersPage.jsx';
 import OrderDetailPage from './pages/orders/OrderDetailPage.jsx';
+import LoyaltyPage from './pages/loyalty/LoyaltyPage.jsx';
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/profile/addresses" element={<ProtectedRoute><AddressesPage/></ProtectedRoute>}/>
           <Route path="/orders" element={<ProtectedRoute><OrdersPage/></ProtectedRoute>}/>
           <Route path="/orders/:orderNumber" element={<ProtectedRoute><OrderDetailPage/></ProtectedRoute>}/>
+          <Route path="/loyalty" element={<ProtectedRoute><LoyaltyPage/></ProtectedRoute>}/>
           <Route path="*" element={<Alert severity="info">Không tìm thấy trang.</Alert>}/>
         </Routes>
       </Container>

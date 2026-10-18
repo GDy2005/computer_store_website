@@ -2,7 +2,8 @@ export function createOrderController({
   cartService,
   couponService,
   checkoutService,
-  customerOrderService
+  customerOrderService,
+  loyaltyService
 }) {
   return {
     async getCart(req, res, next) {
@@ -118,6 +119,7 @@ export function createOrderController({
         const data = await checkoutService.preview({
           owner: req.cartOwner,
           couponCode: req.body.couponCode,
+          pointsToRedeem: req.body.pointsToRedeem,
           requestId: req.context.requestId
         });
 
@@ -187,6 +189,25 @@ export function createOrderController({
         );
 
         res.json({success: true, data});
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async loyaltySummary(req, res, next) {
+      try {
+        const result = await loyaltyService.summary(
+          req.context.userId,
+          req.validatedQuery
+        );
+        res.json({
+          success: true,
+          data: {
+            pointsBalance: result.pointsBalance,
+            transactions: result.transactions
+          },
+          meta: result.meta
+        });
       } catch (error) {
         next(error);
       }

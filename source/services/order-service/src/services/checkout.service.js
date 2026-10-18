@@ -18,13 +18,13 @@ function orderNumber() {
   return `ORD-${date}-${random}`;
 }
 
-function calculatePricing(cart, discountAmount) {
+function calculatePricing(cart, discountAmount, pointsDiscount = 0) {
   const shippingFee =
     cart.subtotal >= 15000000 ? 0 : 50000;
 
   const total = Math.max(
     0,
-    cart.subtotal - discountAmount + shippingFee
+    cart.subtotal - discountAmount - pointsDiscount + shippingFee
   );
 
   const totalCost = cart.items.reduce(
@@ -36,12 +36,14 @@ function calculatePricing(cart, discountAmount) {
   return {
     subtotal: cart.subtotal,
     discountAmount,
+    pointsDiscount,
     shippingFee,
     total,
     totalCost,
     profit:
       cart.subtotal -
       discountAmount -
+      pointsDiscount -
       totalCost
   };
 }
@@ -53,11 +55,13 @@ export function createCheckoutService({
   Outbox,
   cartService,
   couponService,
+  loyaltyService,
   identityClient
 }) {
   async function preview({
     owner,
     couponCode,
+    pointsToRedeem = 0,
     requestId
   }) {
     const cart = await cartService.get(
@@ -77,6 +81,18 @@ export function createCheckoutService({
       couponCode,
       cart.subtotal
     );
+    const pricingBeforePoints = calculatePricing(
+      cart,
+      coupon.discountAmount
+    );
+    const maximumPoints = Math.floor(
+      pricingBeforePoints.total / 1000
+    );
+    const loyalty = await loyaltyService.preview(
+      owner.userId,
+      pointsToRedeem,
+      maximumPoints
+    );
 
     return {
       cart,
@@ -85,8 +101,16 @@ export function createCheckoutService({
         : null,
       pricing: calculatePricing(
         cart,
-        coupon.discountAmount
-      )
+        coupon.discountAmount,
+        loyalty.pointsDiscount
+      ),
+      loyalty: {
+        pointsBalance: owner.userId
+          ? await loyaltyService.balance(owner.userId)
+          : 0,
+        pointsUsed: loyalty.pointsUsed,
+        maximumPoints
+      }
     };
   }
 
@@ -118,6 +142,7 @@ export function createCheckoutService({
     input,
     requestId
   }) {
+    const pointsToRedeem = input.pointsToRedeem || 0;
     function assertOwner(order) {
       const allowed = owner.userId
         ? order.userId === owner.userId
@@ -166,9 +191,17 @@ export function createCheckoutService({
             session
           );
 
-        const pricing = calculatePricing(
+        const pricingBeforePoints = calculatePricing(
           cart,
           reservedCoupon.discountAmount
+        );
+        const maximumPoints = Math.floor(
+          pricingBeforePoints.total / 1000
+        );
+        const pricing = calculatePricing(
+          cart,
+          reservedCoupon.discountAmount,
+          pointsToRedeem * 1000
         );
 
         const coupon = reservedCoupon.coupon
@@ -207,6 +240,13 @@ export function createCheckoutService({
             items: cart.items,
             pricing,
             coupon,
+            loyalty: {
+              pointsUsed: pointsToRedeem,
+              pointsEarned: 0,
+              redeemStatus: pointsToRedeem > 0
+                ? 'PENDING'
+                : 'NONE'
+            },
             payment: {
               method: input.paymentMethod,
               status:
@@ -225,6 +265,14 @@ export function createCheckoutService({
           }],
           {session}
         );
+
+        await loyaltyService.reserve({
+          userId: owner.userId,
+          order,
+          points: pointsToRedeem,
+          maximumPoints,
+          session
+        });
 
         await enqueueOrderCreated({
           Outbox,

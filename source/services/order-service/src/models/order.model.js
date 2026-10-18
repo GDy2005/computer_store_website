@@ -97,6 +97,7 @@ const orderSchema = new Schema(
     pricing: {
       subtotal: {type: Number, required: true},
       discountAmount: {type: Number, required: true},
+      pointsDiscount: {type: Number, required: true, min: 0, default: 0},
       shippingFee: {type: Number, required: true},
       total: {type: Number, required: true},
       totalCost: {type: Number, required: true},
@@ -115,6 +116,15 @@ const orderSchema = new Schema(
         }
       },
       default: null
+    },
+    loyalty: {
+      pointsUsed: {type: Number, min: 0, default: 0},
+      pointsEarned: {type: Number, min: 0, default: 0},
+      redeemStatus: {
+        type: String,
+        enum: ['NONE', 'PENDING', 'COMMITTED', 'REFUNDED'],
+        default: 'NONE'
+      }
     },
     payment: {
       method: {

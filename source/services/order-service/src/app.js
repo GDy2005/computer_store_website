@@ -20,6 +20,7 @@ import {
   createCheckoutService
 } from './services/checkout.service.js';
 import {createCustomerOrderService} from './services/customer-order.service.js';
+import {createLoyaltyService} from './services/loyalty.service.js';
 
 import {
   createOrderController
@@ -59,6 +60,11 @@ export function buildApp({
     Coupon: models.Coupon
   });
 
+  const loyaltyService = createLoyaltyService({
+    LoyaltyAccount: models.LoyaltyAccount,
+    LoyaltyTransaction: models.LoyaltyTransaction
+  });
+
   const checkoutService =
     createCheckoutService({
       connection,
@@ -67,6 +73,7 @@ export function buildApp({
       Outbox: models.Outbox,
       cartService,
       couponService,
+      loyaltyService,
       identityClient
     });
 
@@ -78,7 +85,8 @@ export function buildApp({
     cartService,
     couponService,
     checkoutService,
-    customerOrderService
+    customerOrderService,
+    loyaltyService
   });
 
   router.use(createOrderRouter(controller));

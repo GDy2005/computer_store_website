@@ -8,7 +8,8 @@ export function createOrderWorkflowService({
   Order,
   Coupon,
   Cart,
-  Outbox
+  Outbox,
+  loyaltyService
 }) {
   async function consumePlacedItems(order, session) {
     const cart = await Cart.findById(order.cartId)
@@ -70,6 +71,8 @@ export function createOrderWorkflowService({
       order.coupon.status = 'APPLIED';
     }
 
+    await loyaltyService.commitRedemption(order, session);
+
     order.statusHistory.push({
       status: 'CONFIRMED',
       note: 'Inventory reserved'
@@ -108,6 +111,8 @@ export function createOrderWorkflowService({
 
       order.coupon.status = 'RELEASED';
     }
+
+    await loyaltyService.refundRedemption(order, session);
 
     order.workflowStatus = 'REJECTED';
     order.status = 'CANCELLED';

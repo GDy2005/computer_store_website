@@ -71,7 +71,8 @@ export function createOrderRouter(controller) {
     '/api/v1/cart',
     '/api/v1/coupons',
     '/api/v1/checkout',
-    '/api/v1/orders'
+    '/api/v1/orders',
+    '/api/v1/loyalty'
   ], identifyCartOwner);
 
   router.get(
@@ -125,6 +126,13 @@ export function createOrderRouter(controller) {
     '/api/v1/checkout/place-order',
     validatePlaceOrder,
     controller.place
+  );
+
+  router.get(
+    '/api/v1/loyalty/me',
+    requireUser,
+    validateOrderListQuery,
+    controller.loyaltySummary
   );
 
   router.get(

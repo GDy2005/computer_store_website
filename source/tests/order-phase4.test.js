@@ -173,6 +173,12 @@ test('checkout preview recalculates totals on the server', async () => {
           discountAmount: 200000
         };
       }
+    },
+    loyaltyService: {
+      async preview() {
+        return {pointsUsed: 0, pointsDiscount: 0};
+      },
+      async balance() { return 0; }
     }
   });
 
@@ -185,10 +191,16 @@ test('checkout preview recalculates totals on the server', async () => {
   assert.deepEqual(result.pricing, {
     subtotal: 2000000,
     discountAmount: 200000,
+    pointsDiscount: 0,
     shippingFee: 50000,
     total: 1850000,
     totalCost: 1400000,
     profit: 400000
+  });
+  assert.deepEqual(result.loyalty, {
+    pointsBalance: 0,
+    pointsUsed: 0,
+    maximumPoints: 1850
   });
 });
 
@@ -308,6 +320,9 @@ test('inventory success confirms order and preserves newer cart quantities', asy
       }
     },
     Coupon: {},
+    loyaltyService: {
+      async commitRedemption() {}
+    },
     Outbox: {
       async create(rows) {
         outboxRows = rows;

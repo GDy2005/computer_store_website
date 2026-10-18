@@ -22,6 +22,7 @@ import {
 } from '../../features/cart/cartApi.js';
 import {useCart} from '../../features/cart/CartContext.jsx';
 import {formatVnd} from '../../features/products/productFormat.js';
+import {fetchLoyalty} from '../../features/loyalty/loyaltyApi.js';
 
 const emptyForm = {
   fullName: '',
@@ -49,6 +50,8 @@ export default function CheckoutPage() {
   const [form, setForm] = useState(emptyForm);
   const [couponInput, setCouponInput] = useState('');
   const [couponCode, setCouponCode] = useState('');
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
+  const [pointsBalance, setPointsBalance] = useState(0);
   const [preview, setPreview] = useState(null);
   const [loadingPreview, setLoadingPreview] = useState(true);
   const [placing, setPlacing] = useState(false);
@@ -75,6 +78,19 @@ export default function CheckoutPage() {
   }, [user]);
 
   useEffect(() => {
+    if (!user) {
+      setPointsBalance(0);
+      setPointsToRedeem(0);
+      return undefined;
+    }
+    const controller = new AbortController();
+    fetchLoyalty(1, {signal: controller.signal})
+      .then(result => setPointsBalance(result.pointsBalance))
+      .catch(() => setPointsBalance(0));
+    return () => controller.abort();
+  }, [user]);
+
+  useEffect(() => {
     if (cartLoading || cart.items.length === 0) {
       setLoadingPreview(false);
       return;
@@ -82,8 +98,10 @@ export default function CheckoutPage() {
 
     let active = true;
     setLoadingPreview(true);
+    setPreview(null);
+    setError('');
 
-    previewCheckout(couponCode)
+    previewCheckout(couponCode, pointsToRedeem)
       .then(result => {
         if (active) setPreview(result);
       })
@@ -104,7 +122,7 @@ export default function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, [cartLoading, cart.items.length, couponCode]);
+  }, [cartLoading, cart.items.length, couponCode, pointsToRedeem]);
 
   function change(field) {
     return event => {
@@ -154,6 +172,7 @@ export default function CheckoutPage() {
         checkoutId: checkoutId.current,
         couponCode: couponCode || null,
         paymentMethod: form.paymentMethod,
+        pointsToRedeem,
         customer: {
           fullName: form.fullName,
           email: form.email,
@@ -326,6 +345,21 @@ export default function CheckoutPage() {
 
             {couponMessage && <Alert severity="success">{couponMessage}</Alert>}
 
+            {user && (
+              <TextField
+                label={`Dùng điểm (đang có ${pointsBalance})`}
+                type="number"
+                size="small"
+                value={pointsToRedeem}
+                onChange={event => {
+                  const value = Number(event.target.value);
+                  setPointsToRedeem(Number.isInteger(value) && value >= 0 ? value : 0);
+                }}
+                inputProps={{min: 0, max: Math.min(pointsBalance, preview?.loyalty?.maximumPoints ?? pointsBalance), step: 1}}
+                helperText="1 điểm tương đương 1.000 ₫"
+              />
+            )}
+
             {loadingPreview && <CircularProgress size={24}/>} 
 
             {preview && !loadingPreview && (
@@ -340,6 +374,14 @@ export default function CheckoutPage() {
                     −{formatVnd(preview.pricing.discountAmount)}
                   </Typography>
                 </Stack>
+                {preview.pricing.pointsDiscount > 0 && (
+                  <Stack direction="row" justifyContent="space-between">
+                    <Typography color="text.secondary">Đổi điểm</Typography>
+                    <Typography color="success.main">
+                      −{formatVnd(preview.pricing.pointsDiscount)}
+                    </Typography>
+                  </Stack>
+                )}
                 <Stack direction="row" justifyContent="space-between">
                   <Typography color="text.secondary">Phí giao hàng</Typography>
                   <Typography>{formatVnd(preview.pricing.shippingFee)}</Typography>

@@ -56,3 +56,94 @@ npm run build
 ```
 
 Các tình huống test gồm validation phân trang, sắp xếp mới nhất, filter theo chủ sở hữu, ẩn dữ liệu giá vốn/lợi nhuận và từ chối đọc order của user khác.
+
+## Mục 2 — Loyalty account và ledger
+
+Trạng thái: đã triển khai.
+
+Order Service là chủ sở hữu duy nhất của dữ liệu điểm:
+
+- `loyalty_accounts` lưu `userId`, `pointsBalance` và `version`.
+- `loyalty_transactions` là sổ giao dịch có dấu vết đầy đủ, gồm `EARN`, `REDEEM`, `REFUND` và trạng thái `PENDING`, `COMMITTED`, `REVERSED`.
+- Unique index `{orderId, type}` ngăn cùng một order tạo trùng một loại giao dịch.
+- User chưa có account được xem như có số dư `0`; không cần tạo document rỗng.
+
+API customer:
+
+```http
+GET /api/v1/loyalty/me?page=1&limit=10
+```
+
+API yêu cầu đăng nhập, trả số dư hiện tại và ledger mới nhất trước. Frontend hiển thị tại `/loyalty`.
+
+### Vị trí mã nguồn Mục 2
+
+| Phần | File |
+|---|---|
+| Account model | `services/order-service/src/models/loyalty-account.model.js` |
+| Ledger model và indexes | `services/order-service/src/models/loyalty-transaction.model.js` |
+| Đọc số dư, ledger và nghiệp vụ điểm | `services/order-service/src/services/loyalty.service.js` |
+| API route/controller | `services/order-service/src/routes/order.routes.js`, `controllers/order.controller.js` |
+| Gateway proxy | `api-gateway/src/app.js` |
+| Frontend API | `frontend/src/features/loyalty/loyaltyApi.js` |
+| Trang số dư và ledger | `frontend/src/pages/loyalty/LoyaltyPage.jsx` |
+
+## Mục 3 — Redeem điểm trong checkout và compensation
+
+Trạng thái: đã triển khai.
+
+Quy ước:
+
+- `1 point = 1.000 VND`.
+- Chỉ user đăng nhập được dùng điểm; guest vẫn checkout bình thường với `pointsToRedeem = 0`.
+- Backend đọc số dư thật và tự tính `pointsDiscount`; không nhận tổng tiền hoặc giá trị giảm từ frontend.
+- Điểm tối đa bằng `floor(total sau coupon và phí giao hàng / 1000)` để tổng tiền không âm.
+
+Luồng thành công:
+
+```text
+Checkout preview -> kiểm tra số dư và mức tối đa
+Place order transaction
+  -> atomic decrement loyalty account
+  -> tạo REDEEM/PENDING
+  -> tạo order + outbox
+Inventory reserved transaction
+  -> REDEEM/COMMITTED
+  -> order CONFIRMED
+```
+
+Luồng bù trừ:
+
+```text
+Inventory rejected hoặc checkout timeout
+  -> REDEEM/REVERSED
+  -> cộng lại pointsBalance
+  -> tạo REFUND/COMMITTED
+  -> order CANCELLED
+```
+
+Filter atomic `{userId, pointsBalance: {$gte: points}}` bảo vệ hai checkout đồng thời. Nếu số dư đã thay đổi, toàn bộ transaction tạo order/coupon/redeem rollback và API yêu cầu khách preview lại.
+
+Order snapshot lưu `pointsUsed`, `pointsDiscount` và `redeemStatus`. Trang chi tiết order hiển thị khoản giảm bằng điểm.
+
+### Vị trí mã nguồn Mục 3
+
+| Phần | File |
+|---|---|
+| Validate `pointsToRedeem` | `services/order-service/src/validations/order.validation.js` |
+| Preview, tính tiền, reserve điểm | `services/order-service/src/services/checkout.service.js` |
+| Commit/refund theo Saga | `services/order-service/src/services/order-workflow.service.js` |
+| Loyalty snapshot trong order | `services/order-service/src/models/order.model.js` |
+| Form dùng điểm | `frontend/src/pages/checkout/CheckoutPage.jsx` |
+| Hiển thị điểm trong order | `frontend/src/pages/orders/OrderDetailPage.jsx` |
+| Test Mục 2–3 | `tests/loyalty-phase5.test.js` |
+
+### Kiểm tra riêng Mục 2–3
+
+```powershell
+node --test tests/loyalty-phase5.test.js
+npm run lint
+npm run build
+```
+
+Mục 4 sẽ bổ sung nguồn cộng điểm khi order chuyển sang `DELIVERED` và phát `loyalty.changed.v1`. Trước Mục 4, account thực tế chưa tự phát sinh điểm mới nên màn hình có thể hiển thị số dư `0`; redeem đã sẵn sàng và được test bằng account có số dư.

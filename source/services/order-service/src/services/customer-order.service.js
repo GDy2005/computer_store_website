@@ -28,6 +28,7 @@ function publicOrder(order, detail = false) {
     pricing: {
       subtotal: order.pricing.subtotal,
       discountAmount: order.pricing.discountAmount,
+      pointsDiscount: order.pricing.pointsDiscount || 0,
       shippingFee: order.pricing.shippingFee,
       total: order.pricing.total
     },
@@ -53,6 +54,11 @@ function publicOrder(order, detail = false) {
           status: order.coupon.status
         }
       : null,
+    loyalty: {
+      pointsUsed: order.loyalty?.pointsUsed || 0,
+      pointsEarned: order.loyalty?.pointsEarned || 0,
+      redeemStatus: order.loyalty?.redeemStatus || 'NONE'
+    },
     cancellationReason: order.cancellationReason,
     statusHistory: [...order.statusHistory]
       .sort((left, right) =>

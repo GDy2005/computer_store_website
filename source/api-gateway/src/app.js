@@ -80,7 +80,7 @@ export function buildApp(redis) {
     const name=req.params.service; if(!serviceUrls[name]) return next(new AppError(404,'NOT_FOUND','Unknown service'));
     return proxy(name, path=>`/internal/foundation${path}`)(req,res,next);
   });
-  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','orders','admin/orders','admin/coupons'],analytics:['admin/dashboard'],search:['search']};
+  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','orders','loyalty','admin/orders','admin/coupons'],analytics:['admin/dashboard'],search:['search']};
   for(const [name, prefixes] of Object.entries(routes)) for(const prefix of prefixes) app.use(`/api/v1/${prefix}`,proxy(name,path=>`/api/v1/${prefix}${path}`));
   app.use((req,res,next)=>next(new AppError(404,'NOT_FOUND','Endpoint not found')));app.use(errorHandler);return app;
 }

@@ -108,12 +108,22 @@ export const validateCoupon = middleware(body => {
 
 export const validatePreview = middleware(body => {
   object(body);
-  allowOnly(body, ['couponCode']);
+  allowOnly(body, ['couponCode', 'pointsToRedeem']);
+
+  const pointsToRedeem = body.pointsToRedeem ?? 0;
+  if (
+    !Number.isInteger(pointsToRedeem) ||
+    pointsToRedeem < 0 ||
+    pointsToRedeem > 1000000
+  ) {
+    fail('Invalid pointsToRedeem');
+  }
 
   return {
     couponCode: body.couponCode
       ? text(body.couponCode, 'couponCode', 50).toUpperCase()
-      : null
+      : null,
+    pointsToRedeem
   };
 });
 
@@ -125,6 +135,7 @@ export const validatePlaceOrder = middleware(body => {
     'checkoutId',
     'couponCode',
     'paymentMethod',
+    'pointsToRedeem',
     'customer',
     'shippingAddress'
   ]);
@@ -150,9 +161,17 @@ export const validatePlaceOrder = middleware(body => {
   }
 
   const paymentMethod = body.paymentMethod || 'COD';
+  const pointsToRedeem = body.pointsToRedeem ?? 0;
 
   if (!['COD', 'SIMULATED_ONLINE'].includes(paymentMethod)) {
     fail('Invalid paymentMethod');
+  }
+  if (
+    !Number.isInteger(pointsToRedeem) ||
+    pointsToRedeem < 0 ||
+    pointsToRedeem > 1000000
+  ) {
+    fail('Invalid pointsToRedeem');
   }
 
   return {
@@ -161,6 +180,7 @@ export const validatePlaceOrder = middleware(body => {
       ? text(body.couponCode, 'couponCode', 50).toUpperCase()
       : null,
     paymentMethod,
+    pointsToRedeem,
     customer: {
       fullName: text(body.customer.fullName, 'fullName', 100),
       email: email(body.customer.email),

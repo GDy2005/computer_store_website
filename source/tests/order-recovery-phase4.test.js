@@ -29,6 +29,10 @@ function workflowFixture() {
       }
     },
     Coupon: {async updateOne() { refunds++; }},
+    loyaltyService: {
+      async commitRedemption() {},
+      async refundRedemption() {}
+    },
     Outbox: {async create(events) { rows.push(...events); }}
   });
   return {service, order, rows, refunds: () => refunds};

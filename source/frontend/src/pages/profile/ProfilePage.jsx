@@ -72,6 +72,7 @@ export default function ProfilePage() {
       </Paper>
       <Button component={Link} to="/profile/addresses" variant="outlined">Quản lý địa chỉ giao hàng</Button>
       <Button component={Link} to="/orders" variant="outlined">Xem lịch sử đơn hàng</Button>
+      <Button component={Link} to="/loyalty" variant="outlined">Xem điểm thưởng</Button>
     </Stack>
   );
 }

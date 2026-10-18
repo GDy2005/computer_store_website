@@ -10,6 +10,7 @@ import {
   createOrderWorkflowConsumers
 } from './events/order-workflow.consumer.js';
 import {createCheckoutTimeoutWorker} from './services/checkout-timeout.service.js';
+import {createLoyaltyService} from './services/loyalty.service.js';
 
 export async function configureOrderRuntime({
   connection,
@@ -21,9 +22,14 @@ export async function configureOrderRuntime({
     Object.values(orderModels).map(model => model.init())
   );
 
+  const loyaltyService = createLoyaltyService({
+    LoyaltyAccount: orderModels.LoyaltyAccount,
+    LoyaltyTransaction: orderModels.LoyaltyTransaction
+  });
   const workflowService = createOrderWorkflowService({
     ...orderModels,
-    Outbox: models.Outbox
+    Outbox: models.Outbox,
+    loyaltyService
   });
   const timeoutWorker = createCheckoutTimeoutWorker({
     connection, Order: orderModels.Order, workflowService

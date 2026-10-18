@@ -95,10 +95,10 @@ export async function validateCoupon(code) {
   return response.data.data;
 }
 
-export async function previewCheckout(couponCode) {
+export async function previewCheckout(couponCode, pointsToRedeem = 0) {
   const response = await axios.post(
     '/api/v1/checkout/preview',
-    {couponCode: couponCode || null},
+    {couponCode: couponCode || null, pointsToRedeem},
     requestConfig()
   );
 

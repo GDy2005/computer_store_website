@@ -73,6 +73,7 @@ export default function OrderDetailPage() {
           <Stack spacing={0.75}>
             <Stack direction="row" justifyContent="space-between"><span>Tạm tính</span><span>{formatMoney(order.pricing.subtotal)}</span></Stack>
             <Stack direction="row" justifyContent="space-between"><span>Giảm giá</span><span>-{formatMoney(order.pricing.discountAmount)}</span></Stack>
+            {order.pricing.pointsDiscount > 0 && <Stack direction="row" justifyContent="space-between"><span>Đổi {order.loyalty.pointsUsed} điểm</span><span>-{formatMoney(order.pricing.pointsDiscount)}</span></Stack>}
             <Stack direction="row" justifyContent="space-between"><span>Phí giao hàng</span><span>{formatMoney(order.pricing.shippingFee)}</span></Stack>
             <Stack direction="row" justifyContent="space-between"><strong>Tổng cộng</strong><strong>{formatMoney(order.pricing.total)}</strong></Stack>
           </Stack>
