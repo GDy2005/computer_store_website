@@ -52,6 +52,10 @@ const statusHistorySchema = new Schema(
     note: {
       type: String,
       default: null
+    },
+    updatedBy: {
+      type: String,
+      default: null
     }
   },
   {_id: false}
@@ -125,6 +129,10 @@ const orderSchema = new Schema(
         enum: ['NONE', 'PENDING', 'COMMITTED', 'REFUNDED'],
         default: 'NONE'
       }
+    },
+    loyaltyCredited: {
+      type: Boolean,
+      default: false
     },
     payment: {
       method: {

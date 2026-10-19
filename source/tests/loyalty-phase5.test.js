@@ -141,19 +141,21 @@ test('successful Saga commits a pending redemption once', async () => {
   const service = createLoyaltyService({
     LoyaltyAccount: {},
     LoyaltyTransaction: {
-      async updateOne(filter, update) {
+      async findOneAndUpdate(filter, update) {
         assert.deepEqual(filter, {
           orderId: 'order-1', type: 'REDEEM', status: 'PENDING'
         });
         assert.deepEqual(update, {$set: {status: 'COMMITTED'}});
         updates += 1;
+        return {_id: 'redeem-1', type: 'REDEEM'};
       }
     }
   });
-  await service.commitRedemption(order, {});
+  const transaction = await service.commitRedemption(order, {});
   await service.commitRedemption(order, {});
   assert.equal(order.loyalty.redeemStatus, 'COMMITTED');
   assert.equal(updates, 1);
+  assert.equal(transaction.type, 'REDEEM');
 });
 
 test('failed Saga reverses redeem, restores balance and records one refund', async () => {

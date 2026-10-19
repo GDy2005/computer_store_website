@@ -106,26 +106,28 @@ export function createLoyaltyService({
 
   async function commitRedemption(order, session) {
     if (!order.loyalty?.pointsUsed || order.loyalty.redeemStatus !== 'PENDING') {
-      return;
+      return null;
     }
-    await LoyaltyTransaction.updateOne(
+    const redemption = await LoyaltyTransaction.findOneAndUpdate(
       {orderId: order._id, type: 'REDEEM', status: 'PENDING'},
       {$set: {status: 'COMMITTED'}},
-      {session}
+      {new: true, session}
     );
+    if (!redemption) return null;
     order.loyalty.redeemStatus = 'COMMITTED';
+    return redemption;
   }
 
   async function refundRedemption(order, session) {
     if (!order.loyalty?.pointsUsed || order.loyalty.redeemStatus !== 'PENDING') {
-      return;
+      return null;
     }
     const redemption = await LoyaltyTransaction.findOneAndUpdate(
       {orderId: order._id, type: 'REDEEM', status: 'PENDING'},
       {$set: {status: 'REVERSED'}},
       {new: true, session}
     );
-    if (!redemption) return;
+    if (!redemption) return null;
 
     const account = await LoyaltyAccount.findOneAndUpdate(
       {userId: order.userId},
@@ -137,7 +139,7 @@ export function createLoyaltyService({
       },
       {new: true, upsert: true, session, setDefaultsOnInsert: true}
     );
-    await LoyaltyTransaction.create([{
+    const [refund] = await LoyaltyTransaction.create([{
       userId: order.userId,
       orderId: order._id,
       type: 'REFUND',
@@ -147,6 +149,39 @@ export function createLoyaltyService({
       description: `Refunded from order ${order.orderNumber}`
     }], {session});
     order.loyalty.redeemStatus = 'REFUNDED';
+    return refund;
+  }
+
+  async function earn(order, session) {
+    if (order.loyaltyCredited) return null;
+
+    const points = Math.floor(order.pricing.total * 0.1 / 1000);
+    if (!order.loyalty) {
+      order.loyalty = {
+        pointsUsed: 0,
+        pointsEarned: 0,
+        redeemStatus: 'NONE'
+      };
+    }
+    order.loyaltyCredited = true;
+    order.loyalty.pointsEarned = points;
+    if (points === 0) return null;
+
+    const account = await LoyaltyAccount.findOneAndUpdate(
+      {userId: order.userId},
+      {$inc: {pointsBalance: points, version: 1}},
+      {new: true, upsert: true, session, setDefaultsOnInsert: true}
+    );
+    const [transaction] = await LoyaltyTransaction.create([{
+      userId: order.userId,
+      orderId: order._id,
+      type: 'EARN',
+      status: 'COMMITTED',
+      points,
+      balanceAfter: account.pointsBalance,
+      description: `Earned from order ${order.orderNumber}`
+    }], {session});
+    return transaction;
   }
 
   return {
@@ -155,6 +190,7 @@ export function createLoyaltyService({
     preview,
     reserve,
     commitRedemption,
-    refundRedemption
+    refundRedemption,
+    earn
   };
 }

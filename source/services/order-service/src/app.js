@@ -21,6 +21,7 @@ import {
 } from './services/checkout.service.js';
 import {createCustomerOrderService} from './services/customer-order.service.js';
 import {createLoyaltyService} from './services/loyalty.service.js';
+import {createOrderStatusService} from './services/order-status.service.js';
 
 import {
   createOrderController
@@ -81,12 +82,20 @@ export function buildApp({
     Order: models.Order
   });
 
+  const orderStatusService = createOrderStatusService({
+    connection,
+    Order: models.Order,
+    Outbox: models.Outbox,
+    loyaltyService
+  });
+
   const controller = createOrderController({
     cartService,
     couponService,
     checkoutService,
     customerOrderService,
-    loyaltyService
+    loyaltyService,
+    orderStatusService
   });
 
   router.use(createOrderRouter(controller));

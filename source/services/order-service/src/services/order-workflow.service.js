@@ -1,7 +1,8 @@
 import {
   enqueueOrderCancelled,
   enqueueOrderConfirmed,
-  enqueueInventoryRelease
+  enqueueInventoryRelease,
+  enqueueLoyaltyChanged
 } from '../events/order.events.js';
 
 export function createOrderWorkflowService({
@@ -71,7 +72,7 @@ export function createOrderWorkflowService({
       order.coupon.status = 'APPLIED';
     }
 
-    await loyaltyService.commitRedemption(order, session);
+    const redemption = await loyaltyService.commitRedemption(order, session);
 
     order.statusHistory.push({
       status: 'CONFIRMED',
@@ -89,6 +90,16 @@ export function createOrderWorkflowService({
       causationId: event.eventId,
       session
     });
+    if (redemption) {
+      await enqueueLoyaltyChanged({
+        Outbox,
+        order,
+        transaction: redemption,
+        correlationId: event.correlationId,
+        causationId: event.eventId,
+        session
+      });
+    }
   }
 
   async function rejected(event, session) {
@@ -112,7 +123,7 @@ export function createOrderWorkflowService({
       order.coupon.status = 'RELEASED';
     }
 
-    await loyaltyService.refundRedemption(order, session);
+    const refund = await loyaltyService.refundRedemption(order, session);
 
     order.workflowStatus = 'REJECTED';
     order.status = 'CANCELLED';
@@ -137,6 +148,16 @@ export function createOrderWorkflowService({
       causationId: event.eventId,
       session
     });
+    if (refund) {
+      await enqueueLoyaltyChanged({
+        Outbox,
+        order,
+        transaction: refund,
+        correlationId: event.correlationId,
+        causationId: event.eventId,
+        session
+      });
+    }
   }
 
   async function expire(orderId, cutoff, session) {

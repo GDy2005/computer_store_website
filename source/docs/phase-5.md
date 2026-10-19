@@ -8,6 +8,8 @@ Phase 5 được chia thành các mục để triển khai và kiểm tra riêng
 4. Cộng điểm khi đơn `DELIVERED` và phát Kafka events.
 5. Hoàn thiện liên kết guest activation với đơn hàng, integration test và tài liệu.
 
+**Trạng thái Phase 5: hoàn tất.**
+
 ## Mục 1 — Lịch sử và chi tiết đơn hàng
 
 Trạng thái: đã triển khai.
@@ -146,4 +148,100 @@ npm run lint
 npm run build
 ```
 
-Mục 4 sẽ bổ sung nguồn cộng điểm khi order chuyển sang `DELIVERED` và phát `loyalty.changed.v1`. Trước Mục 4, account thực tế chưa tự phát sinh điểm mới nên màn hình có thể hiển thị số dư `0`; redeem đã sẵn sàng và được test bằng account có số dư.
+## Mục 4 — Cộng điểm khi DELIVERED và phát Kafka events
+
+Trạng thái: đã triển khai.
+
+Luồng trạng thái hợp lệ:
+
+```text
+CONFIRMED -> SHIPPING -> DELIVERED
+PENDING hoặc CONFIRMED -> CANCELLED
+```
+
+API nghiệp vụ hiện có để Phase 7 gắn vào màn hình quản trị:
+
+```http
+PATCH /api/v1/admin/orders/:id/status
+Content-Type: application/json
+
+{"status":"SHIPPING","note":"Đã bàn giao cho đơn vị vận chuyển"}
+```
+
+API yêu cầu session `ADMIN`; customer nhận `403`. Không cho bỏ qua `SHIPPING`, chuyển ngược trạng thái hoặc cập nhật lại `DELIVERED`.
+
+Khi chuyển `SHIPPING -> DELIVERED`, cùng một MongoDB transaction sẽ:
+
+1. Push `statusHistory` gồm `status`, `updatedAt`, `updatedBy`, `note`.
+2. Tính `pointsEarned = floor(orderTotal * 0.1 / 1000)`.
+3. Atomic upsert/cộng `loyalty_accounts.pointsBalance`.
+4. Tạo `loyalty_transactions` loại `EARN/COMMITTED`.
+5. Đặt `loyaltyCredited = true` để không cộng lần hai.
+6. Ghi `orders.status-changed.v1` và `loyalty.changed.v1` vào Outbox.
+
+`loyalty.changed.v1` cũng được phát khi `REDEEM` được commit hoặc khi tạo `REFUND`. Event dùng `userId` làm Kafka key; order status event dùng `orderId`.
+
+Analytics Service sẽ tạo projection dashboard ở Phase 7. Phase 5 chịu trách nhiệm phát đủ event hợp lệ; chưa thêm dashboard projection sớm.
+
+### Vị trí mã nguồn Mục 4
+
+| Phần | File |
+|---|---|
+| Transition và transaction hoàn tất đơn | `services/order-service/src/services/order-status.service.js` |
+| Tính/cộng điểm và tạo EARN ledger | `services/order-service/src/services/loyalty.service.js` |
+| Tạo status/loyalty events | `services/order-service/src/events/order.events.js` |
+| Trường `updatedBy`, `loyaltyCredited` | `services/order-service/src/models/order.model.js` |
+| Admin-only route và validation | `services/order-service/src/routes/order.routes.js`, `validations/order.validation.js` |
+| Test transition, idempotency và event contract | `tests/order-status-phase5.test.js` |
+
+## Mục 5 — Guest activation, integration test và hoàn tất Phase 5
+
+Trạng thái: đã hoàn tất, gồm cả kiểm thử tích hợp trên MongoDB replica set,
+Kafka, Redis, Phase 5 Gateway và các service thật.
+
+Guest checkout đã resolve hoặc tạo user tại Identity Service trước khi Order Service tạo đơn. Order lưu chính `userId` đó. Kích hoạt tài khoản chỉ đổi `PENDING_ACTIVATION -> ACTIVE` và đặt password trên cùng user document, nên sau khi đăng nhập session mang cùng `userId`; `/orders/me` tự tìm thấy đơn guest trước đó mà không cần migrate hay đồng bộ database chéo service.
+
+Luồng kiểm tra tích hợp:
+
+```text
+Guest thêm cart và checkout
+-> Identity tạo PENDING_ACTIVATION user + activation email Outbox
+-> Kafka Saga xác nhận order
+-> lấy activation token từ email event và kích hoạt
+-> đăng nhập bằng tài khoản vừa kích hoạt
+-> GET /orders/me thấy order guest
+-> Admin chuyển SHIPPING rồi DELIVERED
+-> customer thấy EARN ledger và số dư mới
+-> order_db có 2 status events và 1 loyalty EARN event
+```
+
+Script: `scripts/phase5-integration.js`. Profile `test` dùng một Gateway gọn chỉ
+kiểm tra Identity, Catalog và Order; không khởi động Elasticsearch, Search,
+Analytics, frontend hoặc Gateway thứ hai. Test container đợi Gateway healthy
+rồi mới bắt đầu kiểm tra.
+
+Chạy bằng một lệnh; Compose sẽ khởi động các dependency còn thiếu và tự dọn
+test container sau khi hoàn tất:
+
+```powershell
+npm run phase5:integration
+```
+
+Script tạo một user/order demo và làm giảm tồn kho một variant. `docker-compose.yml` truyền cùng `ADMIN_EMAIL` và `ADMIN_INITIAL_PASSWORD` cho Identity Service để script đăng nhập đúng admin seed khi các giá trị được override bằng `.env`.
+
+### Kiểm tra Phase 5
+
+```powershell
+npm test
+npm run lint
+npm run build
+npm run phase5:integration
+```
+
+Kết quả xác nhận cuối Phase 5:
+
+- `npm test`: 70/70 test đạt.
+- `npm run lint`: đạt.
+- `npm run build`: đạt.
+- `npm run phase5:integration`: đạt toàn bộ luồng guest activation, order
+  ownership, status history và loyalty earn.

@@ -7,9 +7,10 @@ async function enqueue({
   payload,
   correlationId,
   causationId = null,
+  key: suppliedKey,
   session
 }) {
-  const key = order._id.toString();
+  const key = suppliedKey || order._id.toString();
 
   const event = createEvent(topic, {
     producer: 'order-service',
@@ -99,6 +100,38 @@ export function enqueueInventoryRelease({reservationId, reason, ...options}) {
       orderId: options.order._id.toString(),
       reservationId,
       reason
+    }
+  });
+}
+
+export function enqueueOrderStatusChanged({
+  previousStatus,
+  ...options
+}) {
+  return enqueue({
+    ...options,
+    topic: 'orders.status-changed.v1',
+    payload: {
+      orderId: options.order._id.toString(),
+      orderNumber: options.order.orderNumber,
+      previousStatus,
+      status: options.order.status
+    }
+  });
+}
+
+export function enqueueLoyaltyChanged({transaction, ...options}) {
+  return enqueue({
+    ...options,
+    key: options.order.userId,
+    topic: 'loyalty.changed.v1',
+    payload: {
+      userId: options.order.userId,
+      orderId: options.order._id.toString(),
+      transactionId: transaction._id.toString(),
+      type: transaction.type,
+      points: transaction.points,
+      balanceAfter: transaction.balanceAfter
     }
   });
 }

@@ -235,3 +235,17 @@ export function validateOrderListQuery(req, res, next) {
     next(error);
   }
 }
+
+export const validateOrderStatus = middleware(body => {
+  object(body);
+  allowOnly(body, ['status', 'note']);
+  if (!['SHIPPING', 'DELIVERED', 'CANCELLED'].includes(body.status)) {
+    fail('Invalid order status');
+  }
+  return {
+    status: body.status,
+    note: body.note === undefined || body.note === null
+      ? null
+      : text(body.note, 'note', 255)
+  };
+});

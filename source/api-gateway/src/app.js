@@ -20,6 +20,14 @@ export const serviceUrls = {
     process.env.SEARCH_SERVICE_URL ||
     'http://search-service:5006'
 };
+
+const healthServiceNames = (
+  process.env.GATEWAY_HEALTH_SERVICES || Object.keys(serviceUrls).join(',')
+)
+  .split(',')
+  .map(name => name.trim())
+  .filter(name => serviceUrls[name]);
+
 export function buildApp(redis) {
   const app = express();
   app.set('trust proxy', 1);
@@ -28,7 +36,7 @@ export function buildApp(redis) {
   app.get('/health/ready', async (req,res,next) => {
     try {
       await redis.ping();
-      const checks = await Promise.all(Object.entries(serviceUrls).map(async ([name,url]) => { const response = await fetch(`${url}/health/ready`, {signal:AbortSignal.timeout(5000)}); return {name,ready:response.ok}; }));
+      const checks = await Promise.all(healthServiceNames.map(async name => { const url = serviceUrls[name]; const response = await fetch(`${url}/health/ready`, {signal:AbortSignal.timeout(5000)}); return {name,ready:response.ok}; }));
       const ready = checks.every(check=>check.ready); res.status(ready ? 200 : 503).json({success:ready,data:{services:checks}});
     } catch(error) { next(error); }
   });

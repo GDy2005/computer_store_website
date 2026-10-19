@@ -129,6 +129,8 @@ services:
       DB_NAME: identity_db
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
       PASSWORD_TOKEN_TTL_MINUTES: ${PASSWORD_TOKEN_TTL_MINUTES:-30}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
       kafka-init: {condition: service_completed_successfully}
@@ -338,6 +340,44 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+  phase5-gateway:
+    profiles: [test]
+    <<: *app
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      args: {SERVICE_PATH: api-gateway}
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      INSTANCE_ID: phase5-gateway
+      REDIS_URL: redis://redis:6379
+      SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+      FOUNDATION_PROBES_ENABLED: "false"
+      GATEWAY_HEALTH_SERVICES: identity,catalog,order
+    depends_on:
+      redis: {condition: service_healthy}
+      identity-service: {condition: service_healthy}
+      catalog-service: {condition: service_healthy}
+      order-service: {condition: service_healthy}
+  phase5-integration:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: services/identity-service/Dockerfile
+      args: {SERVICE_PATH: services/identity-service}
+    command: [node, scripts/phase5-integration.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      APP_BASE_URL: http://phase5-gateway:5000
+      MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
+    depends_on:
+      phase5-gateway: {condition: service_healthy}
 networks:
   private:
     driver: bridge
