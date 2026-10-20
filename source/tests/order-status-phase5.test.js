@@ -107,3 +107,61 @@ test('zero-value delivered order is marked credited without ledger event', async
   assert.equal(order.loyaltyCredited, true);
   assert.equal(order.loyalty.pointsEarned, 0);
 });
+
+test('cancelling a confirmed order compensates coupon, points and inventory', async () => {
+  const order = orderFixture('CONFIRMED');
+  order.workflowStatus = 'CONFIRMED';
+  order.inventoryReservationId = 'reservation-1';
+  order.coupon = {
+    couponId: 'coupon-1', code: 'SAVE1', status: 'APPLIED'
+  };
+  order.loyalty = {
+    pointsUsed: 30, pointsEarned: 0, redeemStatus: 'COMMITTED'
+  };
+  order.payment = {method: 'SIMULATED_ONLINE', status: 'PENDING'};
+
+  const outbox = [];
+  let couponUpdate;
+  const service = createOrderStatusService({
+    connection: {transaction: handler => handler({})},
+    Order: {findById: () => ({session: async () => order})},
+    Coupon: {
+      async updateOne(filter, update) { couponUpdate = {filter, update}; }
+    },
+    Outbox: {async create(rows) { outbox.push(...rows); }},
+    loyaltyService: {
+      async refundRedemption(currentOrder) {
+        currentOrder.loyalty.redeemStatus = 'REFUNDED';
+        return {
+          _id: {toString: () => randomUUID()},
+          type: 'REFUND', points: 30, balanceAfter: 100
+        };
+      }
+    }
+  });
+
+  await service.update({
+    orderId: order._id,
+    status: 'CANCELLED',
+    note: 'Customer requested cancellation',
+    updatedBy: 'admin-1',
+    correlationId: 'request-cancel'
+  });
+
+  assert.equal(order.status, 'CANCELLED');
+  assert.equal(order.workflowStatus, 'REJECTED');
+  assert.equal(order.coupon.status, 'RELEASED');
+  assert.equal(order.loyalty.redeemStatus, 'REFUNDED');
+  assert.equal(order.payment.status, 'FAILED');
+  assert.deepEqual(couponUpdate, {
+    filter: {_id: 'coupon-1', usedCount: {$gt: 0}},
+    update: {$inc: {usedCount: -1}}
+  });
+  assert.deepEqual(outbox.map(row => row.topic), [
+    'orders.status-changed.v1',
+    'orders.cancelled.v1',
+    'inventory.release-requested.v1',
+    'loyalty.changed.v1'
+  ]);
+  for (const row of outbox) validateEvent(row.topic, row.payload);
+});

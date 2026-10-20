@@ -168,9 +168,11 @@ export function createInventoryService({
       );
     }
 
-    if (reservation.status !== 'RESERVED') {
+    if (!['RESERVED', 'COMMITTED'].includes(reservation.status)) {
       return reservation;
     }
+
+    const wasCommitted = reservation.status === 'COMMITTED';
 
     const productIds = [
       ...new Set(
@@ -206,10 +208,14 @@ export function createInventoryService({
         );
       }
 
-      variant.reservedStock = Math.max(
-        0,
-        variant.reservedStock - item.quantity
-      );
+      if (wasCommitted) {
+        variant.stock += item.quantity;
+      } else {
+        variant.reservedStock = Math.max(
+          0,
+          variant.reservedStock - item.quantity
+        );
+      }
     }
 
     await Promise.all(

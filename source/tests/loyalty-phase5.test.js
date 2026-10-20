@@ -178,3 +178,32 @@ test('failed Saga reverses redeem, restores balance and records one refund', asy
   assert.equal(refundRows[0].type, 'REFUND');
   assert.equal(refundRows[0].balanceAfter, 100);
 });
+
+test('cancelling a confirmed order also reverses its committed redemption', async () => {
+  let redemptionFilter;
+  const order = {
+    _id: 'order-2', orderNumber: 'ORD-20261018-DEF456', userId: 'user-1',
+    loyalty: {pointsUsed: 20, redeemStatus: 'COMMITTED'}
+  };
+  const service = createLoyaltyService({
+    LoyaltyAccount: {
+      async findOneAndUpdate() { return {pointsBalance: 90}; }
+    },
+    LoyaltyTransaction: {
+      async findOneAndUpdate(filter) {
+        redemptionFilter = filter;
+        return {status: 'REVERSED'};
+      },
+      async create(rows) { return rows; }
+    }
+  });
+
+  const refund = await service.refundRedemption(order, {});
+
+  assert.deepEqual(redemptionFilter, {
+    orderId: 'order-2', type: 'REDEEM', status: 'COMMITTED'
+  });
+  assert.equal(order.loyalty.redeemStatus, 'REFUNDED');
+  assert.equal(refund.type, 'REFUND');
+  assert.equal(refund.balanceAfter, 90);
+});

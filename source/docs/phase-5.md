@@ -159,6 +159,12 @@ CONFIRMED -> SHIPPING -> DELIVERED
 PENDING hoặc CONFIRMED -> CANCELLED
 ```
 
+Khi admin hủy đơn, Order Service chạy compensation trong cùng transaction:
+hoàn coupon, hoàn điểm đã reserve/commit, đánh dấu workflow đã dừng và ghi các
+outbox event hủy đơn/thay đổi trạng thái. Nếu đơn đã giữ hoặc đã trừ tồn kho,
+Catalog Service nhận `inventory.release-requested.v1` để nhả phần giữ hoặc cộng
+lại tồn kho; consumer vẫn idempotent khi nhận event lặp.
+
 API nghiệp vụ hiện có để Phase 7 gắn vào màn hình quản trị:
 
 ```http
@@ -240,7 +246,7 @@ npm run phase5:integration
 
 Kết quả xác nhận cuối Phase 5:
 
-- `npm test`: 70/70 test đạt.
+- `npm test`: 73/73 test đạt.
 - `npm run lint`: đạt.
 - `npm run build`: đạt.
 - `npm run phase5:integration`: đạt toàn bộ luồng guest activation, order

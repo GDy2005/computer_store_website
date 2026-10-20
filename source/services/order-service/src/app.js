@@ -85,6 +85,7 @@ export function buildApp({
   const orderStatusService = createOrderStatusService({
     connection,
     Order: models.Order,
+    Coupon: models.Coupon,
     Outbox: models.Outbox,
     loyaltyService
   });

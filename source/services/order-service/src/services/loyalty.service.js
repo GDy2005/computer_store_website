@@ -119,11 +119,15 @@ export function createLoyaltyService({
   }
 
   async function refundRedemption(order, session) {
-    if (!order.loyalty?.pointsUsed || order.loyalty.redeemStatus !== 'PENDING') {
+    const redeemStatus = order.loyalty?.redeemStatus;
+    if (
+      !order.loyalty?.pointsUsed ||
+      !['PENDING', 'COMMITTED'].includes(redeemStatus)
+    ) {
       return null;
     }
     const redemption = await LoyaltyTransaction.findOneAndUpdate(
-      {orderId: order._id, type: 'REDEEM', status: 'PENDING'},
+      {orderId: order._id, type: 'REDEEM', status: redeemStatus},
       {$set: {status: 'REVERSED'}},
       {new: true, session}
     );

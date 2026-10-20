@@ -11,7 +11,7 @@ export function createRatingService({
   Outbox,
   identityClient
 }) {
-  async function getSummary(productId) {
+  async function getSummary(productId, userId = null) {
     const product = await Product.findOne({
       _id: productId,
       isActive: true
@@ -27,15 +27,21 @@ export function createRatingService({
       );
     }
 
-    const distribution = await Rating.aggregate([
-      {$match: {productId: product._id}},
-      {$group: {_id: '$stars', count: {$sum: 1}}},
-      {$sort: {_id: -1}}
+    const [distribution, userRating] = await Promise.all([
+      Rating.aggregate([
+        {$match: {productId: product._id}},
+        {$group: {_id: '$stars', count: {$sum: 1}}},
+        {$sort: {_id: -1}}
+      ]),
+      userId
+        ? Rating.findOne({productId: product._id, userId}).lean()
+        : null
     ]);
 
     return {
       averageRating: product.averageRating,
       ratingCount: product.ratingCount,
+      myRating: userRating?.stars || null,
       distribution: Object.fromEntries(
         distribution.map(item => [
           String(item._id),

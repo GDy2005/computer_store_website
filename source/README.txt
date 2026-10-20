@@ -1,4 +1,4 @@
-COMPUTER STORE — PHASE 1 TO PHASE 4
+COMPUTER STORE — PHASE 1 TO PHASE 6
 
 Architecture: React frontend, Nginx, two API Gateway replicas, six Node.js
 microservices, Kafka, MongoDB replica set, Redis and Elasticsearch.
@@ -56,6 +56,8 @@ VERIFY (Node >= 22.12)
   npm run build
   npm run smoke
   npm run order:integration
+  npm run phase5:integration
+  npm run phase6:integration
 
 Useful Docker checks:
   docker compose ps -a
@@ -71,14 +73,17 @@ PHASE STATUS
            Elasticsearch Search Service synchronized through Kafka.
   Phase 4: guest/user cart, coupon, checkout, guest account resolution,
            Kafka inventory Saga, order confirmation email and responsive UI.
-  Phase 5: customer order history/detail, order lifecycle and loyalty are next.
+  Phase 5: customer order history/detail, status history, guest activation,
+           loyalty ledger/redeem/earn and order/loyalty events.
+  Phase 6: guest/user comments, authenticated rating, cached average rating,
+           Kafka-to-Socket.IO realtime updates and responsive feedback UI.
 
 The current product images are placeholders. Replace the image URLs/publicIds
 in services/catalog-service/src/seeds/data/products.json or use the protected
 Cloudinary upload API after configuring credentials. Real Google OAuth and SMTP
 delivery also require local credentials in .env.
 
-Read docs/phase-1.md through docs/phase-4.md for ownership,
+Read docs/phase-1.md through docs/phase-6.md for ownership,
 commands, API checks and remaining limitations.
 
 PERSISTENCE

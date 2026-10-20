@@ -28,7 +28,7 @@ const healthServiceNames = (
   .map(name => name.trim())
   .filter(name => serviceUrls[name]);
 
-export function buildApp(redis) {
+export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   const app = express();
   app.set('trust proxy', 1);
   app.use((req, res, next) => { req.requestId = randomUUID(); res.set('x-request-id', req.requestId); res.set('x-gateway-instance', process.env.INSTANCE_ID || 'gateway'); next(); });
@@ -37,7 +37,12 @@ export function buildApp(redis) {
     try {
       await redis.ping();
       const checks = await Promise.all(healthServiceNames.map(async name => { const url = serviceUrls[name]; const response = await fetch(`${url}/health/ready`, {signal:AbortSignal.timeout(5000)}); return {name,ready:response.ok}; }));
-      const ready = checks.every(check=>check.ready); res.status(ready ? 200 : 503).json({success:ready,data:{services:checks}});
+      const realtime = isRealtimeReady();
+      const ready = checks.every(check=>check.ready) && realtime;
+      res.status(ready ? 200 : 503).json({
+        success: ready,
+        data: {services: checks, realtime}
+      });
     } catch(error) { next(error); }
   });
   app.use(session({store:new RedisStore({client:redis,prefix:'session:'}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:3600000}}));

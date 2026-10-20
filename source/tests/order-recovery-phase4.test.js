@@ -141,6 +141,37 @@ test('inventory release restores reserved stock once without reducing stock', as
   assert.equal(reservation.status, 'RELEASED');
 });
 
+test('inventory release restocks committed inventory exactly once', async () => {
+  const variant = {stock: 7, reservedStock: 0};
+  const reservation = {
+    status: 'COMMITTED',
+    items: [{productId: 'product-1', variantId: 'variant-1', quantity: 3}],
+    async save() {}
+  };
+  const service = createInventoryService({
+    InventoryReservation: {
+      findOne: () => ({session: async () => reservation})
+    },
+    Product: {find: () => ({session: async () => [{
+      _id: 'product-1',
+      variants: {id: () => variant},
+      async save() {}
+    }]})}
+  });
+  const event = {payload: {
+    orderId: 'order-1',
+    reservationId: 'reservation-1',
+    reason: 'Order cancelled'
+  }};
+
+  await service.release(event, {});
+  await service.release(event, {});
+
+  assert.equal(variant.stock, 10);
+  assert.equal(variant.reservedStock, 0);
+  assert.equal(reservation.status, 'RELEASED');
+});
+
 test('insufficient inventory rejects the whole order without partially reserving items', async () => {
   const productId = '507f1f77bcf86cd799439011';
   const firstId = '507f191e810c19729de860ea';

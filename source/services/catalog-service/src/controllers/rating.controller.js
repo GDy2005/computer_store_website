@@ -6,7 +6,8 @@ export function createRatingController({
       try {
         const data =
           await ratingService.getSummary(
-            req.params.id
+            req.params.id,
+            req.context.userId
           );
 
         res.json({success: true, data});

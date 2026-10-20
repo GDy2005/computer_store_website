@@ -25,6 +25,7 @@ import {
 } from '../../features/products/productFormat.js';
 import {cartErrorMessage} from '../../features/cart/cartApi.js';
 import {useCart} from '../../features/cart/CartContext.jsx';
+import ProductFeedback from '../../features/feedback/ProductFeedback.jsx';
 
 export default function ProductDetailPage() {
   const {slug} = useParams();
@@ -223,6 +224,15 @@ export default function ProductDetailPage() {
           </Stack>
         )}
       </Paper>
+
+      <ProductFeedback
+        productId={product._id}
+        onRatingChange={summary => setProduct(current => ({
+          ...current,
+          averageRating: summary.averageRating,
+          ratingCount: summary.ratingCount
+        }))}
+      />
     </Stack>
   );
 }
