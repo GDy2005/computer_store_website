@@ -55,6 +55,8 @@ VERIFY (Node >= 22.12)
   npm test
   npm run build
   npm run smoke
+  npm run auth:integration
+  npm run notification:integration
   npm run order:integration
   npm run phase5:integration
   npm run phase6:integration
