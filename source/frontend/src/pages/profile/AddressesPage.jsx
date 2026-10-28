@@ -11,6 +11,7 @@ export default function AddressesPage() {
   const [form,setForm] = useState(emptyForm);
   const [editingId,setEditingId] = useState('');
   const [loading,setLoading] = useState(true);
+  const [submitting,setSubmitting] = useState(false);
   const [error,setError] = useState('');
 
   const load = useCallback(async () => {
@@ -39,7 +40,9 @@ export default function AddressesPage() {
 
   async function submit(event) {
     event.preventDefault();
+    if (submitting) return;
     try {
+      setSubmitting(true);
       setError('');
       const payload = {
         ...form,
@@ -54,6 +57,8 @@ export default function AddressesPage() {
       await load();
     } catch (requestError) {
       setError(getApiMessage(requestError, 'Không thể lưu địa chỉ.'));
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -103,7 +108,7 @@ export default function AddressesPage() {
             <TextField key={name} label={label} required={name !== 'label'} value={form[name]} onChange={event => setForm({...form,[name]:event.target.value})}/>
           ))}
           <Stack direction="row" gap={1}>
-            <Button type="submit" variant="contained">{editingId ? 'Lưu địa chỉ' : 'Thêm địa chỉ'}</Button>
+            <Button type="submit" variant="contained" disabled={submitting}>{submitting ? 'Đang lưu…' : editingId ? 'Lưu địa chỉ' : 'Thêm địa chỉ'}</Button>
             {editingId && <Button onClick={resetForm}>Hủy</Button>}
           </Stack>
         </Stack>
