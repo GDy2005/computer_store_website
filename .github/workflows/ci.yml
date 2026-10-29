@@ -1,4 +1,4 @@
-name: Foundation and Phase 2 CI
+name: CI
 
 on:
   push:
@@ -8,9 +8,10 @@ permissions:
   contents: read
 
 jobs:
-  foundation:
+  quality-and-integration:
+    name: Quality and integration
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     defaults:
       run:
         working-directory: source
@@ -39,10 +40,10 @@ jobs:
         run: npm run build
 
       - name: Validate Compose
-        run: docker compose config --quiet
+        run: docker compose --profile test config --quiet
 
       - name: Build containers
-        run: docker compose build
+        run: docker compose --profile test build
 
       - name: Start stack
         run: docker compose up -d
@@ -58,6 +59,29 @@ jobs:
 
       - name: Run notification integration test
         run: npm run notification:integration
+
+      - name: Run order Saga integration test
+        run: npm run order:integration
+
+      - name: Run system integration test
+        run: npm run system:integration
+
+      - name: Capture CI evidence
+        if: ${{ always() }}
+        run: |
+          mkdir -p Bonus/evidence/ci
+          docker compose ps -a > Bonus/evidence/ci/compose-ps.txt 2>&1 || true
+          docker compose exec -T kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server kafka:9092 --describe --all-groups > Bonus/evidence/ci/kafka-consumer-groups.txt 2>&1 || true
+          docker compose exec -T elasticsearch curl -s http://localhost:9200/products_v1/_count > Bonus/evidence/ci/elasticsearch-count.json 2>&1 || true
+          curl -fsS http://localhost/api/v1/foundation/status > Bonus/evidence/ci/foundation-status.json 2>&1 || true
+
+      - name: Upload CI evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evidence
+          path: source/Bonus/evidence/ci
+          if-no-files-found: warn
 
       - name: Capture Compose diagnostics
         if: ${{ always() }}
