@@ -26,6 +26,16 @@ test('Nginx and realtime Gateway are configured for horizontal scaling', () => {
   assert.match(realtime, /groupId: 'realtime-gateway-group'/);
 });
 
+test('event integration waits for the six Kafka services and excludes stateless AI', () => {
+  const integration = read('../scripts/event-integration.js');
+
+  assert.match(
+    integration,
+    /\['identity','catalog','order','notification','analytics','search'\]/
+  );
+  assert.doesNotMatch(integration, /data\.every\(service/);
+});
+
 test('demo catalog satisfies the submission product baseline', () => {
   const products = JSON.parse(read('../services/catalog-service/src/seeds/data/products.json'));
 
@@ -39,6 +49,11 @@ test('CI and bonus evidence cover the final system checks', () => {
   const bonus = read('../Bonus/README.md');
   const packageJson = JSON.parse(read('../package.json'));
 
+  assert.match(workflow, /^  lint:/m);
+  assert.match(workflow, /^  unit-tests:/m);
+  assert.match(workflow, /^  frontend-build:/m);
+  assert.match(workflow, /^  docker-integration:/m);
+  assert.match(workflow, /needs: \[lint, unit-tests, frontend-build\]/);
   assert.match(workflow, /Run system integration test/);
   assert.match(workflow, /name: ci-evidence/);
   assert.match(workflow, /upload-artifact@v4/);

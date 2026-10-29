@@ -7,65 +7,111 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  quality-and-integration:
-    name: Quality and integration
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: source
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: source/package-lock.json
-
       - name: Install dependencies
         run: npm ci --ignore-scripts
-
-      - name: Lint
+      - name: Run ESLint
         run: npm run lint
 
-      - name: Test
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: source
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run automated tests
         run: npm test
 
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: source
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
       - name: Build frontend
         run: npm run build
 
+  docker-integration:
+    name: Docker integration
+    needs: [lint, unit-tests, frontend-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: source
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
       - name: Validate Compose
         run: docker compose --profile test config --quiet
-
       - name: Build containers
         run: docker compose --profile test build
-
       - name: Start stack
         run: docker compose up -d
-
       - name: Run smoke tests
         run: npm run smoke
-
       - name: Run event integration test
         run: docker compose exec -T identity-service node scripts/event-integration.js
-
       - name: Run authentication integration test
         run: npm run auth:integration
-
       - name: Run notification integration test
         run: npm run notification:integration
-
       - name: Run order Saga integration test
         run: npm run order:integration
-
       - name: Run system integration test
         run: npm run system:integration
-
       - name: Capture CI evidence
         if: ${{ always() }}
         run: |
@@ -74,7 +120,6 @@ jobs:
           docker compose exec -T kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server kafka:9092 --describe --all-groups > Bonus/evidence/ci/kafka-consumer-groups.txt 2>&1 || true
           docker compose exec -T elasticsearch curl -s http://localhost:9200/products_v1/_count > Bonus/evidence/ci/elasticsearch-count.json 2>&1 || true
           curl -fsS http://localhost/api/v1/foundation/status > Bonus/evidence/ci/foundation-status.json 2>&1 || true
-
       - name: Upload CI evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -82,13 +127,11 @@ jobs:
           name: ci-evidence
           path: source/Bonus/evidence/ci
           if-no-files-found: warn
-
       - name: Capture Compose diagnostics
         if: ${{ always() }}
         run: |
           docker compose ps -a || true
           docker compose logs --no-color || true
-
       - name: Stop Compose stack
         if: ${{ always() }}
         run: docker compose down --volumes --remove-orphans

@@ -36,7 +36,11 @@ The .env file is ignored by Git; keep credentials local and commit only
 the .env.example template when documenting new environment variables.
 
 RUN
-  docker compose up -d --build
+  docker compose up -d
+
+This is the only command required to build missing images and start the full
+application. Initialization, seed and reindex jobs finish with `Exited (0)`;
+this is expected and does not indicate a failure.
 
 Then open:
   http://localhost
