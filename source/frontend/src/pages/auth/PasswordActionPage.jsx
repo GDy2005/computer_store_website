@@ -17,6 +17,10 @@ export default function PasswordActionPage({activation=false}) {
 
   async function submit(event) {
     event.preventDefault();
+    if (password.length < 8) {
+      setError('Mật khẩu cần ít nhất 8 ký tự.');
+      return;
+    }
     if (password !== confirmation) {
       setError('Mật khẩu xác nhận không khớp.');
       return;
