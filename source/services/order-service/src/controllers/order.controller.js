@@ -3,8 +3,7 @@ export function createOrderController({
   couponService,
   checkoutService,
   customerOrderService,
-  loyaltyService,
-  orderStatusService
+  loyaltyService
 }) {
   return {
     async getCart(req, res, next) {
@@ -208,29 +207,6 @@ export function createOrderController({
             transactions: result.transactions
           },
           meta: result.meta
-        });
-      } catch (error) {
-        next(error);
-      }
-    },
-
-    async updateOrderStatus(req, res, next) {
-      try {
-        const order = await orderStatusService.update({
-          orderId: req.params.id,
-          status: req.body.status,
-          note: req.body.note,
-          updatedBy: req.context.userId,
-          correlationId: req.context.requestId
-        });
-        res.json({
-          success: true,
-          data: {
-            orderNumber: order.orderNumber,
-            status: order.status,
-            loyaltyCredited: order.loyaltyCredited,
-            pointsEarned: order.loyalty.pointsEarned
-          }
         });
       } catch (error) {
         next(error);

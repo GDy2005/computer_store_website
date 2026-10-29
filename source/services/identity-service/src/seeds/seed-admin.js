@@ -5,6 +5,10 @@ import {
   getUserModel
 } from '../models/user.model.js';
 
+import {
+  enqueueUserCreated
+} from '../events/user.events.js';
+
 const email = process.env.ADMIN_EMAIL
   ?.trim()
   .toLowerCase();
@@ -39,30 +43,70 @@ const connection = await mongoose
 
 try {
   const User = getUserModel(connection);
-  await User.init();
+  const SeedOutbox = connection.model(
+    'SeedOutbox',
+    new mongoose.Schema(
+      {
+        eventId: {type: String, required: true, unique: true},
+        topic: {type: String, required: true},
+        key: {type: String, required: true},
+        payload: {type: mongoose.Schema.Types.Mixed, required: true},
+        status: {type: String, default: 'PENDING'},
+        attempts: {type: Number, default: 0},
+        nextAttemptAt: {type: Date, default: Date.now},
+        createdAt: {type: Date, default: Date.now}
+      },
+      {versionKey: false}
+    ),
+    'outbox_events'
+  );
 
-  const existing = await User.findOne({email});
+  await Promise.all([User.init(), SeedOutbox.init()]);
 
-  if (existing && existing.role !== 'ADMIN') {
-    throw new Error(
-      'ADMIN_EMAIL belongs to a non-admin account'
-    );
-  }
+  let created = false;
 
-  if (!existing) {
-    await User.create({
-      email,
-      passwordHash: await bcrypt.hash(password, 12),
-      fullName: 'System Administrator',
-      role: 'ADMIN',
-      accountStatus: 'ACTIVE',
-      isBanned: false
-    });
+  await connection.transaction(async session => {
+    let admin = await User.findOne({email}).session(session);
 
-    console.log('Admin created');
-  } else {
-    console.log('Admin already exists');
-  }
+    if (admin && admin.role !== 'ADMIN') {
+      throw new Error(
+        'ADMIN_EMAIL belongs to a non-admin account'
+      );
+    }
+
+    if (!admin) {
+      [admin] = await User.create(
+        [
+          {
+            email,
+            passwordHash: await bcrypt.hash(password, 12),
+            fullName: 'System Administrator',
+            role: 'ADMIN',
+            accountStatus: 'ACTIVE',
+            isBanned: false
+          }
+        ],
+        {session}
+      );
+      created = true;
+    }
+
+    const eventExists = await SeedOutbox.exists({
+      topic: 'users.created.v1',
+      'payload.payload.userId': admin._id.toString()
+    }).session(session);
+
+    if (!eventExists) {
+      await enqueueUserCreated({
+        Outbox: SeedOutbox,
+        user: admin,
+        correlationId: 'identity-admin-seed',
+        session
+      });
+    }
+  });
+
+  console.log(created ? 'Admin created' : 'Admin already exists');
 } finally {
   await connection.close();
 }

@@ -95,3 +95,35 @@ test('email worker stops retrying after five failed attempts', async () => {
   assert.equal(update[1].$set.status, 'FAILED');
   assert.equal(update[1].$set.lastError, 'smtp unavailable');
 });
+
+test('two email worker replicas cannot claim the same job', async () => {
+  let claimed = false;
+  let deliveries = 0;
+  const EmailJob = {
+    async findOneAndUpdate() {
+      if (claimed) return null;
+      claimed = true;
+      return {
+        _id: 'shared-job',
+        attempts: 1,
+        recipientEmail: 'user@example.com',
+        template: 'PASSWORD_RESET',
+        templateData: {}
+      };
+    },
+    async updateOne() {}
+  };
+  const emailService = {
+    async send() { deliveries += 1; }
+  };
+  const first = createEmailWorker({EmailJob, emailService});
+  const second = createEmailWorker({EmailJob, emailService});
+
+  const results = await Promise.all([
+    first.processOne(),
+    second.processOne()
+  ]);
+
+  assert.equal(deliveries, 1);
+  assert.deepEqual(results.sort(), [false, true]);
+});

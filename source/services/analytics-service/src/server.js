@@ -1,4 +1,11 @@
 import {startService} from '@store/service-runtime';
 import {buildApp} from './app.js';
+import {configureAnalyticsRuntime} from './analytics.runtime.js';
 import {handleProbe} from './events/handlers.js';
-await startService('analytics-service', buildApp, handleProbe);
+
+await startService(
+  'analytics-service',
+  buildApp,
+  handleProbe,
+  {configure: configureAnalyticsRuntime}
+);

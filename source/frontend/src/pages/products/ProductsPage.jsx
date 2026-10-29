@@ -183,7 +183,7 @@ export default function ProductsPage() {
                 {filterOptions.brands.map(brand => <MenuItem key={brand} value={brand}>{brand}</MenuItem>)}
               </Select>
             </FormControl>
-            <Stack direction="row" spacing={1.5}>
+            <Stack direction={{xs: 'column', sm: 'row'}} spacing={1.5}>
               <TextField
                 label="Giá từ"
                 type="number"
@@ -252,6 +252,7 @@ export default function ProductsPage() {
               page={Math.min(query.page, Math.max(1, meta.totalPages))}
               onChange={changePage}
               color="primary"
+              siblingCount={0}
               showFirstButton
               showLastButton
               disabled={loading}

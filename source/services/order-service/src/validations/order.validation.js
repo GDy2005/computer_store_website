@@ -47,6 +47,16 @@ function email(value) {
   return result;
 }
 
+function couponCode(value, name = 'couponCode') {
+  const result = text(value, name, 5).toUpperCase();
+
+  if (!/^[A-Z0-9]{5}$/.test(result)) {
+    fail(`Invalid ${name}`);
+  }
+
+  return result;
+}
+
 function objectId(value, name) {
   if (
     typeof value !== 'string' ||
@@ -102,7 +112,7 @@ export const validateCoupon = middleware(body => {
   allowOnly(body, ['code']);
 
   return {
-    code: text(body.code, 'code', 50).toUpperCase()
+    code: couponCode(body.code, 'code')
   };
 });
 
@@ -121,7 +131,7 @@ export const validatePreview = middleware(body => {
 
   return {
     couponCode: body.couponCode
-      ? text(body.couponCode, 'couponCode', 50).toUpperCase()
+      ? couponCode(body.couponCode)
       : null,
     pointsToRedeem
   };
@@ -177,7 +187,7 @@ export const validatePlaceOrder = middleware(body => {
   return {
     checkoutId: body.checkoutId,
     couponCode: body.couponCode
-      ? text(body.couponCode, 'couponCode', 50).toUpperCase()
+      ? couponCode(body.couponCode)
       : null,
     paymentMethod,
     pointsToRedeem,
@@ -235,17 +245,3 @@ export function validateOrderListQuery(req, res, next) {
     next(error);
   }
 }
-
-export const validateOrderStatus = middleware(body => {
-  object(body);
-  allowOnly(body, ['status', 'note']);
-  if (!['SHIPPING', 'DELIVERED', 'CANCELLED'].includes(body.status)) {
-    fail('Invalid order status');
-  }
-  return {
-    status: body.status,
-    note: body.note === undefined || body.note === null
-      ? null
-      : text(body.note, 'note', 255)
-  };
-});

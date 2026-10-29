@@ -12,8 +12,7 @@ import {
   validatePlaceOrder,
   validatePreview,
   validateQuantity,
-  validateOrderListQuery,
-  validateOrderStatus
+  validateOrderListQuery
 } from '../validations/order.validation.js';
 
 function validateVariantId(req, res, next) {
@@ -47,26 +46,6 @@ function requireUser(req, res, next) {
     return;
   }
 
-  next();
-}
-
-function requireAdmin(req, res, next) {
-  if (!req.context?.userId) {
-    next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
-    return;
-  }
-  if (req.context.role !== 'ADMIN') {
-    next(new AppError(403, 'FORBIDDEN', 'Administrator access required'));
-    return;
-  }
-  next();
-}
-
-function validateOrderId(req, res, next) {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    next(new AppError(400, 'VALIDATION_ERROR', 'Invalid order ID'));
-    return;
-  }
   next();
 }
 
@@ -154,14 +133,6 @@ export function createOrderRouter(controller) {
     requireUser,
     validateOrderListQuery,
     controller.loyaltySummary
-  );
-
-  router.patch(
-    '/api/v1/admin/orders/:id/status',
-    requireAdmin,
-    validateOrderId,
-    validateOrderStatus,
-    controller.updateOrderStatus
   );
 
   router.get(

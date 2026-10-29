@@ -6,7 +6,7 @@ Phase 4 đã có luồng hoàn chỉnh từ giao diện đến Kafka Saga:
 
 - Guest và user đã đăng nhập đều có giỏ hàng; giỏ guest được gộp sau khi đăng nhập.
 - Catalog Service luôn tính lại giá và tồn kho, nên frontend không thể tự gửi giá sản phẩm.
-- Hai coupon seed là `WELCOME10` và `SAVE200K`.
+- Năm coupon seed theo quy tắc 5 ký tự là `HELLO`, `SAVE2`, `TECH5`, `DEAL1` và `VIP15`.
 - Checkout hỗ trợ COD và thanh toán online mô phỏng.
 - Guest checkout tự tìm hoặc tạo tài khoản theo email, đồng thời gửi email kích hoạt nếu là tài khoản mới.
 - Order Service tạo đơn và event `orders.created.v1` bằng Outbox.
@@ -36,7 +36,7 @@ Các đường dẫn dưới đây tính từ `source/`:
 | API giỏ hàng, coupon, preview, đặt đơn, trạng thái | `services/order-service/src/routes/order.routes.js` và `controllers/order.controller.js` |
 | Lưu giỏ guest/user, thêm/sửa/xóa/gộp giỏ | `services/order-service/src/models/cart.model.js` và `services/cart.service.js` |
 | Kiểm tra coupon và giữ lượt sử dụng | `services/order-service/src/services/coupon.service.js` |
-| Seed `WELCOME10`, `SAVE200K` | `services/order-service/src/seeds/seed-coupons.js` |
+| Seed 5 coupon hợp lệ | `services/order-service/src/seeds/seed-coupons.js` |
 | Tính tiền, snapshot đơn, retry checkoutId, lưu order + Outbox | `services/order-service/src/services/checkout.service.js` |
 | Model đơn, lịch sử trạng thái, index quét timeout | `services/order-service/src/models/order.model.js` |
 | Xác nhận/từ chối, hoàn coupon, bù trừ kết quả giữ kho đến muộn | `services/order-service/src/services/order-workflow.service.js` |
@@ -135,7 +135,7 @@ npm run build
 npm run order:integration
 ```
 
-`order:integration` chạy một guest checkout thật qua Nginx/Gateway, kiểm tra coupon, hai request cùng `checkoutId` gửi đồng thời, Kafka inventory Saga và tồn kho đã commit giảm đúng một sản phẩm. Mỗi lần chạy sẽ tạo một user/đơn demo, dùng một lượt `WELCOME10` và giảm tồn kho một sản phẩm. Khi kiểm tra tồn kho, nên chạy trên dữ liệu demo không có người khác đặt cùng variant.
+`order:integration` chạy một guest checkout thật qua Nginx/Gateway, kiểm tra coupon, hai request cùng `checkoutId` gửi đồng thời, Kafka inventory Saga và tồn kho đã commit giảm đúng một sản phẩm. Mỗi lần chạy sẽ tạo một user/đơn demo, dùng một lượt `HELLO` và giảm tồn kho một sản phẩm. Khi kiểm tra tồn kho, nên chạy trên dữ liệu demo không có người khác đặt cùng variant.
 
 ## Kiểm tra bằng Postman
 
@@ -176,11 +176,11 @@ POST http://localhost/api/v1/coupons/validate
 
 ```json
 {
-  "code": "WELCOME10"
+  "code": "HELLO"
 }
 ```
 
-`WELCOME10` giảm 10%, tối đa 500.000đ, đơn tối thiểu 1.000.000đ. `SAVE200K` giảm 200.000đ, đơn tối thiểu 5.000.000đ.
+`HELLO` giảm 10%. Coupon Phase 7 có đúng 5 ký tự chữ/số viết hoa và giới hạn từ 1 đến 10 lượt sử dụng.
 
 ### 4. Preview checkout
 
@@ -190,7 +190,7 @@ POST http://localhost/api/v1/checkout/preview
 
 ```json
 {
-  "couponCode": "WELCOME10"
+  "couponCode": "HELLO"
 }
 ```
 
@@ -203,7 +203,7 @@ POST http://localhost/api/v1/checkout/place-order
 ```json
 {
   "checkoutId": "GENERATE_A_NEW_UUID_V4",
-  "couponCode": "WELCOME10",
+  "couponCode": "HELLO",
   "paymentMethod": "COD",
   "customer": {
     "fullName": "Nguyen Van A",

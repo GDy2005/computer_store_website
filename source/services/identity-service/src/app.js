@@ -25,6 +25,10 @@ import {
 } from './services/internal-user.service.js';
 
 import {
+  createAdminUserService
+} from './services/admin-user.service.js';
+
+import {
   createAuthController
 } from './controllers/auth.controller.js';
 
@@ -41,6 +45,10 @@ import {
 } from './controllers/internal-user.controller.js';
 
 import {
+  createAdminUserController
+} from './controllers/admin-user.controller.js';
+
+import {
   createAuthRouter
 } from './routes/auth.routes.js';
 
@@ -55,6 +63,10 @@ import {
 import {
   createInternalUserRouter
 } from './routes/internal-user.routes.js';
+
+import {
+  createAdminUserRouter
+} from './routes/admin-user.routes.js';
 
 export function buildApp({connection, models}) {
   const router = express.Router();
@@ -91,6 +103,12 @@ export function buildApp({connection, models}) {
     User
   });
 
+  const adminUserService = createAdminUserService({
+    connection,
+    User,
+    Outbox: models.Outbox
+  });
+
   router.use(
     createAuthRouter(
       createAuthController(authService)
@@ -106,6 +124,14 @@ export function buildApp({connection, models}) {
   router.use(
     createAddressRouter(
       createAddressController(addressService)
+    )
+  );
+
+  router.use(
+    createAdminUserRouter(
+      createAdminUserController({
+        adminUserService
+      })
     )
   );
 

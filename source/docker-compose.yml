@@ -179,6 +179,7 @@ services:
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_PRODUCT_INDEX: products_v1
+      ELASTICSEARCH_REQUEST_TIMEOUT_MS: 30000
       CATALOG_SERVICE_URL: http://catalog-service:5002
       INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
     depends_on:
@@ -202,6 +203,24 @@ services:
       kafka-init: {condition: service_completed_successfully}
       elasticsearch: {condition: service_healthy}
       search-reindex: {condition: service_completed_successfully}
+  ai-service:
+    <<: *app
+    build:
+      context: .
+      dockerfile: services/ai-service/Dockerfile
+      args: {SERVICE_PATH: services/ai-service}
+    environment:
+      NODE_ENV: development
+      PORT: 5007
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+      SEARCH_SERVICE_URL: http://search-service:5006
+      AI_PROVIDER: ${AI_PROVIDER:-fallback}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      AI_PROVIDER_TIMEOUT_MS: ${AI_PROVIDER_TIMEOUT_MS:-8000}
+    depends_on:
+      search-service: {condition: service_healthy}
   order-seed:
     build:
       context: .
@@ -234,7 +253,7 @@ services:
       order-seed: {condition: service_completed_successfully}
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
-  notification-service:
+  notification-service: &notification-service
     <<: *app
     build:
       context: .
@@ -251,6 +270,8 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
     depends_on: *core-deps
+  notification-service-2:
+    <<: *notification-service
   analytics-service:
     <<: *app
     build:
@@ -281,6 +302,7 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/v1/auth/google/callback}
       SEARCH_SERVICE_URL: http://search-service:5006
+      AI_SERVICE_URL: http://ai-service:5007
     depends_on:
       redis: {condition: service_healthy}
       identity-service: {condition: service_healthy}
@@ -289,6 +311,7 @@ services:
       notification-service: {condition: service_healthy}
       analytics-service: {condition: service_healthy}
       search-service: {condition: service_healthy}
+      ai-service: {condition: service_healthy}
   gateway-2:
     <<: *app
     build:
@@ -308,6 +331,7 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/v1/auth/google/callback}
       SEARCH_SERVICE_URL: http://search-service:5006
+      AI_SERVICE_URL: http://ai-service:5007
     depends_on:
       redis: {condition: service_healthy}
       identity-service: {condition: service_healthy}
@@ -316,6 +340,7 @@ services:
       notification-service: {condition: service_healthy}
       analytics-service: {condition: service_healthy}
       search-service: {condition: service_healthy}
+      ai-service: {condition: service_healthy}
   frontend:
     build:
       context: .
@@ -342,7 +367,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-  phase5-gateway:
+  customer-orders-test-gateway:
     profiles: [test]
     <<: *app
     build:
@@ -352,7 +377,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 5000
-      INSTANCE_ID: phase5-gateway
+      INSTANCE_ID: customer-orders-test-gateway
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
@@ -364,24 +389,24 @@ services:
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
       order-service: {condition: service_healthy}
-  phase5-integration:
+  customer-orders-integration:
     profiles: [test]
     build:
       context: .
       dockerfile: services/identity-service/Dockerfile
       args: {SERVICE_PATH: services/identity-service}
-    command: [node, scripts/phase5-integration.js]
+    command: [node, scripts/customer-orders-integration.js]
     init: true
     restart: "no"
     networks: [private]
     environment:
-      APP_BASE_URL: http://phase5-gateway:5000
+      APP_BASE_URL: http://customer-orders-test-gateway:5000
       MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
-      phase5-gateway: {condition: service_healthy}
-  phase6-gateway:
+      customer-orders-test-gateway: {condition: service_healthy}
+  feedback-test-gateway:
     profiles: [test]
     <<: *app
     build:
@@ -391,7 +416,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 5000
-      INSTANCE_ID: phase6-gateway
+      INSTANCE_ID: feedback-test-gateway
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
@@ -403,22 +428,121 @@ services:
       kafka-init: {condition: service_completed_successfully}
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
-  phase6-integration:
+  feedback-realtime-integration:
     profiles: [test]
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
       args: {SERVICE_PATH: api-gateway}
-    command: [node, scripts/phase6-integration.js]
+    command: [node, scripts/feedback-realtime-integration.js]
     init: true
     restart: "no"
     networks: [private]
     environment:
-      APP_BASE_URL: http://phase6-gateway:5000
+      APP_BASE_URL: http://feedback-test-gateway:5000
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
-      phase6-gateway: {condition: service_healthy}
+      feedback-test-gateway: {condition: service_healthy}
+  admin-analytics-test-gateway:
+    profiles: [test]
+    <<: *app
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      args: {SERVICE_PATH: api-gateway}
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      INSTANCE_ID: admin-analytics-test-gateway
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+      FOUNDATION_PROBES_ENABLED: "false"
+      GATEWAY_HEALTH_SERVICES: identity,catalog,order,analytics
+    depends_on:
+      redis: {condition: service_healthy}
+      kafka-init: {condition: service_completed_successfully}
+      identity-service: {condition: service_healthy}
+      catalog-service: {condition: service_healthy}
+      order-service: {condition: service_healthy}
+      analytics-service: {condition: service_healthy}
+  admin-analytics-integration:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: services/identity-service/Dockerfile
+      args: {SERVICE_PATH: services/identity-service}
+    command: [node, scripts/admin-analytics-integration.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      APP_BASE_URL: http://admin-analytics-test-gateway:5000
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
+    depends_on:
+      admin-analytics-test-gateway: {condition: service_healthy}
+  ai-test-gateway:
+    profiles: [test]
+    <<: *app
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      args: {SERVICE_PATH: api-gateway}
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      INSTANCE_ID: ai-test-gateway
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+      FOUNDATION_PROBES_ENABLED: "false"
+      SEARCH_SERVICE_URL: http://search-service:5006
+      AI_SERVICE_URL: http://ai-service:5007
+      GATEWAY_HEALTH_SERVICES: catalog,search,ai
+    depends_on:
+      redis: {condition: service_healthy}
+      kafka-init: {condition: service_completed_successfully}
+      catalog-service: {condition: service_healthy}
+      search-service: {condition: service_healthy}
+      ai-service: {condition: service_healthy}
+  ai-integration:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: services/ai-service/Dockerfile
+      args: {SERVICE_PATH: services/ai-service}
+    command: [node, scripts/ai-integration.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      APP_BASE_URL: http://ai-test-gateway:5000
+    depends_on:
+      ai-test-gateway: {condition: service_healthy}
+  system-integration:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      args: {SERVICE_PATH: api-gateway}
+    command: [node, scripts/system-integration.js]
+    init: true
+    restart: "no"
+    networks: [private]
+    environment:
+      APP_BASE_URL: http://nginx
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_PRODUCT_INDEX: products_v1
+    depends_on:
+      nginx: {condition: service_healthy}
+      notification-service: {condition: service_healthy}
+      notification-service-2: {condition: service_healthy}
 networks:
   private:
     driver: bridge

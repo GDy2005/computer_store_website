@@ -221,7 +221,7 @@ Guest thêm cart và checkout
 -> order_db có 2 status events và 1 loyalty EARN event
 ```
 
-Script: `scripts/phase5-integration.js`. Profile `test` dùng một Gateway gọn chỉ
+Script: `scripts/customer-orders-integration.js`. Profile `test` dùng một Gateway gọn chỉ
 kiểm tra Identity, Catalog và Order; không khởi động Elasticsearch, Search,
 Analytics, frontend hoặc Gateway thứ hai. Test container đợi Gateway healthy
 rồi mới bắt đầu kiểm tra.
@@ -230,7 +230,7 @@ Chạy bằng một lệnh; Compose sẽ khởi động các dependency còn thi
 test container sau khi hoàn tất:
 
 ```powershell
-npm run phase5:integration
+npm run customer-orders:integration
 ```
 
 Script tạo một user/order demo và làm giảm tồn kho một variant. `docker-compose.yml` truyền cùng `ADMIN_EMAIL` và `ADMIN_INITIAL_PASSWORD` cho Identity Service để script đăng nhập đúng admin seed khi các giá trị được override bằng `.env`.
@@ -241,7 +241,7 @@ Script tạo một user/order demo và làm giảm tồn kho một variant. `doc
 npm test
 npm run lint
 npm run build
-npm run phase5:integration
+npm run customer-orders:integration
 ```
 
 Kết quả xác nhận cuối Phase 5:
@@ -249,5 +249,5 @@ Kết quả xác nhận cuối Phase 5:
 - `npm test`: 73/73 test đạt.
 - `npm run lint`: đạt.
 - `npm run build`: đạt.
-- `npm run phase5:integration`: đạt toàn bộ luồng guest activation, order
+- `npm run customer-orders:integration`: đạt toàn bộ luồng guest activation, order
   ownership, status history và loyalty earn.

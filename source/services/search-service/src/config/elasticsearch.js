@@ -55,7 +55,10 @@ export function createElasticsearchClient({
   baseUrl = process.env.ELASTICSEARCH_URL ||
     'http://elasticsearch:9200',
   indexName = process.env.ELASTICSEARCH_PRODUCT_INDEX ||
-    'products_v1'
+    'products_v1',
+  requestTimeoutMs = Number(
+    process.env.ELASTICSEARCH_REQUEST_TIMEOUT_MS || 10000
+  )
 } = {}) {
   const root = baseUrl.replace(/\/$/, '');
   const indexPath = `/${encodeURIComponent(indexName)}`;
@@ -74,7 +77,7 @@ export function createElasticsearchClient({
           ? {'content-type': 'application/json'}
           : undefined,
         body: body ? JSON.stringify(body) : undefined,
-        signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(requestTimeoutMs)
       });
     } catch {
       throw new AppError(

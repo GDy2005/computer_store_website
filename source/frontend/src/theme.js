@@ -14,6 +14,19 @@ export const theme = createTheme({
   },
   shape:{borderRadius:14},
   components:{
+    MuiCssBaseline:{
+      styleOverrides:{
+        body:{minWidth:320},
+        '@media (prefers-reduced-motion: reduce)':{
+          '*, *::before, *::after':{
+            animationDuration:'0.01ms !important',
+            animationIterationCount:'1 !important',
+            scrollBehavior:'auto !important',
+            transitionDuration:'0.01ms !important'
+          }
+        }
+      }
+    },
     MuiButton:{
       defaultProps:{disableElevation:true},
       styleOverrides:{root:{borderRadius:10,fontWeight:750,textTransform:'none'}}

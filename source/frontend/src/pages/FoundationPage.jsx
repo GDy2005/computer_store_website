@@ -30,7 +30,7 @@ export default function FoundationPage() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h4">Kiểm tra nền tảng Phase 1</Typography>
+      <Typography variant="h4">Kiểm tra nền tảng hệ thống</Typography>
       <Typography>Trang dành cho môi trường phát triển.</Typography>
       {error && <Alert severity="error">{error}</Alert>}
       {result && <Alert severity="info">{result}</Alert>}

@@ -74,10 +74,10 @@ assert.equal(cart.subtotal, variant.price);
 
 const coupon = await request('/api/v1/coupons/validate', {
   method: 'POST',
-  body: {code: 'welcome10'}
+  body: {code: 'hello'}
 });
 
-assert.equal(coupon.code, 'WELCOME10');
+assert.equal(coupon.code, 'HELLO');
 assert.ok(coupon.discountAmount > 0);
 
 const preview = await request('/api/v1/checkout/preview', {
@@ -94,7 +94,7 @@ assert.equal(
 );
 
 const checkoutId = randomUUID();
-const email = `phase4-${randomUUID()}@example.invalid`;
+const email = `checkout-${randomUUID()}@example.invalid`;
 const placeInput = {
   checkoutId,
   couponCode: coupon.code,
@@ -154,5 +154,5 @@ await eventually(async () => {
 }, 30000);
 
 console.log(
-  `PASS Phase 4: cart, coupon, guest checkout, idempotency and Kafka inventory Saga (${placed.orderNumber})`
+  `PASS checkout: cart, coupon, guest checkout, idempotency and Kafka inventory Saga (${placed.orderNumber})`
 );

@@ -50,7 +50,7 @@ Catalog REST -> catalog_db + Outbox -> Kafka
 | Nginx WebSocket proxy | `infra/nginx/nginx.conf` |
 | Frontend API/realtime | `frontend/src/features/feedback/feedbackApi.js`, `useProductRealtime.js` |
 | Giao diện feedback | `frontend/src/features/feedback/ProductFeedback.jsx` |
-| Integration test | `scripts/phase6-integration.js` |
+| Integration test | `scripts/feedback-realtime-integration.js` |
 
 ## Kiểm tra tự động
 
@@ -60,7 +60,7 @@ Chạy tại thư mục `source/`:
 npm test
 npm run lint
 npm run build
-npm run phase6:integration
+npm run feedback:integration
 ```
 
 Integration script tạo một guest comment và upsert rating `5` sao của tài khoản
@@ -72,7 +72,7 @@ Kết quả xác nhận cuối Phase 6:
 - `npm test`: 78/78 test đạt.
 - `npm run lint`: đạt.
 - `npm run build`: đạt.
-- `npm run phase6:integration`: kiểm tra guest comment, email privacy,
+- `npm run feedback:integration`: kiểm tra guest comment, email privacy,
   authenticated rating, average cache và Kafka → Socket.IO realtime.
 
 ## Kiểm tra thủ công trên giao diện

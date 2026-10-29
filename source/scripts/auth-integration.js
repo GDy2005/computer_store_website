@@ -4,11 +4,11 @@ import {signedContext} from '@store/validation';
 
 const gatewayOne = process.env.GATEWAY_ONE_URL || 'http://gateway-1:5000';
 const gatewayTwo = process.env.GATEWAY_TWO_URL || 'http://gateway-2:5000';
-const email = process.env.AUTH_TEST_EMAIL || `phase2-${randomUUID()}@example.invalid`;
-const oauthEmail = `phase2-google-${randomUUID()}@example.invalid`;
-const firstPassword = 'Phase2 initial password!';
-const secondPassword = 'Phase2 changed password!';
-const finalPassword = 'Phase2 reset password!';
+const email = process.env.AUTH_TEST_EMAIL || `auth-${randomUUID()}@example.invalid`;
+const oauthEmail = `auth-google-${randomUUID()}@example.invalid`;
+const firstPassword = 'Auth integration initial password!';
+const secondPassword = 'Auth integration changed password!';
+const finalPassword = 'Auth integration reset password!';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -233,7 +233,7 @@ try {
   assert(persistedGoogleUser?.socialAccounts?.[0]?.provider === 'GOOGLE', 'Google identity was not linked');
   assert(await outbox.countDocuments({key: googleUser.userId, topic: 'users.created.v1'}) === 1, 'Google user did not create exactly one user event');
 
-  console.log('PASS Phase 2 identity: admin seed, local auth, shared session, profile, addresses, password recovery and Google user resolution');
+  console.log('PASS identity: admin seed, local auth, shared session, profile, addresses, password recovery and Google user resolution');
 } finally {
   const user = userId
     ? await users.findOne({_id: new mongoose.Types.ObjectId(userId)})

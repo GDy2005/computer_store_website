@@ -1685,6 +1685,9 @@ Index tối thiểu:
 
 AI Service cung cấp chatbot tư vấn sản phẩm theo nhu cầu như ngân sách, loại sản phẩm và mục đích sử dụng.
 
+Triển khai Phase 8 giữ AI Service stateless: hội thoại tối thiểu nằm trong state tạm của frontend,
+mỗi request chỉ gửi câu hỏi hiện tại và service không sở hữu database riêng.
+
 Luồng:
 
 1. Nhận câu hỏi từ `/api/v1/ai/chat`.
@@ -1850,6 +1853,11 @@ E2E test phải quan sát được toàn chuỗi Order -> Kafka -> Catalog -> Ka
 - Seed demo data.
 - Thu thập bằng chứng CI/CD, Kafka, microservices, AI và Elasticsearch.
 - Kiểm tra `docker compose up -d` trên máy sạch.
+
+Triển khai Phase 9 dùng hai Gateway phía sau Nginx và hai replica của Notification
+Service trong cùng Kafka consumer groups. `scripts/system-integration.js` xác minh
+load balancing, Redis adapter, consumer membership, Elasticsearch, AI grounding và
+demo seed; GitHub Actions lưu các log không chứa secret vào artifact bằng chứng.
 
 ---
 

@@ -6,7 +6,8 @@ const couponSchema = new mongoose.Schema(
       type: String,
       required: true,
       uppercase: true,
-      trim: true
+      trim: true,
+      match: /^[A-Z0-9]{5}$/
     },
     discountType: {
       type: String,
@@ -31,7 +32,8 @@ const couponSchema = new mongoose.Schema(
     usageLimit: {
       type: Number,
       required: true,
-      min: 1
+      min: 1,
+      max: 10
     },
     usedCount: {
       type: Number,
@@ -48,6 +50,10 @@ const couponSchema = new mongoose.Schema(
     },
     expiresAt: {
       type: Date,
+      default: null
+    },
+    createdBy: {
+      type: String,
       default: null
     }
   },

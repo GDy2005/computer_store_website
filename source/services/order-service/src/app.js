@@ -22,6 +22,8 @@ import {
 import {createCustomerOrderService} from './services/customer-order.service.js';
 import {createLoyaltyService} from './services/loyalty.service.js';
 import {createOrderStatusService} from './services/order-status.service.js';
+import {createAdminOrderService} from './services/admin-order.service.js';
+import {createAdminCouponService} from './services/admin-coupon.service.js';
 
 import {
   createOrderController
@@ -30,6 +32,14 @@ import {
 import {
   createOrderRouter
 } from './routes/order.routes.js';
+
+import {
+  createAdminController
+} from './controllers/admin.controller.js';
+
+import {
+  createAdminRouter
+} from './routes/admin.routes.js';
 
 export function buildApp({
   connection,
@@ -90,16 +100,33 @@ export function buildApp({
     loyaltyService
   });
 
+  const adminOrderService = createAdminOrderService({
+    Order: models.Order
+  });
+
+  const adminCouponService = createAdminCouponService({
+    Coupon: models.Coupon
+  });
+
   const controller = createOrderController({
     cartService,
     couponService,
     checkoutService,
     customerOrderService,
-    loyaltyService,
-    orderStatusService
+    loyaltyService
   });
 
   router.use(createOrderRouter(controller));
+
+  router.use(
+    createAdminRouter(
+      createAdminController({
+        adminOrderService,
+        adminCouponService,
+        orderStatusService
+      })
+    )
+  );
 
   return router;
 }
