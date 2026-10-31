@@ -22,8 +22,10 @@ import {
   formatVnd,
   handleImageError
 } from '../../features/products/productFormat.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 export default function CartPage() {
+  const {t} = useLanguage();
   const {cart, loading, error: loadError, update, remove, clear} = useCart();
   const [busyVariant, setBusyVariant] = useState('');
   const [error, setError] = useState('');
@@ -41,7 +43,7 @@ export default function CartPage() {
       setError(
         cartErrorMessage(
           requestError,
-          'Không thể cập nhật số lượng.'
+          t('cart.updateError')
         )
       );
     } finally {
@@ -58,7 +60,7 @@ export default function CartPage() {
       setError(
         cartErrorMessage(
           requestError,
-          'Không thể xóa sản phẩm.'
+          t('cart.removeError')
         )
       );
     } finally {
@@ -74,7 +76,7 @@ export default function CartPage() {
       setError(
         cartErrorMessage(
           requestError,
-          'Không thể xóa giỏ hàng.'
+          t('cart.clearError')
         )
       );
     }
@@ -83,7 +85,7 @@ export default function CartPage() {
   if (loading) {
     return (
       <Box sx={{display: 'grid', minHeight: 360, placeItems: 'center'}}>
-        <CircularProgress aria-label="Đang tải giỏ hàng"/>
+        <CircularProgress aria-label={t('cart.loading')}/>
       </Box>
     );
   }
@@ -95,13 +97,13 @@ export default function CartPage() {
         <Paper variant="outlined" sx={{p: {xs: 3, md: 6}, textAlign: 'center'}}>
           <Stack spacing={2} alignItems="center">
           <Typography component="h1" variant="h4" fontWeight={850}>
-            Giỏ hàng đang trống
+            {t('cart.emptyTitle')}
           </Typography>
           <Typography color="text.secondary">
-            Hãy chọn sản phẩm và phiên bản phù hợp trước khi thanh toán.
+            {t('cart.emptyText')}
           </Typography>
           <Button component={Link} to="/products" variant="contained">
-            Xem sản phẩm
+            {t('common.viewProduct')}
           </Button>
           </Stack>
         </Paper>
@@ -119,14 +121,14 @@ export default function CartPage() {
       >
         <Box>
           <Typography component="h1" variant="h4" fontWeight={850}>
-            Giỏ hàng
+            {t('cart.title')}
           </Typography>
           <Typography color="text.secondary">
-            {cart.totalItems} sản phẩm đã chọn
+            {t('cart.selected',{count:cart.totalItems})}
           </Typography>
         </Box>
         <Button color="error" onClick={removeAll}>
-          Xóa toàn bộ
+          {t('cart.clearAll')}
         </Button>
       </Stack>
 
@@ -198,7 +200,7 @@ export default function CartPage() {
                   >
                     <Typography fontWeight={850}>{formatVnd(item.lineTotal)}</Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Còn {item.availableStock} sản phẩm
+                      {t('catalog.stock',{count:item.availableStock})}
                     </Typography>
                     <Button
                       size="small"
@@ -206,7 +208,7 @@ export default function CartPage() {
                       disabled={busy}
                       onClick={() => removeItem(item.variantId)}
                     >
-                      Xóa
+                      {t('cart.remove')}
                     </Button>
                   </Stack>
                 </Box>
@@ -218,21 +220,21 @@ export default function CartPage() {
         <Paper variant="outlined" sx={{p: 3, position: {md: 'sticky'}, top: {md: 96}}}>
           <Stack spacing={2}>
             <Typography component="h2" variant="h6" fontWeight={850}>
-              Tóm tắt đơn hàng
+              {t('cart.summary')}
             </Typography>
             <Stack direction="row" justifyContent="space-between">
-              <Typography color="text.secondary">Tạm tính</Typography>
+              <Typography color="text.secondary">{t('cart.subtotal')}</Typography>
               <Typography fontWeight={750}>{formatVnd(cart.subtotal)}</Typography>
             </Stack>
             <Divider/>
             <Typography variant="body2" color="text.secondary">
-              Phí giao hàng và mã giảm giá sẽ được tính lại ở bước checkout.
+              {t('cart.recalculated')}
             </Typography>
             <Button component={Link} to="/checkout" variant="contained" size="large">
-              Tiến hành thanh toán
+              {t('cart.checkout')}
             </Button>
             <Button component={Link} to="/products">
-              Tiếp tục mua sắm
+              {t('cart.continue')}
             </Button>
           </Stack>
         </Paper>

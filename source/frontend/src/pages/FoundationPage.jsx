@@ -1,8 +1,10 @@
 import {useEffect,useState} from 'react';
 import axios from 'axios';
 import {Alert,Button,Paper,Stack,Typography} from '@mui/material';
+import {useLanguage} from '../features/i18n/LanguageContext.jsx';
 
 export default function FoundationPage() {
+  const {t} = useLanguage();
   const [data,setData] = useState(null);
   const [error,setError] = useState('');
   const [result,setResult] = useState('');
@@ -12,7 +14,7 @@ export default function FoundationPage() {
       setData(response.data.data);
       setError('');
     })
-    .catch(() => setError('Chưa kết nối được hệ thống.'));
+    .catch(() => setError(t('foundation.connectError')));
 
   useEffect(() => {
     refresh();
@@ -21,22 +23,22 @@ export default function FoundationPage() {
   async function probe() {
     try {
       const response = await axios.post('/api/v1/foundation/identity/probes', {message:'Frontend foundation check',mode:'normal'});
-      setResult(`Đã gửi kiểm tra: ${response.data.data.probeId}`);
+      setResult(t('foundation.probeSent',{id:response.data.data.probeId}));
       setTimeout(refresh, 2000);
     } catch {
-      setError('Không gửi được kiểm tra.');
+      setError(t('foundation.probeError'));
     }
   }
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h4">Kiểm tra nền tảng hệ thống</Typography>
-      <Typography>Trang dành cho môi trường phát triển.</Typography>
+      <Typography variant="h4">{t('foundation.title')}</Typography>
+      <Typography>{t('foundation.description')}</Typography>
       {error && <Alert severity="error">{error}</Alert>}
       {result && <Alert severity="info">{result}</Alert>}
       <Stack direction={{xs:'column',sm:'row'}} spacing={2} alignItems={{sm:'flex-start'}}>
-        <Button variant="contained" onClick={probe}>Kiểm tra event</Button>
-        <Button onClick={refresh}>Làm mới</Button>
+        <Button variant="contained" onClick={probe}>{t('foundation.probe')}</Button>
+        <Button onClick={refresh}>{t('foundation.refresh')}</Button>
       </Stack>
       {data?.map(service => (
         <Paper key={service.service} sx={{p:2}}>

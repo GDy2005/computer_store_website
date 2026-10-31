@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {resolve4} from 'node:dns/promises';
 import {createServer} from 'node:http';
 import {randomUUID} from 'node:crypto';
 
@@ -152,6 +153,24 @@ await eventually(async () => {
   }
 }, 'Nginx/Gateway stack did not become ready', 180000);
 
+const scaledServices = [
+  'gateway',
+  'identity-service',
+  'catalog-service',
+  'order-service',
+  'notification-service',
+  'analytics-service',
+  'search-service',
+  'ai-service'
+];
+for (const service of scaledServices) {
+  await eventually(async () => {
+    const addresses = [...new Set(await resolve4(service))];
+    return addresses.length >= 2 ? addresses : false;
+  }, `${service} did not expose at least two replica addresses`);
+}
+console.log('PASS Compose DNS exposes at least two replicas for every backend service and Gateway');
+
 const gatewayInstances = new Set();
 for (let index = 0; index < 12; index++) {
   const {response} = await request('/health/live', {
@@ -159,8 +178,9 @@ for (let index = 0; index < 12; index++) {
   });
   gatewayInstances.add(response.headers.get('x-gateway-instance'));
 }
-assert.deepEqual(gatewayInstances, new Set(['gateway-1', 'gateway-2']));
-console.log('PASS Nginx distributed traffic across gateway-1 and gateway-2');
+assert.equal(gatewayInstances.size, 2);
+assert.ok([...gatewayInstances].every(Boolean));
+console.log(`PASS Nginx distributed traffic across Gateway replicas: ${[...gatewayInstances].join(', ')}`);
 
 const foundation = (await request('/api/v1/foundation/status')).body.data;
 assert.equal(foundation.length, 7);
@@ -211,9 +231,14 @@ const admin = kafka.admin();
 await admin.connect();
 try {
   const groupIds = [
+    'identity-service-foundation-group',
+    'catalog-service-foundation-group',
+    'order-service-foundation-group',
+    'notification-service-foundation-group',
+    'analytics-service-foundation-group',
+    'search-service-foundation-group',
     'notification-email-group',
-    'notification-order-group',
-    'notification-service-foundation-group'
+    'notification-order-group'
   ];
   const groups = await eventually(async () => {
     const description = await admin.describeGroups(groupIds);
@@ -225,7 +250,7 @@ try {
   for (const group of groups) {
     assert.ok(group.members.length >= 2);
   }
-  console.log('PASS notification Kafka consumer groups have at least two active members');
+  console.log('PASS Kafka-backed service groups have at least two active members');
 } finally {
   await admin.disconnect();
 }

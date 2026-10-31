@@ -30,10 +30,13 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage.jsx';
 import AdminCouponsPage from './pages/admin/AdminCouponsPage.jsx';
 import ChatWidget from './features/chatbot/ChatWidget.jsx';
+import {useLanguage} from './features/i18n/LanguageContext.jsx';
 
 export default function App() {
   const {pathname} = useLocation();
+  const {t} = useLanguage();
   const adminPage = pathname === '/admin' || pathname.startsWith('/admin/');
+  const homePage = pathname === '/';
 
   return (
     <Box sx={{display:'flex',minHeight:'100vh',flexDirection:'column'}}>
@@ -57,10 +60,16 @@ export default function App() {
           '&:focus':{transform:'translateY(0)'}
         }}
       >
-        Bỏ qua điều hướng
+        {t('a11y.skip')}
       </Box>
       <SiteHeader/>
-      <Container id="main-content" tabIndex={-1} component="main" maxWidth={adminPage ? 'xl' : 'lg'} sx={{flexGrow:1,py:{xs:3,sm:4,md:7},outline:'none'}}>
+      <Container
+        id="main-content"
+        tabIndex={-1}
+        component="main"
+        maxWidth={adminPage || homePage ? 'xl' : 'lg'}
+        sx={{flexGrow:1,py:homePage ? {xs:2,sm:3,md:4} : {xs:3,sm:4,md:7},outline:'none'}}
+      >
         <Routes>
           <Route path="/" element={<HomePage/>}/>
           <Route path="/products" element={<ProductsPage/>}/>
@@ -90,7 +99,7 @@ export default function App() {
             <Route path="orders/:id" element={<AdminOrderDetailPage/>}/>
             <Route path="coupons" element={<AdminCouponsPage/>}/>
           </Route>
-          <Route path="*" element={<Alert severity="info">Không tìm thấy trang.</Alert>}/>
+          <Route path="*" element={<Alert severity="info">{t('common.notFound')}</Alert>}/>
         </Routes>
       </Container>
       <SiteFooter/>

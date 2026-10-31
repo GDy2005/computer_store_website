@@ -3,9 +3,11 @@ import axios from 'axios';
 import {Alert,Button,Stack,TextField,Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 import {getApiMessage} from '../../features/auth/AuthContext.jsx';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 import AuthCard from './AuthCard.jsx';
 
 export default function ForgotPasswordPage() {
+  const {t} = useLanguage();
   const [email,setEmail] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [error,setError] = useState('');
@@ -19,15 +21,15 @@ export default function ForgotPasswordPage() {
       await axios.post('/api/v1/auth/forgot-password', {email});
       setAccepted(true);
     } catch (requestError) {
-      setError(getApiMessage(requestError, 'Không thể gửi yêu cầu.'));
+      setError(getApiMessage(requestError, t('auth.requestError')));
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <AuthCard title="Khôi phục mật khẩu" description="Nếu email tồn tại, hệ thống sẽ gửi một liên kết dùng một lần.">
-      {accepted && <Alert severity="success">Yêu cầu đã được tiếp nhận. Hãy kiểm tra email.</Alert>}
+    <AuthCard title={t('auth.forgotTitle')} description={t('auth.forgotDescription')}>
+      {accepted && <Alert severity="success">{t('auth.requestAccepted')}</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
       {!accepted && (
         <Stack component="form" spacing={2} onSubmit={submit}>
@@ -40,11 +42,11 @@ export default function ForgotPasswordPage() {
             onChange={event => setEmail(event.target.value)}
           />
           <Button type="submit" variant="contained" disabled={submitting}>
-            {submitting ? 'Đang gửi…' : 'Gửi liên kết đặt lại'}
+            {submitting ? t('auth.sending') : t('auth.sendReset')}
           </Button>
         </Stack>
       )}
-      <Typography component={Link} to="/login" color="primary">Về trang đăng nhập</Typography>
+      <Typography component={Link} to="/login" color="primary">{t('auth.backLogin')}</Typography>
     </AuthCard>
   );
 }

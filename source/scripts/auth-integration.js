@@ -1,9 +1,8 @@
 import {randomUUID} from 'node:crypto';
+import {resolve4} from 'node:dns/promises';
 import mongoose from 'mongoose';
 import {signedContext} from '@store/validation';
 
-const gatewayOne = process.env.GATEWAY_ONE_URL || 'http://gateway-1:5000';
-const gatewayTwo = process.env.GATEWAY_TWO_URL || 'http://gateway-2:5000';
 const email = process.env.AUTH_TEST_EMAIL || `auth-${randomUUID()}@example.invalid`;
 const oauthEmail = `auth-google-${randomUUID()}@example.invalid`;
 const firstPassword = 'Auth integration initial password!';
@@ -13,6 +12,31 @@ const finalPassword = 'Auth integration reset password!';
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
+
+async function discoverGatewayReplicas() {
+  if (process.env.GATEWAY_ONE_URL && process.env.GATEWAY_TWO_URL) {
+    return [process.env.GATEWAY_ONE_URL, process.env.GATEWAY_TWO_URL];
+  }
+
+  const deadline = Date.now() + 30000;
+  while (Date.now() < deadline) {
+    try {
+      const addresses = [...new Set(await resolve4('gateway'))];
+      if (addresses.length >= 2) {
+        return addresses.slice(0, 2).map(address =>
+          `http://${address}:5000`
+        );
+      }
+    } catch {
+      // Compose DNS may still be updating while replicas start.
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
+  throw new Error('Expected at least two Gateway replicas in Compose DNS');
+}
+
+const [gatewayOne, gatewayTwo] = await discoverGatewayReplicas();
 
 async function request(baseUrl, path, {method = 'GET', body, cookie, status = 200} = {}) {
   const response = await fetch(`${baseUrl}${path}`, {

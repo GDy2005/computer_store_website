@@ -1592,8 +1592,7 @@ Mỗi service có thể nhận một tập biến con từ Compose. Không commi
 ```text
 frontend
 nginx
-gateway-1
-gateway-2
+gateway (2 replicas)
 identity-service
 catalog-service
 order-service
@@ -1617,7 +1616,10 @@ Yêu cầu:
 - Service chỉ start/consume sau khi dependencies sẵn sàng.
 - Dùng named volumes cho Kafka, MongoDB, Redis và Elasticsearch.
 - Không mount `node_modules` từ máy Windows vào Linux container.
-- Nginx cân bằng tải giữa `gateway-1` và `gateway-2`.
+- `SERVICE_REPLICAS=2` áp dụng cho Gateway và cả bảy backend service.
+- Nginx cân bằng tải giữa các replica của service `gateway` qua Docker DNS.
+- Kafka consumer group phân phối partition giữa các replica cùng service.
+- Hạ tầng, seed, init và reindex job giữ một replica.
 - Chỉ Nginx/frontend expose public ports; databases và business services ở private network.
 - `docker compose up -d` phải khởi chạy cả core lẫn các bonus được tuyên bố trong rubric.
 
@@ -1844,7 +1846,7 @@ E2E test phải quan sát được toàn chuỗi Order -> Kafka -> Catalog -> Ka
 
 ### Phase 9 - Scaling, QA và submission readiness
 
-- Chạy hai Gateway replicas và scale ít nhất một consumer service.
+- Chạy hai replica cho Gateway và toàn bộ bảy backend service.
 - Nginx load balancing.
 - Socket.IO Redis adapter.
 - Kiểm tra Kafka consumer groups, retry và DLQ.
@@ -1854,10 +1856,11 @@ E2E test phải quan sát được toàn chuỗi Order -> Kafka -> Catalog -> Ka
 - Thu thập bằng chứng CI/CD, Kafka, microservices, AI và Elasticsearch.
 - Kiểm tra `docker compose up -d` trên máy sạch.
 
-Triển khai Phase 9 dùng hai Gateway phía sau Nginx và hai replica của Notification
-Service trong cùng Kafka consumer groups. `scripts/system-integration.js` xác minh
-load balancing, Redis adapter, consumer membership, Elasticsearch, AI grounding và
-demo seed; GitHub Actions lưu các log không chứa secret vào artifact bằng chứng.
+Triển khai hiện tại dùng hai replica cho Gateway và toàn bộ backend service. Nginx
+phát hiện Gateway qua Docker DNS; các Kafka-backed service chia tải trong cùng
+consumer group. `scripts/system-integration.js` xác minh DNS replicas, load balancing,
+Redis adapter, consumer membership, Elasticsearch, AI grounding và demo seed; GitHub
+Actions lưu các log không chứa secret vào artifact bằng chứng.
 
 ---
 

@@ -1,12 +1,16 @@
 import {useCallback,useEffect,useState} from 'react';
 import axios from 'axios';
-import {Alert,Button,Chip,CircularProgress,Paper,Stack,TextField,Typography} from '@mui/material';
+import {Alert,Box,Button,Chip,CircularProgress,Paper,Stack,TextField,Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 import {getApiMessage} from '../../features/auth/AuthContext.jsx';
+import {formatAddress} from '../../features/address/addressFormat.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
+import UiIcon from '../../components/UiIcon.jsx';
 
 const emptyForm = {label:'Nhà',recipientName:'',phone:'',addressLine:'',ward:'',district:'',province:''};
 
 export default function AddressesPage() {
+  const {locale, t} = useLanguage();
   const [addresses,setAddresses] = useState([]);
   const [form,setForm] = useState(emptyForm);
   const [editingId,setEditingId] = useState('');
@@ -20,11 +24,11 @@ export default function AddressesPage() {
       const response = await axios.get('/api/v1/users/me/addresses');
       setAddresses(response.data.data);
     } catch (requestError) {
-      setError(getApiMessage(requestError, 'Không thể tải địa chỉ.'));
+      setError(getApiMessage(requestError, t('address.loadError')));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -56,7 +60,7 @@ export default function AddressesPage() {
       resetForm();
       await load();
     } catch (requestError) {
-      setError(getApiMessage(requestError, 'Không thể lưu địa chỉ.'));
+      setError(getApiMessage(requestError, t('address.saveError')));
     } finally {
       setSubmitting(false);
     }
@@ -73,43 +77,53 @@ export default function AddressesPage() {
   }
 
   return (
-    <Stack spacing={3} maxWidth={900} mx="auto">
+    <Stack spacing={3.5} maxWidth={960} mx="auto">
       <Stack direction={{xs:'column',sm:'row'}} justifyContent="space-between" gap={1}>
-        <Typography component="h1" variant="h4" fontWeight={800}>Địa chỉ giao hàng</Typography>
-        <Button component={Link} to="/profile">Về hồ sơ</Button>
+        <Box>
+          <Typography component="h1" variant="h3" fontWeight={950}>{t('address.title')}</Typography>
+          <Typography color="text.secondary" mt={0.75}>{t('address.description')}</Typography>
+        </Box>
+        <Button component={Link} to="/profile" startIcon={<UiIcon name="arrowLeft"/>}>{t('address.back')}</Button>
       </Stack>
       {error && <Alert severity="error">{error}</Alert>}
       {loading ? <CircularProgress aria-label="Đang tải địa chỉ"/> : (
         <Stack spacing={2}>
-          {addresses.length === 0 && <Alert severity="info">Bạn chưa có địa chỉ.</Alert>}
+          {addresses.length === 0 && <Alert severity="info">{t('address.empty')}</Alert>}
           {addresses.map(address => (
-            <Paper key={address._id} variant="outlined" sx={{p:2.5}}>
-              <Stack spacing={1}>
-                <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
-                  <Typography fontWeight={800}>{address.label || 'Địa chỉ'}</Typography>
-                  {address.isDefault && <Chip size="small" color="primary" label="Mặc định"/>}
-                </Stack>
-                <Typography>{address.recipientName} · {address.phone}</Typography>
-                <Typography color="text.secondary">{address.addressLine}, {address.ward}, {address.district}, {address.province}</Typography>
-                <Stack direction="row" gap={1} flexWrap="wrap">
-                  <Button size="small" onClick={() => edit(address)}>Sửa</Button>
-                  {!address.isDefault && <Button size="small" onClick={() => run(() => axios.patch(`/api/v1/users/me/addresses/${address._id}/default`), 'Không thể đặt địa chỉ mặc định.')}>Đặt mặc định</Button>}
-                  <Button color="error" size="small" onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${address._id}`), 'Không thể xóa địa chỉ.')}>Xóa</Button>
+            <Paper key={address._id} variant="outlined" sx={{p:{xs:2.25,sm:3},bgcolor:'rgba(255,255,255,.88)',transition:'transform 180ms ease, box-shadow 180ms ease','&:hover':{transform:'translateY(-2px)',boxShadow:'0 14px 38px rgba(18,76,61,.09)'}}}>
+              <Stack direction={{xs:'column',sm:'row'}} spacing={2.25}>
+                <Box sx={{display:'grid',placeItems:'center',width:48,height:48,flex:'0 0 auto',borderRadius:'15px',bgcolor:'rgba(18,76,61,.09)',color:'primary.main'}}>
+                  <UiIcon name="location"/>
+                </Box>
+                <Stack spacing={1.15} flexGrow={1}>
+                  <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+                    <Typography fontWeight={900}>{address.label || t('address.fallbackLabel')}</Typography>
+                    {address.isDefault && <Chip size="small" color="primary" label={t('address.default')}/>}
+                  </Stack>
+                  <Typography fontWeight={650}>{address.recipientName} · {address.phone}</Typography>
+                  <Typography color="text.secondary" sx={{lineHeight:1.7}}>{formatAddress(address, locale)}</Typography>
+                  <Stack direction="row" gap={1} flexWrap="wrap" pt={0.5}>
+                    <Button size="small" onClick={() => edit(address)}>{t('address.edit')}</Button>
+                    {!address.isDefault && <Button size="small" onClick={() => run(() => axios.patch(`/api/v1/users/me/addresses/${address._id}/default`), t('address.defaultError'))}>{t('address.setDefault')}</Button>}
+                    <Button color="error" size="small" onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${address._id}`), t('address.deleteError'))}>{t('address.delete')}</Button>
+                  </Stack>
                 </Stack>
               </Stack>
             </Paper>
           ))}
         </Stack>
       )}
-      <Paper component="form" variant="outlined" sx={{p:{xs:3,sm:4}}} onSubmit={submit}>
+      <Paper component="form" variant="outlined" sx={{p:{xs:3,sm:4},bgcolor:'rgba(255,255,255,.9)'}} onSubmit={submit}>
         <Stack spacing={2}>
-          <Typography variant="h6" fontWeight={700}>{editingId ? 'Sửa địa chỉ' : 'Thêm địa chỉ'}</Typography>
-          {Object.entries({label:'Nhãn địa chỉ',recipientName:'Tên người nhận',phone:'Số điện thoại',addressLine:'Số nhà, tên đường',ward:'Phường / xã',district:'Quận / huyện',province:'Tỉnh / thành phố'}).map(([name,label]) => (
-            <TextField key={name} label={label} required={name !== 'label'} value={form[name]} onChange={event => setForm({...form,[name]:event.target.value})}/>
-          ))}
+          <Typography variant="h5" fontWeight={900}>{editingId ? t('address.editTitle') : t('address.addTitle')}</Typography>
+          <Box sx={{display:'grid',gridTemplateColumns:{xs:'1fr',sm:'repeat(2,minmax(0,1fr))'},gap:2}}>
+            {Object.entries({label:t('address.label'),recipientName:t('address.recipient'),phone:t('address.phone'),addressLine:t('address.street'),ward:t('address.ward'),district:t('address.district'),province:t('address.province')}).map(([name,label]) => (
+              <TextField key={name} label={label} required={name !== 'label'} value={form[name]} onChange={event => setForm({...form,[name]:event.target.value})} sx={name === 'addressLine' || name === 'province' ? {gridColumn:{sm:'1 / -1'}} : undefined}/>
+            ))}
+          </Box>
           <Stack direction="row" gap={1}>
-            <Button type="submit" variant="contained" disabled={submitting}>{submitting ? 'Đang lưu…' : editingId ? 'Lưu địa chỉ' : 'Thêm địa chỉ'}</Button>
-            {editingId && <Button onClick={resetForm}>Hủy</Button>}
+            <Button type="submit" variant="contained" disabled={submitting}>{submitting ? t('address.saving') : editingId ? t('address.save') : t('address.add')}</Button>
+            {editingId && <Button onClick={resetForm}>{t('address.cancel')}</Button>}
           </Stack>
         </Stack>
       </Paper>

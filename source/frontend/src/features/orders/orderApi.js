@@ -26,15 +26,15 @@ export function orderErrorMessage(error, fallback) {
   return error.response?.data?.error?.message || fallback;
 }
 
-export function formatMoney(value) {
-  return Number(value || 0).toLocaleString('vi-VN', {
+export function formatMoney(value, locale = 'vi') {
+  return Number(value || 0).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
     style: 'currency',
     currency: 'VND'
   });
 }
 
-export function formatOrderDate(value) {
-  return new Intl.DateTimeFormat('vi-VN', {
+export function formatOrderDate(value, locale = 'vi') {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: 'Asia/Ho_Chi_Minh'

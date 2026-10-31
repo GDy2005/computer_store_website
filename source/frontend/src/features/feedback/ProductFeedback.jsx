@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {
   Alert,
   Box,
@@ -25,6 +25,7 @@ import {
   updateRating
 } from './feedbackApi.js';
 import {useProductRealtime} from './useProductRealtime.js';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
 
 const emptyComments = {
   items: [],
@@ -38,17 +39,17 @@ const emptyRating = {
   distribution: {}
 };
 
-const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
-  dateStyle: 'medium',
-  timeStyle: 'short'
-});
-
 function commentId(comment) {
   return comment._id || comment.commentId;
 }
 
 export default function ProductFeedback({productId, onRatingChange}) {
   const {user} = useAuth();
+  const {locale, t} = useLanguage();
+  const dateFormatter = useMemo(() => new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }), [locale]);
   const [page, setPage] = useState(1);
   const [comments, setComments] = useState(emptyComments);
   const [rating, setRating] = useState(emptyRating);
@@ -78,7 +79,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
       .catch(requestError => {
         const text = feedbackErrorMessage(
           requestError,
-          'Không thể tải bình luận và đánh giá.'
+          t('feedback.loadError')
         );
         if (text) setError(text);
       })
@@ -87,7 +88,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
       });
 
     return () => controller.abort();
-  }, [productId, page, user?._id]);
+  }, [productId, page, user?._id, t]);
 
   const realtimeConnected = useProductRealtime(productId, {
     onComment(event) {
@@ -159,7 +160,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
             }
       );
       setForm(current => ({...current, content: ''}));
-      setMessage('Đã gửi bình luận.');
+      setMessage(t('feedback.commentSent'));
       if (page !== 1) {
         setPage(1);
       } else {
@@ -182,7 +183,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
         });
       }
     } catch (requestError) {
-      setError(feedbackErrorMessage(requestError, 'Không thể gửi bình luận.'));
+      setError(feedbackErrorMessage(requestError, t('feedback.commentError')));
     } finally {
       setSubmittingComment(false);
     }
@@ -197,9 +198,9 @@ export default function ProductFeedback({productId, onRatingChange}) {
       const result = await updateRating(productId, stars);
       setRating(current => ({...current, ...result, myRating: stars}));
       onRatingChange?.(result);
-      setMessage('Đã lưu đánh giá của bạn.');
+      setMessage(t('feedback.ratingSaved'));
     } catch (requestError) {
-      setError(feedbackErrorMessage(requestError, 'Không thể lưu đánh giá.'));
+      setError(feedbackErrorMessage(requestError, t('feedback.ratingError')));
     } finally {
       setSubmittingRating(false);
     }
@@ -216,16 +217,16 @@ export default function ProductFeedback({productId, onRatingChange}) {
       >
         <Box>
           <Typography id="feedback-title" component="h2" variant="h5" fontWeight={850}>
-            Bình luận và đánh giá
+            {t('feedback.title')}
           </Typography>
           <Typography color="text.secondary">
-            Bình luận dành cho mọi khách; đánh giá sao yêu cầu đăng nhập.
+            {t('feedback.description')}
           </Typography>
         </Box>
         <Chip
           size="small"
           color={realtimeConnected ? 'success' : 'default'}
-          label={realtimeConnected ? 'Realtime đã kết nối' : 'Đang kết nối realtime'}
+          label={realtimeConnected ? t('feedback.connected') : t('feedback.connecting')}
           variant={realtimeConnected ? 'filled' : 'outlined'}
         />
       </Stack>
@@ -237,12 +238,12 @@ export default function ProductFeedback({productId, onRatingChange}) {
         <Stack spacing={3}>
           <Paper variant="outlined" sx={{p: 3}}>
             <Stack spacing={2} alignItems="flex-start">
-              <Typography component="h3" variant="h6" fontWeight={800}>Điểm đánh giá</Typography>
+              <Typography component="h3" variant="h6" fontWeight={800}>{t('feedback.score')}</Typography>
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <Typography variant="h3" fontWeight={900}>{Number(rating.averageRating || 0).toFixed(1)}</Typography>
                 <Box>
                   <Rating value={rating.averageRating || 0} precision={0.1} readOnly/>
-                  <Typography variant="body2" color="text.secondary">{rating.ratingCount || 0} lượt đánh giá</Typography>
+                  <Typography variant="body2" color="text.secondary">{t('feedback.ratings',{count:rating.ratingCount || 0})}</Typography>
                 </Box>
               </Stack>
               <Stack spacing={0.75} width="100%">
@@ -263,7 +264,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
               <Divider flexItem/>
               {user ? (
                 <Stack spacing={1.25} alignItems="flex-start">
-                  <Typography fontWeight={750}>Đánh giá của bạn</Typography>
+                  <Typography fontWeight={750}>{t('feedback.yourRating')}</Typography>
                   <Rating
                     value={stars}
                     onChange={(_, value) => setStars(value || 0)}
@@ -274,12 +275,12 @@ export default function ProductFeedback({productId, onRatingChange}) {
                     disabled={!stars || submittingRating}
                     onClick={submitRating}
                   >
-                    {submittingRating ? 'Đang lưu...' : 'Lưu đánh giá'}
+                    {submittingRating ? t('feedback.saving') : t('feedback.saveRating')}
                   </Button>
                 </Stack>
               ) : (
                 <Alert severity="info">
-                  <Link to="/login">Đăng nhập</Link> để đánh giá sản phẩm.
+                  <Link to="/login">{t('feedback.login')}</Link> {t('feedback.toRate')}
                 </Alert>
               )}
             </Stack>
@@ -287,12 +288,12 @@ export default function ProductFeedback({productId, onRatingChange}) {
 
           <Paper component="form" variant="outlined" sx={{p: 3}} onSubmit={submitComment}>
             <Stack spacing={2}>
-              <Typography component="h3" variant="h6" fontWeight={800}>Viết bình luận</Typography>
+              <Typography component="h3" variant="h6" fontWeight={800}>{t('feedback.write')}</Typography>
               {!user && (
                 <>
                   <TextField
                     required
-                    label="Tên hiển thị"
+                    label={t('feedback.displayName')}
                     value={form.guestName}
                     onChange={change('guestName')}
                     inputProps={{maxLength: 100}}
@@ -300,7 +301,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
                   <TextField
                     required
                     type="email"
-                    label="Email (không hiển thị)"
+                    label={t('feedback.hiddenEmail')}
                     value={form.guestEmail}
                     onChange={change('guestEmail')}
                     inputProps={{maxLength: 254}}
@@ -311,14 +312,14 @@ export default function ProductFeedback({productId, onRatingChange}) {
                 required
                 multiline
                 minRows={4}
-                label="Nội dung"
+                label={t('feedback.content')}
                 value={form.content}
                 onChange={change('content')}
                 inputProps={{maxLength: 1000}}
                 helperText={`${form.content.length}/1000`}
               />
               <Button type="submit" variant="contained" disabled={submittingComment}>
-                {submittingComment ? 'Đang gửi...' : 'Gửi bình luận'}
+                {submittingComment ? t('feedback.sending') : t('feedback.submit')}
               </Button>
             </Stack>
           </Paper>
@@ -327,13 +328,13 @@ export default function ProductFeedback({productId, onRatingChange}) {
         <Stack spacing={2}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography component="h3" variant="h6" fontWeight={800}>
-              Bình luận mới nhất
+              {t('feedback.latest')}
             </Typography>
-            <Typography color="text.secondary">{comments.meta.totalItems} bình luận</Typography>
+            <Typography color="text.secondary">{t('feedback.comments',{count:comments.meta.totalItems})}</Typography>
           </Stack>
           {loading && <Box sx={{display: 'grid', placeItems: 'center', minHeight: 180}}><CircularProgress/></Box>}
           {!loading && comments.items.length === 0 && (
-            <Alert severity="info">Chưa có bình luận. Bạn có thể là người đầu tiên.</Alert>
+            <Alert severity="info">{t('feedback.empty')}</Alert>
           )}
           {!loading && comments.items.map(comment => (
             <Paper key={commentId(comment)} variant="outlined" sx={{p: 2.5}}>

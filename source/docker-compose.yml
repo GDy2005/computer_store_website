@@ -11,6 +11,11 @@ x-app: &app
     retries: 10
     start_period: 60s
 
+x-scaled-app: &scaled-app
+  <<: *app
+  deploy:
+    replicas: ${SERVICE_REPLICAS:-2}
+
 x-core-env: &core-env
   NODE_ENV: development
   MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
@@ -34,6 +39,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
   mongo-init:
     image: mongo:7.0.26
     networks: [private]
@@ -41,6 +47,7 @@ services:
       mongo: {condition: service_healthy}
     volumes: [./infra/mongodb/init-replica-set.js:/init.js:ro]
     entrypoint: [mongosh, --host, mongo:27017, --quiet, /init.js]
+
   redis:
     image: redis:7.4-bookworm
     command: [redis-server, --appendonly, 'yes']
@@ -52,6 +59,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
     restart: unless-stopped
@@ -67,6 +75,7 @@ services:
       timeout: 5s
       retries: 30
       start_period: 45s
+
   kafka:
     image: apache/kafka:3.9.2
     restart: unless-stopped
@@ -94,6 +103,7 @@ services:
       timeout: 10s
       retries: 30
       start_period: 30s
+
   kafka-init:
     image: apache/kafka:3.9.2
     networks: [private]
@@ -117,8 +127,9 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
+
   identity-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/identity-service/Dockerfile
@@ -135,6 +146,7 @@ services:
       mongo-init: {condition: service_completed_successfully}
       kafka-init: {condition: service_completed_successfully}
       identity-seed: {condition: service_completed_successfully}
+
   catalog-seed:
     build:
       context: .
@@ -149,8 +161,9 @@ services:
       DB_NAME: catalog_db
     depends_on:
       mongo-init: {condition: service_completed_successfully}
+
   catalog-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/catalog-service/Dockerfile
@@ -167,6 +180,7 @@ services:
       mongo-init: {condition: service_completed_successfully}
       kafka-init: {condition: service_completed_successfully}
       catalog-seed: {condition: service_completed_successfully}
+
   search-reindex:
     build:
       context: .
@@ -185,8 +199,9 @@ services:
     depends_on:
       elasticsearch: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
+
   search-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/search-service/Dockerfile
@@ -203,8 +218,9 @@ services:
       kafka-init: {condition: service_completed_successfully}
       elasticsearch: {condition: service_healthy}
       search-reindex: {condition: service_completed_successfully}
+
   ai-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/ai-service/Dockerfile
@@ -221,6 +237,7 @@ services:
       AI_PROVIDER_TIMEOUT_MS: ${AI_PROVIDER_TIMEOUT_MS:-8000}
     depends_on:
       search-service: {condition: service_healthy}
+
   order-seed:
     build:
       context: .
@@ -235,8 +252,9 @@ services:
       DB_NAME: order_db
     depends_on:
       mongo-init: {condition: service_completed_successfully}
+
   order-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/order-service/Dockerfile
@@ -253,8 +271,8 @@ services:
       order-seed: {condition: service_completed_successfully}
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
-  notification-service: &notification-service
-    <<: *app
+  notification-service:
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/notification-service/Dockerfile
@@ -270,10 +288,9 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
     depends_on: *core-deps
-  notification-service-2:
-    <<: *notification-service
+
   analytics-service:
-    <<: *app
+    <<: *scaled-app
     build:
       context: .
       dockerfile: services/analytics-service/Dockerfile
@@ -283,8 +300,9 @@ services:
       PORT: 5005
       DB_NAME: analytics_db
     depends_on: *core-deps
-  gateway-1:
-    <<: *app
+
+  gateway:
+    <<: *scaled-app
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
@@ -292,7 +310,6 @@ services:
     environment:
       NODE_ENV: development
       PORT: 5000
-      INSTANCE_ID: gateway-1
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
@@ -312,35 +329,7 @@ services:
       analytics-service: {condition: service_healthy}
       search-service: {condition: service_healthy}
       ai-service: {condition: service_healthy}
-  gateway-2:
-    <<: *app
-    build:
-      context: .
-      dockerfile: api-gateway/Dockerfile
-      args: {SERVICE_PATH: api-gateway}
-    environment:
-      NODE_ENV: development
-      PORT: 5000
-      INSTANCE_ID: gateway-2
-      REDIS_URL: redis://redis:6379
-      KAFKA_BROKERS: kafka:9092
-      SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
-      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
-      FOUNDATION_PROBES_ENABLED: ${FOUNDATION_PROBES_ENABLED:-true}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/v1/auth/google/callback}
-      SEARCH_SERVICE_URL: http://search-service:5006
-      AI_SERVICE_URL: http://ai-service:5007
-    depends_on:
-      redis: {condition: service_healthy}
-      identity-service: {condition: service_healthy}
-      catalog-service: {condition: service_healthy}
-      order-service: {condition: service_healthy}
-      notification-service: {condition: service_healthy}
-      analytics-service: {condition: service_healthy}
-      search-service: {condition: service_healthy}
-      ai-service: {condition: service_healthy}
+
   frontend:
     build:
       context: .
@@ -352,6 +341,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+
   nginx:
     image: nginx:1.28-bookworm
     restart: unless-stopped
@@ -360,13 +350,13 @@ services:
     volumes: [./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro]
     depends_on:
       frontend: {condition: service_healthy}
-      gateway-1: {condition: service_healthy}
-      gateway-2: {condition: service_healthy}
+      gateway: {condition: service_healthy}
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1/health/ready]
       interval: 10s
       timeout: 5s
       retries: 10
+
   customer-orders-test-gateway:
     profiles: [test]
     <<: *app
@@ -389,6 +379,7 @@ services:
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
       order-service: {condition: service_healthy}
+
   customer-orders-integration:
     profiles: [test]
     build:
@@ -406,6 +397,7 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       customer-orders-test-gateway: {condition: service_healthy}
+
   feedback-test-gateway:
     profiles: [test]
     <<: *app
@@ -428,6 +420,7 @@ services:
       kafka-init: {condition: service_completed_successfully}
       identity-service: {condition: service_healthy}
       catalog-service: {condition: service_healthy}
+
   feedback-realtime-integration:
     profiles: [test]
     build:
@@ -444,6 +437,7 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       feedback-test-gateway: {condition: service_healthy}
+
   admin-analytics-test-gateway:
     profiles: [test]
     <<: *app
@@ -468,6 +462,7 @@ services:
       catalog-service: {condition: service_healthy}
       order-service: {condition: service_healthy}
       analytics-service: {condition: service_healthy}
+
   admin-analytics-integration:
     profiles: [test]
     build:
@@ -484,6 +479,7 @@ services:
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       admin-analytics-test-gateway: {condition: service_healthy}
+
   ai-test-gateway:
     profiles: [test]
     <<: *app
@@ -509,6 +505,7 @@ services:
       catalog-service: {condition: service_healthy}
       search-service: {condition: service_healthy}
       ai-service: {condition: service_healthy}
+
   ai-integration:
     profiles: [test]
     build:
@@ -523,6 +520,7 @@ services:
       APP_BASE_URL: http://ai-test-gateway:5000
     depends_on:
       ai-test-gateway: {condition: service_healthy}
+
   system-integration:
     profiles: [test]
     build:
@@ -542,13 +540,13 @@ services:
     depends_on:
       nginx: {condition: service_healthy}
       notification-service: {condition: service_healthy}
-      notification-service-2: {condition: service_healthy}
+
 networks:
   private:
     driver: bridge
+
 volumes:
   mongo-data:
   redis-data:
   kafka-data:
   elasticsearch-data:
-

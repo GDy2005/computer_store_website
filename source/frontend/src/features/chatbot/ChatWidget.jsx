@@ -9,33 +9,29 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Fab,
   IconButton,
   Paper,
   Stack,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery
 } from '@mui/material';
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useTheme} from '@mui/material/styles';
 
 import {formatProductPrice} from '../products/productFormat.js';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
 import {chatErrorMessage, sendChatMessage} from './chatApi.js';
+import UiIcon from '../../components/UiIcon.jsx';
 
-const suggestions = [
-  'Laptop học tập dưới 25 triệu',
-  'Chuột gaming không dây',
-  'Màn hình QHD khoảng 10 triệu'
-];
+function createWelcome(t) {
+  return {id: 'welcome', role: 'assistant', text: t('chat.welcome')};
+}
 
-const welcome = {
-  id: 'welcome',
-  role: 'assistant',
-  text: 'Chào bạn! Hãy cho mình biết loại sản phẩm, ngân sách, thương hiệu hoặc nhu cầu sử dụng.'
-};
-
-function Message({message}) {
+function Message({message, t}) {
   const assistant = message.role === 'assistant';
 
   return (
@@ -81,7 +77,7 @@ function Message({message}) {
                     size="small"
                     sx={{px: 0, minWidth: 0}}
                   >
-                    Xem sản phẩm
+                    {t('common.viewProduct')}
                   </Button>
                 </Box>
               </Stack>
@@ -95,13 +91,21 @@ function Message({message}) {
 
 export default function ChatWidget() {
   const theme = useTheme();
+  const {locale, t} = useLanguage();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const controller = useRef(null);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([welcome]);
+  const [messages, setMessages] = useState(() => [createWelcome(t)]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const suggestions = [t('chat.suggestion1'), t('chat.suggestion2'), t('chat.suggestion3')];
+
+  useEffect(() => {
+    setMessages(current => current.length === 1 && current[0].id === 'welcome'
+      ? [createWelcome(t)]
+      : current);
+  }, [locale, t]);
 
   async function submit(value) {
     const message = value.trim();
@@ -143,29 +147,33 @@ export default function ChatWidget() {
   }
 
   function clear() {
-    setMessages([welcome]);
+    setMessages([createWelcome(t)]);
     setError('');
   }
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => setOpen(true)}
-        aria-label="Mở trợ lý tư vấn sản phẩm"
-        sx={{
-          position: 'fixed',
-          right: {xs: 16, md: 28},
-          bottom: {xs: 16, md: 28},
-          zIndex: theme.zIndex.appBar,
-          px: 2.25,
-          py: 1.25,
-          boxShadow: '0 12px 30px rgba(23,63,53,0.24)'
-        }}
-      >
-        Tư vấn AI
-      </Button>
+      <Tooltip title={t('chat.title')} placement="left">
+        <Fab
+          color="secondary"
+          onClick={() => setOpen(true)}
+          aria-label={t('chat.open')}
+          sx={{
+            position: 'fixed',
+            right: {xs: 16, md: 28},
+            bottom: {xs: 16, md: 28},
+            zIndex: theme.zIndex.appBar,
+            width: 62,
+            height: 62,
+            color: '#09251e',
+            boxShadow: '0 16px 38px rgba(8,49,39,.28)',
+            transition: 'transform 180ms ease, box-shadow 180ms ease',
+            '&:hover': {transform: 'translateY(-4px) scale(1.03)', boxShadow: '0 20px 44px rgba(8,49,39,.34)'}
+          }}
+        >
+          <UiIcon name="chat" sx={{fontSize: 29}}/>
+        </Fab>
+      </Tooltip>
       <Dialog
         open={open}
         onClose={close}
@@ -173,25 +181,26 @@ export default function ChatWidget() {
         fullWidth
         maxWidth="sm"
         aria-labelledby="chatbot-title"
-        slotProps={{paper: {sx: {height: fullScreen ? '100%' : 'min(720px, 86vh)'}}}}
+        slotProps={{paper: {sx: {height: fullScreen ? '100%' : 'min(720px, 86vh)', overflow: 'hidden'}}}}
       >
-        <DialogTitle id="chatbot-title" sx={{pb: 1}}>
+        <DialogTitle id="chatbot-title" sx={{py: 1.75, bgcolor: '#f4f8f5'}}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Box>
-              <Typography component="span" variant="h6" fontWeight={850}>
-                Trợ lý chọn sản phẩm
-              </Typography>
-              <Typography variant="caption" color="text.secondary" display="block">
-                Gợi ý dựa trên dữ liệu thật của cửa hàng
-              </Typography>
-            </Box>
-            <IconButton onClick={close} aria-label="Đóng trợ lý">×</IconButton>
+            <Stack direction="row" spacing={1.4} alignItems="center">
+              <Box sx={{display:'grid',placeItems:'center',width:42,height:42,borderRadius:'14px',bgcolor:'secondary.main',color:'#09251e'}}>
+                <UiIcon name="chat"/>
+              </Box>
+              <Box>
+                <Typography component="span" variant="h6" fontWeight={900}>{t('chat.title')}</Typography>
+                <Typography variant="caption" color="text.secondary" display="block">{t('chat.subtitle')}</Typography>
+              </Box>
+            </Stack>
+            <IconButton onClick={close} aria-label={t('chat.close')}><UiIcon name="close"/></IconButton>
           </Stack>
         </DialogTitle>
         <Divider/>
         <DialogContent sx={{display: 'flex', flexDirection: 'column', gap: 1.5, p: 2}}>
           <Stack role="log" aria-live="polite" aria-busy={loading} spacing={1.5}>
-            {messages.map(message => <Message key={message.id} message={message}/>)}
+            {messages.map(message => <Message key={message.id} message={message} t={t}/>)}
           </Stack>
           {messages.length === 1 && (
             <Stack direction="row" useFlexGap flexWrap="wrap" gap={1}>
@@ -209,13 +218,13 @@ export default function ChatWidget() {
           {loading && (
             <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
               <CircularProgress size={18}/>
-              <Typography variant="body2">Đang tìm trong catalog…</Typography>
+              <Typography variant="body2">{t('chat.loading')}</Typography>
             </Stack>
           )}
           {error && <Alert severity="error">{error}</Alert>}
           <Box sx={{flexGrow: 1}}/>
           <Typography variant="caption" color="text.secondary">
-            Trợ lý không lưu hội thoại và không xác nhận tồn kho. Hãy kiểm tra trang chi tiết trước khi đặt hàng.
+            {t('chat.note')}
           </Typography>
         </DialogContent>
         <Divider/>
@@ -231,21 +240,21 @@ export default function ChatWidget() {
             <TextField
               value={input}
               onChange={event => setInput(event.target.value)}
-              label="Bạn đang cần sản phẩm nào?"
+              label={t('chat.input')}
               inputProps={{maxLength: 800}}
               disabled={loading}
               fullWidth
               multiline
               maxRows={3}
             />
-            <Button type="submit" variant="contained" disabled={loading || input.trim().length < 2} sx={{width:{xs:'100%',sm:'auto'}}}>
-              Gửi
+            <Button type="submit" variant="contained" disabled={loading || input.trim().length < 2} endIcon={<UiIcon name="send"/>} sx={{width:{xs:'100%',sm:'auto'}}}>
+              {t('chat.send')}
             </Button>
           </Stack>
         </Box>
         <DialogActions sx={{px: 2, py: 1, justifyContent: 'flex-start'}}>
           <Button size="small" color="inherit" onClick={clear} disabled={loading}>
-            Xóa hội thoại
+            {t('chat.clear')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -14,17 +14,17 @@
     "description": "Laptop mỏng nhẹ 13 inch dùng chip Apple M4, phù hợp học tập và làm việc. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449747/kih8zv6q0rvjo3sjxnx8.webp",
         "publicId": "seed/products/apple-macbook-air-13-m4-2025-front",
         "alt": "Apple MacBook Air 13 M4 2025 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449747/vmb9oj1negr0urkmpcyv.webp",
         "publicId": "seed/products/apple-macbook-air-13-m4-2025-side",
         "alt": "Apple MacBook Air 13 M4 2025 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=apple-macbook-air-13-m4-2025-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449747/dkx7tqziuuqxtmz9noql.webp",
         "publicId": "seed/products/apple-macbook-air-13-m4-2025-detail",
         "alt": "Apple MacBook Air 13 M4 2025 ảnh chi tiết"
       }
@@ -74,17 +74,17 @@
     "description": "Laptop văn phòng 15.6 inch, bàn phím số và cấu hình Intel Core. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449732/qlye2vacgxkbybnvfaf8.webp",
         "publicId": "seed/products/asus-vivobook-15-x1504va-front",
         "alt": "ASUS Vivobook 15 X1504VA mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449733/faahygyffqluwnwffx0d.webp",
         "publicId": "seed/products/asus-vivobook-15-x1504va-side",
         "alt": "ASUS Vivobook 15 X1504VA góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-vivobook-15-x1504va-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449720/wems6e7itlm6t1mgys8c.webp",
         "publicId": "seed/products/asus-vivobook-15-x1504va-detail",
         "alt": "ASUS Vivobook 15 X1504VA ảnh chi tiết"
       }
@@ -134,17 +134,17 @@
     "description": "Laptop 14 inch gọn nhẹ dành cho công việc, học tập và di chuyển. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449738/e8dpsn2ampkb8w6ztfop.webp",
         "publicId": "seed/products/dell-inspiron-14-5440-front",
         "alt": "Dell Inspiron 14 5440 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449738/nmhku0zvzj8potkfq06f.webp",
         "publicId": "seed/products/dell-inspiron-14-5440-side",
         "alt": "Dell Inspiron 14 5440 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-inspiron-14-5440-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449738/ud2xvzcgqtvnxmngi5rq.webp",
         "publicId": "seed/products/dell-inspiron-14-5440-detail",
         "alt": "Dell Inspiron 14 5440 ảnh chi tiết"
       }
@@ -194,17 +194,17 @@
     "description": "Laptop gaming 15.6 inch với CPU Intel HX và GPU NVIDIA GeForce RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449743/xbdilodiuo75udatvipi.webp",
         "publicId": "seed/products/lenovo-loq-15irx9-front",
         "alt": "Lenovo LOQ 15IRX9 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449743/rirbuosasdvsgkiikfaf.webp",
         "publicId": "seed/products/lenovo-loq-15irx9-side",
         "alt": "Lenovo LOQ 15IRX9 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lenovo-loq-15irx9-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449743/o2vzwupmrqrfyvlean6f.webp",
         "publicId": "seed/products/lenovo-loq-15irx9-detail",
         "alt": "Lenovo LOQ 15IRX9 ảnh chi tiết"
       }
@@ -314,17 +314,17 @@
     "description": "Laptop gaming thiết kế trung tính, phù hợp cả chơi game và làm việc. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449740/sz46hpr7c0z0znonzgzr.webp",
         "publicId": "seed/products/hp-victus-15-front",
         "alt": "HP Victus 15 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449740/hzd6gstu8ksgr73luqtm.webp",
         "publicId": "seed/products/hp-victus-15-side",
         "alt": "HP Victus 15 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=hp-victus-15-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449740/ckq2dsdnc73o7k3td2zz.webp",
         "publicId": "seed/products/hp-victus-15-detail",
         "alt": "HP Victus 15 ảnh chi tiết"
       }
@@ -374,17 +374,17 @@
     "description": "Laptop gaming hiệu năng cao với CPU Intel HX và card đồ họa RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449747/x0pataicu8mkblvhtzkj.webp",
         "publicId": "seed/products/msi-katana-15-hx-b14w-front",
         "alt": "MSI Katana 15 HX B14W mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449748/zqx8dwn4sflgzu75vb3a.webp",
         "publicId": "seed/products/msi-katana-15-hx-b14w-side",
         "alt": "MSI Katana 15 HX B14W góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-katana-15-hx-b14w-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449747/y0ismzlhlbyeotk5lgpg.webp",
         "publicId": "seed/products/msi-katana-15-hx-b14w-detail",
         "alt": "MSI Katana 15 HX B14W ảnh chi tiết"
       }
@@ -434,17 +434,17 @@
     "description": "Laptop gaming 14 inch cao cấp với thiết kế nhỏ gọn và màn hình chất lượng cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449732/xl45lfxbyb8z2l4vjkrg.webp",
         "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-front",
         "alt": "ASUS ROG Zephyrus G14 GA403 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449732/xol3cte3j0wvies4swgl.webp",
         "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-side",
         "alt": "ASUS ROG Zephyrus G14 GA403 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-zephyrus-g14-ga403-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449732/kmq3sjrdn9vf0yziz1re.webp",
         "publicId": "seed/products/asus-rog-zephyrus-g14-ga403-detail",
         "alt": "ASUS ROG Zephyrus G14 GA403 ảnh chi tiết"
       }
@@ -494,17 +494,17 @@
     "description": "Màn hình gaming cong QHD, tần số quét cao cho trải nghiệm chơi game mượt. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449751/klusp1uqst2rlzebpxf1.webp",
         "publicId": "seed/products/samsung-odyssey-g5-g55c-front",
         "alt": "Samsung Odyssey G5 G55C mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449751/cgmnpmjb8cdtutftgbtf.webp",
         "publicId": "seed/products/samsung-odyssey-g5-g55c-side",
         "alt": "Samsung Odyssey G5 G55C góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-odyssey-g5-g55c-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449751/x5po3s9zxzgsbjsxd7le.webp",
         "publicId": "seed/products/samsung-odyssey-g5-g55c-detail",
         "alt": "Samsung Odyssey G5 G55C ảnh chi tiết"
       }
@@ -554,17 +554,17 @@
     "description": "Màn hình gaming Nano IPS QHD với màu sắc tốt và phản hồi nhanh. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/or3ykknciuh13oc8ttbn.webp",
         "publicId": "seed/products/lg-ultragear-gp850-front",
         "alt": "LG UltraGear GP850 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/gb22nnawxtsku4tbamhb.webp",
         "publicId": "seed/products/lg-ultragear-gp850-side",
         "alt": "LG UltraGear GP850 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lg-ultragear-gp850-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/rhvqexmjdx0nemhhslyx.webp",
         "publicId": "seed/products/lg-ultragear-gp850-detail",
         "alt": "LG UltraGear GP850 ảnh chi tiết"
       }
@@ -614,17 +614,17 @@
     "description": "Màn hình 4K cao cấp dành cho văn phòng, thiết kế và xử lý nội dung. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449739/xuofmii9l5v3te98qqfx.jpg",
         "publicId": "seed/products/dell-ultrasharp-u-series-front",
         "alt": "Dell UltraSharp U Series mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449739/mmr5ywlx1vkhopbrnjfr.jpg",
         "publicId": "seed/products/dell-ultrasharp-u-series-side",
         "alt": "Dell UltraSharp U Series góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=dell-ultrasharp-u-series-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449739/jl6rdyv2zsvka6vgesku.jpg",
         "publicId": "seed/products/dell-ultrasharp-u-series-detail",
         "alt": "Dell UltraSharp U Series ảnh chi tiết"
       }
@@ -674,17 +674,17 @@
     "description": "Màn hình gaming QHD tần số quét cao thuộc dòng ASUS TUF Gaming. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449755/zdztrigabvyxvs727h8p.webp",
         "publicId": "seed/products/asus-tuf-gaming-vg-series-front",
         "alt": "ASUS TUF Gaming VG Series mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449755/sfdziqdoqojb09qkepte.webp",
         "publicId": "seed/products/asus-tuf-gaming-vg-series-side",
         "alt": "ASUS TUF Gaming VG Series góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-tuf-gaming-vg-series-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449754/lste0gjxih49rxrlritx.webp",
         "publicId": "seed/products/asus-tuf-gaming-vg-series-detail",
         "alt": "ASUS TUF Gaming VG Series ảnh chi tiết"
       }
@@ -734,17 +734,17 @@
     "description": "Màn hình gaming QHD tích hợp KVM, phù hợp dùng chung nhiều thiết bị. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449740/uf27hxocrfnbw8kfosld.webp",
         "publicId": "seed/products/gigabyte-m-series-monitor-front",
         "alt": "Gigabyte M Series mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449740/kf59v7mjhroxvkth0te9.webp",
         "publicId": "seed/products/gigabyte-m-series-monitor-side",
         "alt": "Gigabyte M Series góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=gigabyte-m-series-monitor-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449739/dnsn1mxsyigitgcjyji0.webp",
         "publicId": "seed/products/gigabyte-m-series-monitor-detail",
         "alt": "Gigabyte M Series ảnh chi tiết"
       }
@@ -794,17 +794,17 @@
     "description": "Màn hình gaming QHD với màu sắc rộng và tần số quét cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449748/inml689useehugkeytkb.webp",
         "publicId": "seed/products/msi-mag-gaming-monitor-front",
         "alt": "MSI MAG Gaming Monitor mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449748/oifzxuv4abgpmyc24bd4.webp",
         "publicId": "seed/products/msi-mag-gaming-monitor-side",
         "alt": "MSI MAG Gaming Monitor góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=msi-mag-gaming-monitor-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449748/rzzsgpyk6lsmxsw5v4u0.webp",
         "publicId": "seed/products/msi-mag-gaming-monitor-detail",
         "alt": "MSI MAG Gaming Monitor ảnh chi tiết"
       }
@@ -854,17 +854,17 @@
     "description": "Màn hình gaming QHD có tần số quét cao với hai kiểu phẳng và cong. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/nzvadqdkxg7tgsxsjuj5.webp",
         "publicId": "seed/products/aoc-gaming-qhd-series-front",
         "alt": "AOC Gaming QHD Series mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/ntmciujav1k4mig6wv2f.webp",
         "publicId": "seed/products/aoc-gaming-qhd-series-side",
         "alt": "AOC Gaming QHD Series góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=aoc-gaming-qhd-series-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/ltzxfzy3r4qjnb2cjqo2.webp",
         "publicId": "seed/products/aoc-gaming-qhd-series-detail",
         "alt": "AOC Gaming QHD Series ảnh chi tiết"
       }
@@ -914,17 +914,17 @@
     "description": "Màn hình gaming MOBIUZ tích hợp loa và các chế độ hiển thị HDR. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449742/tcofuoqsvk6dexgmlkxf.webp",
         "publicId": "seed/products/benq-mobiuz-ex-series-front",
         "alt": "BenQ MOBIUZ EX Series mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449743/zqwsfjpmvkjuhbo1zsoa.webp",
         "publicId": "seed/products/benq-mobiuz-ex-series-side",
         "alt": "BenQ MOBIUZ EX Series góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=benq-mobiuz-ex-series-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449742/f36dmtodgbjnlogjwjc5.webp",
         "publicId": "seed/products/benq-mobiuz-ex-series-detail",
         "alt": "BenQ MOBIUZ EX Series ảnh chi tiết"
       }
@@ -974,17 +974,17 @@
     "description": "Bàn phím cơ không dây layout 75%, hỗ trợ nhiều hệ điều hành. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449741/hzus3gkf7x5carnwamya.jpg",
         "publicId": "seed/products/keychron-k2-pro-front",
         "alt": "Keychron K2 Pro mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449741/spea5zdpfccv5sy3tcz5.jpg",
         "publicId": "seed/products/keychron-k2-pro-side",
         "alt": "Keychron K2 Pro góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=keychron-k2-pro-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449741/x0zhzvovvcei5zpsa4ie.jpg",
         "publicId": "seed/products/keychron-k2-pro-detail",
         "alt": "Keychron K2 Pro ảnh chi tiết"
       }
@@ -1034,17 +1034,17 @@
     "description": "Bàn phím cơ 75% hỗ trợ ba chế độ kết nối và hot-swap. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449701/o7l7kjkz37keiwkieuk6.webp",
         "publicId": "seed/products/akko-5075b-plus-front",
         "alt": "Akko 5075B Plus mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/j7wqyauc9fa0dgiixgjb.webp",
         "publicId": "seed/products/akko-5075b-plus-side",
         "alt": "Akko 5075B Plus góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=akko-5075b-plus-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/crumubbdjrcp3pfvkwpl.webp",
         "publicId": "seed/products/akko-5075b-plus-detail",
         "alt": "Akko 5075B Plus ảnh chi tiết"
       }
@@ -1094,17 +1094,17 @@
     "description": "Bàn phím gaming TKL không dây Lightspeed dành cho thi đấu. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/pb759unb1zrwnzrtxv42.webp",
         "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-front",
         "alt": "Logitech G Pro X TKL Lightspeed mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/yzorcwnc30vetlhxtxqg.webp",
         "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-side",
         "alt": "Logitech G Pro X TKL Lightspeed góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-tkl-lightspeed-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/dml8slzbtsgnqqf5zfeu.webp",
         "publicId": "seed/products/logitech-g-pro-x-tkl-lightspeed-detail",
         "alt": "Logitech G Pro X TKL Lightspeed ảnh chi tiết"
       }
@@ -1154,17 +1154,17 @@
     "description": "Bàn phím cơ gaming 75% có hot-swap và hệ thống LED Chroma RGB. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449750/udqmq78xnhjw8a2yac3r.webp",
         "publicId": "seed/products/razer-blackwidow-v4-75-front",
         "alt": "Razer BlackWidow V4 75% mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449750/klckvgk1mvt3meisr8mf.webp",
         "publicId": "seed/products/razer-blackwidow-v4-75-side",
         "alt": "Razer BlackWidow V4 75% góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-blackwidow-v4-75-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449749/sbsnetpvfzu20kkrp3eu.webp",
         "publicId": "seed/products/razer-blackwidow-v4-75-detail",
         "alt": "Razer BlackWidow V4 75% ảnh chi tiết"
       }
@@ -1214,17 +1214,17 @@
     "description": "Bàn phím cơ full-size khung nhôm với LED RGB từng phím. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449735/ufhlmbden7igazfxmfg2.webp",
         "publicId": "seed/products/corsair-k70-rgb-pro-front",
         "alt": "Corsair K70 RGB Pro mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449736/pbafhrbw5zzooqhp34xq.webp",
         "publicId": "seed/products/corsair-k70-rgb-pro-side",
         "alt": "Corsair K70 RGB Pro góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-k70-rgb-pro-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449735/cgwpfgqp8msy1shpo9is.webp",
         "publicId": "seed/products/corsair-k70-rgb-pro-detail",
         "alt": "Corsair K70 RGB Pro ảnh chi tiết"
       }
@@ -1274,17 +1274,17 @@
     "description": "Bàn phím gaming TKL dùng switch từ tính có thể điều chỉnh điểm nhận phím. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449754/pqsd2vtctgsyujwec3kh.jpg",
         "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-front",
         "alt": "SteelSeries Apex Pro TKL Gen 3 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449754/lvmeom41l110vli9vvdy.jpg",
         "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-side",
         "alt": "SteelSeries Apex Pro TKL Gen 3 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-apex-pro-tkl-gen-3-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449754/c71ezqjssqlbhhrdcjkx.jpg",
         "publicId": "seed/products/steelseries-apex-pro-tkl-gen-3-detail",
         "alt": "SteelSeries Apex Pro TKL Gen 3 ảnh chi tiết"
       }
@@ -1334,17 +1334,17 @@
     "description": "Bàn phím gaming không dây layout 96%, đầy đủ phím trong thân máy gọn. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449733/oth4w4jarimtwrjdrx74.webp",
         "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-front",
         "alt": "ASUS ROG Strix Scope II 96 Wireless mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449733/izldy8auzzjdvq6w0wfu.webp",
         "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-side",
         "alt": "ASUS ROG Strix Scope II 96 Wireless góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-strix-scope-ii-96-wireless-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449733/kuvtd4rvc2hhpnj9gcyt.jpg",
         "publicId": "seed/products/asus-rog-strix-scope-ii-96-wireless-detail",
         "alt": "ASUS ROG Strix Scope II 96 Wireless ảnh chi tiết"
       }
@@ -1394,17 +1394,17 @@
     "description": "Bàn phím cơ low-profile không dây dành cho làm việc đa thiết bị. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/pb759unb1zrwnzrtxv42.webp",
         "publicId": "seed/products/logitech-mx-mechanical-front",
         "alt": "Logitech MX Mechanical mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/yzorcwnc30vetlhxtxqg.webp",
         "publicId": "seed/products/logitech-mx-mechanical-side",
         "alt": "Logitech MX Mechanical góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-mx-mechanical-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/dml8slzbtsgnqqf5zfeu.webp",
         "publicId": "seed/products/logitech-mx-mechanical-detail",
         "alt": "Logitech MX Mechanical ảnh chi tiết"
       }
@@ -1454,17 +1454,17 @@
     "description": "Chuột gaming không dây siêu nhẹ dành cho game thủ thi đấu. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/ufrtlxuxlzgxwwbqz0be.webp",
         "publicId": "seed/products/logitech-g-pro-x-superlight-2-front",
         "alt": "Logitech G Pro X Superlight 2 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/jedmupbxvfveozpsnp2x.webp",
         "publicId": "seed/products/logitech-g-pro-x-superlight-2-side",
         "alt": "Logitech G Pro X Superlight 2 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g-pro-x-superlight-2-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/ypqxk25gfrv5lm1gqr2a.webp",
         "publicId": "seed/products/logitech-g-pro-x-superlight-2-detail",
         "alt": "Logitech G Pro X Superlight 2 ảnh chi tiết"
       }
@@ -1514,17 +1514,17 @@
     "description": "Chuột gaming đối xứng siêu nhẹ, tối ưu cho FPS và esports. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449749/jzejcmcegddhlksdbmiz.webp",
         "publicId": "seed/products/razer-viper-v3-pro-front",
         "alt": "Razer Viper V3 Pro mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449749/slrncst2ztdgkl8nw6yx.webp",
         "publicId": "seed/products/razer-viper-v3-pro-side",
         "alt": "Razer Viper V3 Pro góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-viper-v3-pro-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449749/oopyupa9inz8wmjvsm6o.webp",
         "publicId": "seed/products/razer-viper-v3-pro-detail",
         "alt": "Razer Viper V3 Pro ảnh chi tiết"
       }
@@ -1574,17 +1574,17 @@
     "description": "Chuột gaming công thái học không dây dành cho người thuận tay phải. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449738/kebm0ihtngsp5iyinynm.webp",
         "publicId": "seed/products/razer-deathadder-v3-pro-front",
         "alt": "Razer DeathAdder V3 Pro mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449738/pycbqee2ux6bar51val7.webp",
         "publicId": "seed/products/razer-deathadder-v3-pro-side",
         "alt": "Razer DeathAdder V3 Pro góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=razer-deathadder-v3-pro-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449737/ybwmrdqnvotye4wqr1v1.webp",
         "publicId": "seed/products/razer-deathadder-v3-pro-detail",
         "alt": "Razer DeathAdder V3 Pro ảnh chi tiết"
       }
@@ -1634,17 +1634,17 @@
     "description": "Chuột gaming không dây nhiều nút, LED RGB và con lăn hai chế độ. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/ufrtlxuxlzgxwwbqz0be.webp",
         "publicId": "seed/products/logitech-g502-x-plus-front",
         "alt": "Logitech G502 X Plus mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449746/jedmupbxvfveozpsnp2x.webp",
         "publicId": "seed/products/logitech-g502-x-plus-side",
         "alt": "Logitech G502 X Plus góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=logitech-g502-x-plus-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449745/ypqxk25gfrv5lm1gqr2a.webp",
         "publicId": "seed/products/logitech-g502-x-plus-detail",
         "alt": "Logitech G502 X Plus ảnh chi tiết"
       }
@@ -1694,17 +1694,17 @@
     "description": "Chuột gaming siêu nhẹ hợp tác cùng Aim Lab, hướng đến game FPS. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/lzuocm8js1cbf0whe4ak.webp",
         "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-front",
         "alt": "ASUS ROG Harpe Ace Aim Lab Edition mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449703/povzqypyghc6fyneibsq.webp",
         "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-side",
         "alt": "ASUS ROG Harpe Ace Aim Lab Edition góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=asus-rog-harpe-ace-aim-lab-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449702/pucw2juudkpefeaccvmj.webp",
         "publicId": "seed/products/asus-rog-harpe-ace-aim-lab-detail",
         "alt": "ASUS ROG Harpe Ace Aim Lab Edition ảnh chi tiết"
       }
@@ -1754,17 +1754,17 @@
     "description": "Chuột gaming nhẹ nhiều nút, phù hợp nhiều thể loại trò chơi. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449753/b71sk8sehsc7utgqdpdj.webp",
         "publicId": "seed/products/steelseries-aerox-5-front",
         "alt": "SteelSeries Aerox 5 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449754/cxq1jzfb6wuqstipvtvs.webp",
         "publicId": "seed/products/steelseries-aerox-5-side",
         "alt": "SteelSeries Aerox 5 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=steelseries-aerox-5-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449753/u9cqkcmr4wavbbcxtiug.webp",
         "publicId": "seed/products/steelseries-aerox-5-detail",
         "alt": "SteelSeries Aerox 5 ảnh chi tiết"
       }
@@ -1814,17 +1814,17 @@
     "description": "Chuột gaming không dây nhẹ với form đối xứng và cảm biến chính xác. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793456303/zpdwnf3julenquxyoprz.webp",
         "publicId": "seed/products/pulsar-x2v2-front",
         "alt": "Pulsar X2V2 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793456304/d9utnue3o7pcldfxttqg.webp",
         "publicId": "seed/products/pulsar-x2v2-side",
         "alt": "Pulsar X2V2 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=pulsar-x2v2-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793456300/jcl2fpnk9e8ddjdzziqb.webp",
         "publicId": "seed/products/pulsar-x2v2-detail",
         "alt": "Pulsar X2V2 ảnh chi tiết"
       }
@@ -1874,17 +1874,17 @@
     "description": "Chuột gaming không dây đối xứng với nút cạnh có thể tùy chỉnh. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449735/zjcvwhkqjw5uspjootae.webp",
         "publicId": "seed/products/corsair-m75-wireless-front",
         "alt": "Corsair M75 Wireless mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449735/ucyah1313toy7y3csmcu.webp",
         "publicId": "seed/products/corsair-m75-wireless-side",
         "alt": "Corsair M75 Wireless góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-m75-wireless-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449734/dqz2fdhyclznxbmcdn3n.webp",
         "publicId": "seed/products/corsair-m75-wireless-detail",
         "alt": "Corsair M75 Wireless ảnh chi tiết"
       }
@@ -1935,17 +1935,17 @@
     "description": "SSD NVMe PCIe 4.0 Samsung 990 PRO dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449751/cpkbhhozbcpdzpaix0i0.webp",
         "publicId": "seed/products/samsung-990-pro-front",
         "alt": "Samsung 990 PRO mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449751/kqegg64leugiix3jb0so.webp",
         "publicId": "seed/products/samsung-990-pro-side",
         "alt": "Samsung 990 PRO góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=samsung-990-pro-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449750/j42xiuqutqlyscjtqmwf.webp",
         "publicId": "seed/products/samsung-990-pro-detail",
         "alt": "Samsung 990 PRO ảnh chi tiết"
       }
@@ -1996,17 +1996,17 @@
     "description": "SSD NVMe PCIe 4.0 WD_BLACK SN850X dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449734/pripv0jkdn8t3p6ppsjd.webp",
         "publicId": "seed/products/wd-black-sn850x-front",
         "alt": "WD_BLACK SN850X mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449734/mprkkm8vcbgga21uwk9r.webp",
         "publicId": "seed/products/wd-black-sn850x-side",
         "alt": "WD_BLACK SN850X góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=wd-black-sn850x-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449734/chryp1zwe7xnws3glzz9.webp",
         "publicId": "seed/products/wd-black-sn850x-detail",
         "alt": "WD_BLACK SN850X ảnh chi tiết"
       }
@@ -2057,17 +2057,17 @@
     "description": "SSD NVMe PCIe 4.0 Crucial T500 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449737/z5kelozrxlymufp01bdm.webp",
         "publicId": "seed/products/crucial-t500-front",
         "alt": "Crucial T500 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449737/z5kelozrxlymufp01bdm.webp",
         "publicId": "seed/products/crucial-t500-side",
         "alt": "Crucial T500 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=crucial-t500-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449737/z5kelozrxlymufp01bdm.webp",
         "publicId": "seed/products/crucial-t500-detail",
         "alt": "Crucial T500 ảnh chi tiết"
       }
@@ -2118,17 +2118,17 @@
     "description": "SSD NVMe PCIe 4.0 Kingston KC3000 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449742/acqheq6efwaxgmkpztut.webp",
         "publicId": "seed/products/kingston-kc3000-front",
         "alt": "Kingston KC3000 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449742/uojzuegdiwjqxbh8ypnj.webp",
         "publicId": "seed/products/kingston-kc3000-side",
         "alt": "Kingston KC3000 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=kingston-kc3000-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449742/v5rmkius3ifpzm6jguyo.webp",
         "publicId": "seed/products/kingston-kc3000-detail",
         "alt": "Kingston KC3000 ảnh chi tiết"
       }
@@ -2179,17 +2179,17 @@
     "description": "SSD NVMe PCIe 4.0 Seagate FireCuda 530R dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449752/cdsbapjhs27u8balgpu9.webp",
         "publicId": "seed/products/seagate-firecuda-530r-front",
         "alt": "Seagate FireCuda 530R mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449752/gwkozfajlhgpll8cqros.webp",
         "publicId": "seed/products/seagate-firecuda-530r-side",
         "alt": "Seagate FireCuda 530R góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=seagate-firecuda-530r-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449752/vsagsywyl6kc6bxaxamf.webp",
         "publicId": "seed/products/seagate-firecuda-530r-detail",
         "alt": "Seagate FireCuda 530R ảnh chi tiết"
       }
@@ -2240,17 +2240,17 @@
     "description": "SSD NVMe PCIe 4.0 Lexar NM790 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449744/gyrsyqzcvyntwzepblkr.jpg",
         "publicId": "seed/products/lexar-nm790-front",
         "alt": "Lexar NM790 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449744/tyjotxgfqjqj47rx3sph.jpg",
         "publicId": "seed/products/lexar-nm790-side",
         "alt": "Lexar NM790 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=lexar-nm790-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449744/cxbwlhdtr5dlffikmy4i.jpg",
         "publicId": "seed/products/lexar-nm790-detail",
         "alt": "Lexar NM790 ảnh chi tiết"
       }
@@ -2301,17 +2301,17 @@
     "description": "SSD NVMe PCIe 4.0 Corsair MP600 PRO LPX dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449736/diygebzxexf1gksetda5.jpg",
         "publicId": "seed/products/corsair-mp600-pro-lpx-front",
         "alt": "Corsair MP600 PRO LPX mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449736/eoqdkfdgroxprun4loxa.jpg",
         "publicId": "seed/products/corsair-mp600-pro-lpx-side",
         "alt": "Corsair MP600 PRO LPX góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=corsair-mp600-pro-lpx-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449736/hw37oihulwancths7xhs.jpg",
         "publicId": "seed/products/corsair-mp600-pro-lpx-detail",
         "alt": "Corsair MP600 PRO LPX ảnh chi tiết"
       }
@@ -2362,17 +2362,17 @@
     "description": "SSD NVMe PCIe 4.0 SK hynix Platinum P41 dành cho nâng cấp máy tính và lưu trữ tốc độ cao. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449753/a7lacatalyjlcgqhcjha.jpg",
         "publicId": "seed/products/sk-hynix-platinum-p41-front",
         "alt": "SK hynix Platinum P41 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449753/ywas08cr0b7vr2ry4jt4.jpg",
         "publicId": "seed/products/sk-hynix-platinum-p41-side",
         "alt": "SK hynix Platinum P41 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=sk-hynix-platinum-p41-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449752/ikmzqhxfmszz2k4ijjeo.jpg",
         "publicId": "seed/products/sk-hynix-platinum-p41-detail",
         "alt": "SK hynix Platinum P41 ảnh chi tiết"
       }

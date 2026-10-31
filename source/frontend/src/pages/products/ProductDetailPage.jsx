@@ -26,8 +26,10 @@ import {
 import {cartErrorMessage} from '../../features/cart/cartApi.js';
 import {useCart} from '../../features/cart/CartContext.jsx';
 import ProductFeedback from '../../features/feedback/ProductFeedback.jsx';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 export default function ProductDetailPage() {
+  const {t} = useLanguage();
   const {slug} = useParams();
   const {add} = useCart();
   const [product, setProduct] = useState(null);
@@ -51,7 +53,7 @@ export default function ProductDetailPage() {
         setSelectedImage(0);
       })
       .catch(errorValue => {
-        const message = catalogErrorMessage(errorValue, 'Không tải được chi tiết sản phẩm.');
+        const message = catalogErrorMessage(errorValue, t('detail.loadError'));
         if (message) setError(message);
       })
       .finally(() => {
@@ -59,7 +61,7 @@ export default function ProductDetailPage() {
       });
 
     return () => controller.abort();
-  }, [slug]);
+  }, [slug, t]);
 
   const selectedVariant = useMemo(
     () => product?.variants?.find(variant => variant.sku === selectedSku),
@@ -78,12 +80,12 @@ export default function ProductDetailPage() {
         variantId: selectedVariant._id,
         quantity: 1
       });
-      setCartMessage('Đã thêm sản phẩm vào giỏ hàng.');
+      setCartMessage(t('detail.added'));
     } catch (requestError) {
       setCartError(
         cartErrorMessage(
           requestError,
-          'Không thể thêm sản phẩm vào giỏ hàng.'
+          t('detail.addError')
         )
       );
     } finally {
@@ -98,8 +100,8 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <Stack spacing={2}>
-        <Alert severity="error">{error || 'Không tìm thấy sản phẩm.'}</Alert>
-        <Button component={Link} to="/products" sx={{alignSelf: 'flex-start'}}>Quay lại catalog</Button>
+        <Alert severity="error">{error || t('detail.notFound')}</Alert>
+        <Button component={Link} to="/products" sx={{alignSelf: 'flex-start'}}>{t('detail.backCatalog')}</Button>
       </Stack>
     );
   }
@@ -111,9 +113,9 @@ export default function ProductDetailPage() {
 
   return (
     <Stack spacing={4}>
-      <Breadcrumbs aria-label="Điều hướng sản phẩm">
-        <Link to="/" style={{color: 'inherit'}}>Trang chủ</Link>
-        <Link to="/products" style={{color: 'inherit'}}>Sản phẩm</Link>
+      <Breadcrumbs aria-label={t('detail.breadcrumb')}>
+        <Link to="/" style={{color: 'inherit'}}>{t('nav.home')}</Link>
+        <Link to="/products" style={{color: 'inherit'}}>{t('nav.products')}</Link>
         <Typography color="text.primary">{product.name}</Typography>
       </Breadcrumbs>
 
@@ -134,7 +136,7 @@ export default function ProductDetailPage() {
                 key={image.publicId || image.url}
                 component="button"
                 type="button"
-                aria-label={`Xem ảnh ${index + 1}`}
+                aria-label={t('detail.viewImage',{number:index + 1})}
                 onClick={() => setSelectedImage(index)}
                 variant="outlined"
                 sx={{cursor: 'pointer', borderWidth: index === selectedImage ? 2 : 1, borderColor: index === selectedImage ? 'primary.main' : 'divider', overflow: 'hidden', p: 0.75}}
@@ -155,7 +157,7 @@ export default function ProductDetailPage() {
           <Typography component="h1" variant="h3" fontWeight={850}>{product.name}</Typography>
           <Stack direction="row" spacing={1} alignItems="center">
             <Rating value={product.averageRating || 0} precision={0.5} readOnly/>
-            <Typography color="text.secondary">{product.ratingCount || 0} đánh giá</Typography>
+            <Typography color="text.secondary">{t('detail.reviews',{count:product.ratingCount || 0})}</Typography>
           </Stack>
           <Typography color="text.secondary" sx={{fontSize: '1.05rem'}}>{product.shortDescription}</Typography>
           <Divider/>
@@ -164,7 +166,7 @@ export default function ProductDetailPage() {
           </Typography>
 
           <Box>
-            <Typography component="h2" variant="subtitle1" fontWeight={800} sx={{mb: 1.25}}>Chọn phiên bản</Typography>
+            <Typography component="h2" variant="subtitle1" fontWeight={800} sx={{mb: 1.25}}>{t('detail.selectVariant')}</Typography>
             <Stack direction="row" spacing={1.25} flexWrap="wrap" useFlexGap>
               {product.variants.map(variant => (
                 <Button
@@ -194,9 +196,9 @@ export default function ProductDetailPage() {
                 ))}
                 <Divider/>
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography color="text.secondary">Tình trạng</Typography>
+                  <Typography color="text.secondary">{t('detail.condition')}</Typography>
                   <Typography color={selectedVariant.availableStock > 0 ? 'success.main' : 'error.main'} fontWeight={800}>
-                    {selectedVariant.availableStock > 0 ? `Còn ${selectedVariant.availableStock}` : 'Tạm hết hàng'}
+                    {selectedVariant.availableStock > 0 ? t('catalog.stockShort',{count:selectedVariant.availableStock}) : t('catalog.outOfStock')}
                   </Typography>
                 </Stack>
               </Stack>
@@ -210,13 +212,13 @@ export default function ProductDetailPage() {
             disabled={adding || !selectedVariant || selectedVariant.availableStock < 1}
             onClick={addToCart}
           >
-            {adding ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+            {adding ? t('detail.adding') : t('detail.addCart')}
           </Button>
         </Stack>
       </Box>
 
       <Paper component="section" variant="outlined" sx={{p: {xs: 2.5, md: 4}}}>
-        <Typography component="h2" variant="h5" fontWeight={850} sx={{mb: 2}}>Mô tả sản phẩm</Typography>
+        <Typography component="h2" variant="h5" fontWeight={850} sx={{mb: 2}}>{t('detail.description')}</Typography>
         <Typography color="text.secondary" sx={{whiteSpace: 'pre-line', lineHeight: 1.8}}>{product.description}</Typography>
         {product.tags?.length > 0 && (
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{mt: 3}}>

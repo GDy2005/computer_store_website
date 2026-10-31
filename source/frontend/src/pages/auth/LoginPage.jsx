@@ -2,9 +2,11 @@ import {useState} from 'react';
 import {Alert,Button,Divider,Stack,TextField,Typography} from '@mui/material';
 import {Link,useLocation,useNavigate,useSearchParams} from 'react-router-dom';
 import {getApiMessage,useAuth} from '../../features/auth/AuthContext.jsx';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 import AuthCard from './AuthCard.jsx';
 
 export default function LoginPage() {
+  const {t} = useLanguage();
   const {login} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,16 +23,16 @@ export default function LoginPage() {
       await login(form);
       navigate(location.state?.from || '/profile', {replace:true});
     } catch (requestError) {
-      setError(getApiMessage(requestError, 'Không thể đăng nhập.'));
+      setError(getApiMessage(requestError, t('auth.loginError')));
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <AuthCard title="Đăng nhập" description="Phiên đăng nhập được bảo vệ trên máy chủ.">
+    <AuthCard title={t('auth.loginTitle')} description={t('auth.loginDescription')}>
       {searchParams.get('oauth') === 'failed' && (
-        <Alert severity="error">Google không thể xác nhận tài khoản. Vui lòng thử lại.</Alert>
+        <Alert severity="error">{t('auth.googleFailed')}</Alert>
       )}
       {error && <Alert severity="error">{error}</Alert>}
       <Stack component="form" spacing={2} onSubmit={submit}>
@@ -43,7 +45,7 @@ export default function LoginPage() {
           onChange={event => setForm({...form,email:event.target.value})}
         />
         <TextField
-          label="Mật khẩu"
+          label={t('auth.password')}
           type="password"
           autoComplete="current-password"
           required
@@ -51,16 +53,16 @@ export default function LoginPage() {
           onChange={event => setForm({...form,password:event.target.value})}
         />
         <Button type="submit" variant="contained" size="large" disabled={submitting}>
-          {submitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
+          {submitting ? t('auth.signingIn') : t('auth.signIn')}
         </Button>
       </Stack>
       <Button component="a" href="/api/v1/auth/google" variant="outlined" size="large">
-        Tiếp tục với Google
+        {t('auth.google')}
       </Button>
       <Divider/>
       <Stack direction={{xs:'column',sm:'row'}} justifyContent="space-between" gap={1}>
-        <Typography component={Link} to="/register" color="primary">Tạo tài khoản</Typography>
-        <Typography component={Link} to="/forgot-password" color="primary">Quên mật khẩu?</Typography>
+        <Typography component={Link} to="/register" color="primary">{t('auth.createAccount')}</Typography>
+        <Typography component={Link} to="/forgot-password" color="primary">{t('auth.forgot')}</Typography>
       </Stack>
     </AuthCard>
   );

@@ -6,10 +6,13 @@ import {
 import {Link, useParams} from 'react-router-dom';
 import {
   fetchMyOrder, formatMoney, formatOrderDate,
-  orderErrorMessage, statusColors, statusLabels
+  orderErrorMessage, statusColors
 } from '../../features/orders/orderApi.js';
+import {formatAddress} from '../../features/address/addressFormat.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 export default function OrderDetailPage() {
+  const {locale, t} = useLanguage();
   const {orderNumber} = useParams();
   const [order, setOrder] = useState(null);
   const [error, setError] = useState('');
@@ -19,11 +22,11 @@ export default function OrderDetailPage() {
     fetchMyOrder(orderNumber, {signal: controller.signal})
       .then(setOrder)
       .catch(requestError => {
-        const message = orderErrorMessage(requestError, 'Không thể tải chi tiết đơn hàng.');
+        const message = orderErrorMessage(requestError, t('orders.detailError'));
         if (message) setError(message);
       });
     return () => controller.abort();
-  }, [orderNumber]);
+  }, [orderNumber, t]);
 
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!order) return <Box sx={{display: 'grid', placeItems: 'center', minHeight: 300}}><CircularProgress/></Box>;
@@ -33,17 +36,17 @@ export default function OrderDetailPage() {
     <Stack spacing={3} maxWidth={960} mx="auto">
       <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={2}>
         <Box>
-          <Button component={Link} to="/orders" sx={{px: 0}}>← Danh sách đơn</Button>
+          <Button component={Link} to="/orders" sx={{px: 0}}>← {t('orders.back')}</Button>
           <Typography component="h1" variant="h4" fontWeight={850}>{order.orderNumber}</Typography>
-          <Typography color="text.secondary">Đặt lúc {formatOrderDate(order.createdAt)}</Typography>
+          <Typography color="text.secondary">{t('orders.placedAt',{date:formatOrderDate(order.createdAt, locale)})}</Typography>
         </Box>
-        <Chip label={statusLabels[order.status] || order.status} color={statusColors[order.status] || 'default'} sx={{alignSelf: 'flex-start'}}/>
+        <Chip label={t(`status.${order.status}`)} color={statusColors[order.status] || 'default'} sx={{alignSelf: 'flex-start'}}/>
       </Stack>
 
       {order.cancellationReason && <Alert severity="error">{order.cancellationReason}</Alert>}
 
       <Paper variant="outlined" sx={{p: {xs: 2.5, sm: 3}}}>
-        <Typography component="h2" variant="h6" fontWeight={800} mb={2}>Sản phẩm</Typography>
+        <Typography component="h2" variant="h6" fontWeight={800} mb={2}>{t('orders.products')}</Typography>
         <Stack divider={<Divider flexItem/>} spacing={2}>
           {order.items.map(item => (
             <Stack key={item.variantId} direction="row" spacing={2} alignItems="center">
@@ -51,9 +54,9 @@ export default function OrderDetailPage() {
               <Box flexGrow={1}>
                 <Typography fontWeight={750}>{item.productName}</Typography>
                 <Typography variant="body2" color="text.secondary">{item.variantName} · {item.sku}</Typography>
-                <Typography variant="body2">{item.quantity} × {formatMoney(item.unitPrice)}</Typography>
+                <Typography variant="body2">{item.quantity} × {formatMoney(item.unitPrice, locale)}</Typography>
               </Box>
-              <Typography fontWeight={750}>{formatMoney(item.lineTotal)}</Typography>
+              <Typography fontWeight={750}>{formatMoney(item.lineTotal, locale)}</Typography>
             </Stack>
           ))}
         </Stack>
@@ -61,32 +64,32 @@ export default function OrderDetailPage() {
 
       <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'}, gap: 3}}>
         <Paper variant="outlined" sx={{p: 3}}>
-          <Typography component="h2" variant="h6" fontWeight={800} mb={1}>Giao hàng</Typography>
+          <Typography component="h2" variant="h6" fontWeight={800} mb={1}>{t('orders.shipping')}</Typography>
           <Typography fontWeight={700}>{address.recipientName}</Typography>
           <Typography>{address.phone}</Typography>
-          <Typography>{address.addressLine}, {address.ward}, {address.district}, {address.province}</Typography>
+          <Typography>{formatAddress(address, locale)}</Typography>
         </Paper>
         <Paper variant="outlined" sx={{p: 3}}>
-          <Typography component="h2" variant="h6" fontWeight={800} mb={1}>Thanh toán</Typography>
-          <Typography>Phương thức: {order.payment.method === 'COD' ? 'Thanh toán khi nhận hàng' : 'Thanh toán online mô phỏng'}</Typography>
+          <Typography component="h2" variant="h6" fontWeight={800} mb={1}>{t('checkout.payment')}</Typography>
+          <Typography>{t('orders.method')}: {order.payment.method === 'COD' ? t('checkout.cod') : t('checkout.online')}</Typography>
           <Divider sx={{my: 1.5}}/>
           <Stack spacing={0.75}>
-            <Stack direction="row" justifyContent="space-between"><span>Tạm tính</span><span>{formatMoney(order.pricing.subtotal)}</span></Stack>
-            <Stack direction="row" justifyContent="space-between"><span>Giảm giá</span><span>-{formatMoney(order.pricing.discountAmount)}</span></Stack>
-            {order.pricing.pointsDiscount > 0 && <Stack direction="row" justifyContent="space-between"><span>Đổi {order.loyalty.pointsUsed} điểm</span><span>-{formatMoney(order.pricing.pointsDiscount)}</span></Stack>}
-            <Stack direction="row" justifyContent="space-between"><span>Phí giao hàng</span><span>{formatMoney(order.pricing.shippingFee)}</span></Stack>
-            <Stack direction="row" justifyContent="space-between"><strong>Tổng cộng</strong><strong>{formatMoney(order.pricing.total)}</strong></Stack>
+            <Stack direction="row" justifyContent="space-between"><span>{t('cart.subtotal')}</span><span>{formatMoney(order.pricing.subtotal, locale)}</span></Stack>
+            <Stack direction="row" justifyContent="space-between"><span>{t('checkout.discount')}</span><span>-{formatMoney(order.pricing.discountAmount, locale)}</span></Stack>
+            {order.pricing.pointsDiscount > 0 && <Stack direction="row" justifyContent="space-between"><span>{t('orders.pointsUsed',{count:order.loyalty.pointsUsed})}</span><span>-{formatMoney(order.pricing.pointsDiscount, locale)}</span></Stack>}
+            <Stack direction="row" justifyContent="space-between"><span>{t('checkout.shipping')}</span><span>{formatMoney(order.pricing.shippingFee, locale)}</span></Stack>
+            <Stack direction="row" justifyContent="space-between"><strong>{t('checkout.total')}</strong><strong>{formatMoney(order.pricing.total, locale)}</strong></Stack>
           </Stack>
         </Paper>
       </Box>
 
       <Paper variant="outlined" sx={{p: 3}}>
-        <Typography component="h2" variant="h6" fontWeight={800} mb={2}>Lịch sử trạng thái</Typography>
+        <Typography component="h2" variant="h6" fontWeight={800} mb={2}>{t('orders.history')}</Typography>
         <Stack spacing={2}>
           {order.statusHistory.map((entry, index) => (
             <Box key={`${entry.status}-${entry.updatedAt}-${index}`} sx={{borderLeft: '3px solid', borderColor: `${statusColors[entry.status] || 'grey'}.main`, pl: 2}}>
-              <Typography fontWeight={750}>{statusLabels[entry.status] || entry.status}</Typography>
-              <Typography variant="body2" color="text.secondary">{formatOrderDate(entry.updatedAt)}</Typography>
+              <Typography fontWeight={750}>{t(`status.${entry.status}`)}</Typography>
+              <Typography variant="body2" color="text.secondary">{formatOrderDate(entry.updatedAt, locale)}</Typography>
               {entry.note && <Typography variant="body2">{entry.note}</Typography>}
             </Box>
           ))}

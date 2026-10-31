@@ -1,7 +1,8 @@
 COMPUTER STORE — FINAL PROJECT
 
-Architecture: React frontend, Nginx, two API Gateway replicas, seven Node.js
-microservices, Kafka, MongoDB replica set, Redis and Elasticsearch.
+Architecture: React frontend, Nginx, two API Gateway replicas, two replicas of
+each of seven Node.js microservices, Kafka, MongoDB replica set, Redis and
+Elasticsearch.
 Run npm and Docker commands from this source/ directory. The Git repository
 root is the parent project/ directory.
 
@@ -15,6 +16,8 @@ following commands from source/ only if .env does not already exist:
 
 Edit .env for your local setup:
   - Set INTERNAL_SERVICE_SECRET and SESSION_SECRET to separate random values.
+  - SERVICE_REPLICAS defaults to 2 and controls every backend service and the
+    API Gateway. Infrastructure and one-shot initialization jobs stay single.
   - Set ADMIN_EMAIL and ADMIN_INITIAL_PASSWORD before the first startup;
     these credentials are used to create the initial admin account.
   - HTTP_PORT defaults to 80. If you change it (for example, to 8080), update
@@ -95,8 +98,8 @@ FEATURE STATUS
                   analytics projections and responsive dashboards.
   AI: stateless chatbot, Vietnamese need extraction, Search-grounded
       recommendations, verified links, fallback and privacy guardrails.
-  Scaling/QA: two Gateway replicas, two Notification consumers, Redis adapter,
-              automated CI evidence and responsive accessibility polish.
+  Scaling/QA: two replicas of every backend service and Gateway, Docker DNS,
+              Kafka consumer groups, Redis adapter and automated CI evidence.
 
 The current product images are placeholders. Replace the image URLs/publicIds
 in services/catalog-service/src/seeds/data/products.json or use the protected

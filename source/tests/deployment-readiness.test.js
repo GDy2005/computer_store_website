@@ -6,12 +6,27 @@ function read(relativePath) {
   return readFileSync(new URL(relativePath, import.meta.url), 'utf8');
 }
 
-test('production-style deployment declares two gateways and two notification consumers', () => {
+test('production-style deployment scales every backend service and Gateway', () => {
   const compose = read('../docker-compose.yml');
 
-  assert.match(compose, /^  gateway-1:/m);
-  assert.match(compose, /^  gateway-2:/m);
-  assert.match(compose, /^  notification-service-2:/m);
+  assert.match(compose, /^x-scaled-app: &scaled-app/m);
+  assert.match(compose, /replicas: \$\{SERVICE_REPLICAS:-2\}/);
+  for (const service of [
+    'gateway',
+    'identity-service',
+    'catalog-service',
+    'order-service',
+    'notification-service',
+    'analytics-service',
+    'search-service',
+    'ai-service'
+  ]) {
+    assert.match(
+      compose,
+      new RegExp(`^  ${service}:\\r?\\n    <<: \\*scaled-app`, 'm')
+    );
+  }
+  assert.doesNotMatch(compose, /^  notification-service-2:/m);
   assert.match(compose, /^  system-integration:/m);
 });
 
@@ -19,8 +34,8 @@ test('Nginx and realtime Gateway are configured for horizontal scaling', () => {
   const nginx = read('../infra/nginx/nginx.conf');
   const realtime = read('../api-gateway/src/services/realtime.service.js');
 
-  assert.match(nginx, /server gateway-1:5000/);
-  assert.match(nginx, /server gateway-2:5000/);
+  assert.match(nginx, /resolver 127\.0\.0\.11/);
+  assert.match(nginx, /server gateway:5000 resolve/);
   assert.match(nginx, /proxy_set_header Upgrade \$http_upgrade/);
   assert.match(realtime, /createAdapter\(publisher, subscriber\)/);
   assert.match(realtime, /groupId: 'realtime-gateway-group'/);

@@ -15,10 +15,12 @@ import {
   fetchOrderStatus
 } from '../../features/cart/cartApi.js';
 import {useCart} from '../../features/cart/CartContext.jsx';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 const terminalStates = new Set(['CONFIRMED', 'REJECTED']);
 
 export default function OrderProcessingPage() {
+  const {t} = useLanguage();
   const {orderNumber} = useParams();
   const {refresh} = useCart();
   const [order, setOrder] = useState(null);
@@ -47,7 +49,7 @@ export default function OrderProcessingPage() {
         setError(
           cartErrorMessage(
             requestError,
-            'Chưa thể đọc trạng thái đơn hàng.'
+            t('processing.readError')
           )
         );
       }
@@ -61,7 +63,7 @@ export default function OrderProcessingPage() {
       stopped = true;
       clearTimeout(timer);
     };
-  }, [orderNumber, refresh]);
+  }, [orderNumber, refresh, t]);
 
   const confirmed = order?.workflowStatus === 'CONFIRMED';
   const rejected = order?.workflowStatus === 'REJECTED';
@@ -69,7 +71,7 @@ export default function OrderProcessingPage() {
   return (
     <Paper variant="outlined" sx={{maxWidth: 700, mx: 'auto', p: {xs: 3, md: 6}}}>
       <Stack spacing={3} alignItems="center" textAlign="center">
-        {!order && !error && <CircularProgress aria-label="Đang kiểm tra đơn hàng"/>}
+        {!order && !error && <CircularProgress aria-label={t('processing.checking')}/>}
 
         <Box>
           <Typography component="p" variant="overline" color="secondary.main" fontWeight={850}>
@@ -77,28 +79,28 @@ export default function OrderProcessingPage() {
           </Typography>
           <Typography component="h1" variant="h4" fontWeight={900}>
             {confirmed
-              ? 'Đặt hàng thành công'
+              ? t('processing.success')
               : rejected
-                ? 'Đơn hàng không thể xác nhận'
-                : 'Đang xử lý đơn hàng'}
+                ? t('processing.rejected')
+                : t('processing.inProgress')}
           </Typography>
         </Box>
 
         {!confirmed && !rejected && (
           <Alert severity="info" sx={{width: '100%'}}>
-            Đơn hàng đang được xử lý. Bạn không cần gửi lại đơn hàng.
+            {t('processing.wait')}
           </Alert>
         )}
 
         {confirmed && (
           <Alert severity="success" sx={{width: '100%'}}>
-            Đơn hàng đã được xác nhận. Email xác nhận sẽ được gửi đến bạn.
+            {t('processing.confirmed')}
           </Alert>
         )}
 
         {rejected && (
           <Alert severity="error" sx={{width: '100%'}}>
-            {order.cancellationReason || 'Sản phẩm không còn đủ tồn kho.'}
+            {order.cancellationReason || t('processing.stockRejected')}
           </Alert>
         )}
 
@@ -106,10 +108,10 @@ export default function OrderProcessingPage() {
 
         <Stack direction={{xs: 'column', sm: 'row'}} spacing={1.5}>
           <Button component={Link} to="/products" variant="contained">
-            Tiếp tục mua sắm
+            {t('cart.continue')}
           </Button>
           <Button component={Link} to="/" variant="outlined">
-            Về trang chủ
+            {t('processing.home')}
           </Button>
         </Stack>
       </Stack>

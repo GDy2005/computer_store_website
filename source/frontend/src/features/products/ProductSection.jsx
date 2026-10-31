@@ -2,6 +2,8 @@ import {Box, Button, Stack, Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 
 import ProductCard from './ProductCard.jsx';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
+import UiIcon from '../../components/UiIcon.jsx';
 
 export default function ProductSection({
   title,
@@ -9,6 +11,7 @@ export default function ProductSection({
   products,
   actionTo = '/products'
 }) {
+  const {t} = useLanguage();
   if (!products?.length) return null;
 
   return (
@@ -24,8 +27,8 @@ export default function ProductSection({
           <Typography component="h2" variant="h4" fontWeight={850}>{title}</Typography>
           {description && <Typography color="text.secondary">{description}</Typography>}
         </Stack>
-        <Button component={Link} to={actionTo} sx={{alignSelf: {xs: 'flex-start', sm: 'auto'}}}>
-          Xem tất cả
+        <Button component={Link} to={actionTo} endIcon={<UiIcon name="arrowRight"/>} sx={{alignSelf: {xs: 'flex-start', sm: 'auto'}}}>
+          {t('common.viewAll')}
         </Button>
       </Stack>
       <Box

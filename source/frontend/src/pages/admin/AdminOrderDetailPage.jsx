@@ -27,6 +27,7 @@ import {
   orderStatusColors,
   orderStatusLabels
 } from '../../features/admin/adminFormat.js';
+import {formatAddress} from '../../features/address/addressFormat.js';
 
 const nextStatuses = {
   PENDING: ['CANCELLED'],
@@ -163,7 +164,7 @@ export default function AdminOrderDetailPage() {
               <Divider sx={{my: 1.5}}/>
               <Typography fontWeight={750}>{address.recipientName}</Typography>
               <Typography>{address.phone}</Typography>
-              <Typography>{[address.addressLine, address.ward, address.district, address.province].filter(Boolean).join(', ')}</Typography>
+              <Typography>{formatAddress(address, 'vi')}</Typography>
             </Paper>
             <Paper variant="outlined" sx={{p: 3}}>
               <Typography component="h2" variant="h6" fontWeight={850} mb={1.5}>Thanh toán</Typography>

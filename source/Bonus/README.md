@@ -7,8 +7,8 @@ cookie, access token hoặc dữ liệu cá nhân trong ảnh/log nộp bài.
 |---|---|---|
 | CI/CD | `../.github/workflows/ci.yml` | GitHub Actions run và artifact `ci-evidence` |
 | Microservices | `docker-compose.yml`, `api-gateway/src/app.js` | `GET /api/v1/foundation/status`, `docker compose ps` |
-| Hai Gateway + Nginx | `infra/nginx/nginx.conf` | `scripts/system-integration.js` kiểm tra cả `gateway-1` và `gateway-2` |
-| Kafka consumer groups | `packages/service-runtime/index.js` | Hai replica Notification và `kafka-consumer-groups.sh --describe --all-groups` |
+| Backend scaling + Nginx | `docker-compose.yml`, `infra/nginx/nginx.conf` | `scripts/system-integration.js` kiểm tra DNS có hai replica cho mọi backend service và Gateway |
+| Kafka consumer groups | `packages/service-runtime/index.js` | Hai member cho từng Kafka-backed service và `kafka-consumer-groups.sh --describe --all-groups` |
 | Retry và DLQ | `packages/service-runtime/index.js` | `npm run smoke` chạy normal/retry/poison probe |
 | Socket.IO Redis | `api-gateway/src/services/realtime.service.js` | System test gửi event xuyên hai Socket.IO server qua Redis |
 | Elasticsearch | `services/search-service/` | System test kiểm tra index có ít nhất 40 document |
@@ -28,9 +28,9 @@ docker compose exec -T elasticsearch curl -s http://localhost:9200/products_v1/_
 
 Khi quay video hoặc chụp screenshot, nên thu lần lượt:
 
-1. `docker compose ps` hiển thị hai Gateway và hai Notification replicas healthy.
+1. `docker compose ps` hiển thị hai replica cho Gateway và mọi backend service.
 2. Nhiều lần gọi `/health/live` trả cả hai giá trị `x-gateway-instance`.
-3. Kafka consumer groups có ít nhất hai member ở các group Notification.
+3. Kafka consumer groups có ít nhất hai member ở các service dùng Kafka.
 4. Elasticsearch `_count` có ít nhất 40 sản phẩm.
 5. Chatbot trả thẻ sản phẩm mở được URL thật.
 6. GitHub Actions xanh và có artifact `ci-evidence`.

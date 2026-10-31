@@ -6,10 +6,12 @@ import {
 import {Link, useSearchParams} from 'react-router-dom';
 import {
   fetchMyOrders, formatMoney, formatOrderDate,
-  orderErrorMessage, statusColors, statusLabels
+  orderErrorMessage, statusColors
 } from '../../features/orders/orderApi.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 export default function OrdersPage() {
+  const {locale, t} = useLanguage();
   const [params, setParams] = useSearchParams();
   const page = useMemo(() => {
     const value = Number(params.get('page') || 1);
@@ -29,7 +31,7 @@ export default function OrdersPage() {
       .then(setResult)
       .catch(requestError => {
         const message = orderErrorMessage(
-          requestError, 'Không thể tải lịch sử đơn hàng.'
+          requestError, t('orders.loadError')
         );
         if (message) setError(message);
       })
@@ -37,7 +39,7 @@ export default function OrdersPage() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [page]);
+  }, [page, t]);
 
   function changePage(_, nextPage) {
     setParams(nextPage === 1 ? {} : {page: String(nextPage)});
@@ -48,11 +50,11 @@ export default function OrdersPage() {
     <Stack spacing={3} maxWidth={900} mx="auto">
       <Box>
         <Typography component="p" variant="overline" color="secondary.main" fontWeight={800}>
-          Tài khoản
+          {t('orders.account')}
         </Typography>
-        <Typography component="h1" variant="h4" fontWeight={850}>Đơn hàng của tôi</Typography>
+        <Typography component="h1" variant="h4" fontWeight={850}>{t('orders.title')}</Typography>
         <Typography color="text.secondary" sx={{mt: 1}}>
-          Theo dõi các đơn hàng đã đặt và lịch sử xử lý.
+          {t('orders.description')}
         </Typography>
       </Box>
 
@@ -60,8 +62,8 @@ export default function OrdersPage() {
       {loading && <Box sx={{display: 'grid', placeItems: 'center', minHeight: 240}}><CircularProgress/></Box>}
       {!loading && !error && result.items.length === 0 && (
         <Paper variant="outlined" sx={{p: 4, textAlign: 'center'}}>
-          <Typography fontWeight={750}>Bạn chưa có đơn hàng nào.</Typography>
-          <Button component={Link} to="/products" sx={{mt: 2}}>Xem sản phẩm</Button>
+          <Typography fontWeight={750}>{t('orders.empty')}</Typography>
+          <Button component={Link} to="/products" sx={{mt: 2}}>{t('common.viewProduct')}</Button>
         </Paper>
       )}
       {!loading && result.items.map(order => (
@@ -70,13 +72,13 @@ export default function OrdersPage() {
             <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={1}>
               <Box>
                 <Typography fontWeight={850}>{order.orderNumber}</Typography>
-                <Typography variant="body2" color="text.secondary">{formatOrderDate(order.createdAt)}</Typography>
+                <Typography variant="body2" color="text.secondary">{formatOrderDate(order.createdAt, locale)}</Typography>
               </Box>
-              <Chip label={statusLabels[order.status] || order.status} color={statusColors[order.status] || 'default'}/>
+              <Chip label={t(`status.${order.status}`)} color={statusColors[order.status] || 'default'}/>
             </Stack>
             <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" alignItems={{sm: 'center'}} gap={1}>
-              <Typography>{order.itemCount} sản phẩm · <strong>{formatMoney(order.pricing.total)}</strong></Typography>
-              <Button component={Link} to={`/orders/${order.orderNumber}`} variant="outlined">Xem chi tiết</Button>
+              <Typography>{t('orders.items',{count:order.itemCount})} · <strong>{formatMoney(order.pricing.total, locale)}</strong></Typography>
+              <Button component={Link} to={`/orders/${order.orderNumber}`} variant="outlined">{t('orders.viewDetail')}</Button>
             </Stack>
           </Stack>
         </Paper>
@@ -86,7 +88,7 @@ export default function OrdersPage() {
         <Stack alignItems="center" spacing={1}>
           <Pagination count={Math.max(1, result.meta.totalPages)} page={Math.min(page, Math.max(1, result.meta.totalPages))} onChange={changePage}/>
           <Typography variant="caption" color="text.secondary">
-            Trang {Math.min(page, Math.max(1, result.meta.totalPages))} / {Math.max(1, result.meta.totalPages)}
+            {t('products.page',{current:Math.min(page, Math.max(1, result.meta.totalPages)),total:Math.max(1, result.meta.totalPages)})}
           </Typography>
         </Stack>
       )}

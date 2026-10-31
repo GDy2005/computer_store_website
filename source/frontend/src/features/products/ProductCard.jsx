@@ -9,6 +9,8 @@ import {
   Typography
 } from '@mui/material';
 import {Link} from 'react-router-dom';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
+import UiIcon from '../../components/UiIcon.jsx';
 
 import {
   availableProductStock,
@@ -18,6 +20,7 @@ import {
 } from './productFormat.js';
 
 export default function ProductCard({product}) {
+  const {t} = useLanguage();
   const stock = availableProductStock(product);
   const category = product.categoryId?.name;
 
@@ -27,11 +30,14 @@ export default function ProductCard({product}) {
       sx={{
         height: '100%',
         overflow: 'hidden',
-        transition: 'transform 180ms ease, box-shadow 180ms ease',
+        bgcolor: 'rgba(255,255,255,.92)',
+        transition: 'transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 16px 36px rgba(23,63,53,0.12)'
-        }
+          transform: 'translateY(-7px)',
+          boxShadow: '0 22px 46px rgba(23,63,53,0.14)',
+          borderColor: 'rgba(18,76,61,.2)'
+        },
+        '&:hover .product-image': {transform: 'scale(1.055)'}
       }}
     >
       <CardActionArea
@@ -39,14 +45,18 @@ export default function ProductCard({product}) {
         to={`/products/${product.slug}`}
         sx={{display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'stretch'}}
       >
-        <Box
-          component="img"
-          src={productImage(product)}
-          alt={product.images?.[0]?.alt || product.name}
-          onError={handleImageError}
-          loading="lazy"
-          sx={{width: '100%', aspectRatio: '1 / 1', objectFit: 'contain', bgcolor: '#f8f8f5', p: 2}}
-        />
+        <Box sx={{position:'relative',width:'100%',aspectRatio:'1 / 1',overflow:'hidden',bgcolor:'#f2f4ef'}}>
+          <Box
+            className="product-image"
+            component="img"
+            src={productImage(product)}
+            alt={product.images?.[0]?.alt || product.name}
+            onError={handleImageError}
+            loading="lazy"
+            sx={{width:'100%',height:'100%',objectFit:'contain',p:2.5,transition:'transform 350ms cubic-bezier(.2,.75,.3,1)'}}
+          />
+          <Chip label={stock > 0 ? t('catalog.stockShort',{count:stock}) : t('catalog.outOfStock')} size="small" color={stock > 0 ? 'primary' : 'error'} sx={{position:'absolute',top:12,right:12,fontWeight:800}}/>
+        </Box>
         <CardContent sx={{display: 'flex', flexGrow: 1, flexDirection: 'column', gap: 1.25}}>
           <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
             <Typography variant="overline" color="text.secondary" sx={{lineHeight: 1.2}}>
@@ -79,9 +89,12 @@ export default function ProductCard({product}) {
           <Typography color="primary.main" fontWeight={850} sx={{fontSize: '1.08rem'}}>
             {formatProductPrice(product)}
           </Typography>
-          <Typography variant="caption" color={stock > 0 ? 'success.main' : 'error.main'} fontWeight={700}>
-            {stock > 0 ? `Còn ${stock} sản phẩm` : 'Tạm hết hàng'}
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="caption" color={stock > 0 ? 'success.main' : 'error.main'} fontWeight={750}>
+              {stock > 0 ? t('catalog.stock',{count:stock}) : t('catalog.outOfStock')}
+            </Typography>
+            <UiIcon name="arrowRight" color="primary" sx={{fontSize:20}}/>
+          </Stack>
         </CardContent>
       </CardActionArea>
     </Card>

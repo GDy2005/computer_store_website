@@ -31,10 +31,13 @@ const healthServiceNames = (
   .map(name => name.trim())
   .filter(name => serviceUrls[name]);
 
+const gatewayInstance =
+  process.env.INSTANCE_ID || process.env.HOSTNAME || 'gateway';
+
 export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   const app = express();
   app.set('trust proxy', 1);
-  app.use((req, res, next) => { req.requestId = randomUUID(); res.set('x-request-id', req.requestId); res.set('x-gateway-instance', process.env.INSTANCE_ID || 'gateway'); next(); });
+  app.use((req, res, next) => { req.requestId = randomUUID(); res.set('x-request-id', req.requestId); res.set('x-gateway-instance', gatewayInstance); next(); });
   app.get('/health/live', (req,res) => res.json({success:true}));
   app.get('/health/ready', async (req,res,next) => {
     try {

@@ -23,14 +23,15 @@ import {
   fetchProductFilters,
   fetchProducts
 } from '../../features/products/catalogApi.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 const sortOptions = [
-  ['newest', 'Mới nhất'],
-  ['best_selling', 'Bán chạy nhất'],
-  ['price_asc', 'Giá tăng dần'],
-  ['price_desc', 'Giá giảm dần'],
-  ['name_asc', 'Tên A–Z'],
-  ['name_desc', 'Tên Z–A']
+  ['newest', 'products.newest'],
+  ['best_selling', 'products.bestSelling'],
+  ['price_asc', 'products.priceAsc'],
+  ['price_desc', 'products.priceDesc'],
+  ['name_asc', 'products.nameAsc'],
+  ['name_desc', 'products.nameDesc']
 ];
 
 function queryFromParams(params) {
@@ -51,6 +52,7 @@ function queryFromParams(params) {
 }
 
 export default function ProductsPage() {
+  const {locale, t} = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const paramsKey = searchParams.toString();
   const query = useMemo(
@@ -74,12 +76,12 @@ export default function ProductsPage() {
     fetchProductFilters({signal: controller.signal})
       .then(setFilterOptions)
       .catch(errorValue => {
-        const message = catalogErrorMessage(errorValue, 'Không tải được dữ liệu bộ lọc.');
+        const message = catalogErrorMessage(errorValue, t('products.filterError'));
         if (message) setError(message);
       });
 
     return () => controller.abort();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -92,7 +94,7 @@ export default function ProductsPage() {
         setMeta(result.meta);
       })
       .catch(errorValue => {
-        const message = catalogErrorMessage(errorValue, 'Không tải được danh sách sản phẩm.');
+        const message = catalogErrorMessage(errorValue, t('products.listError'));
         if (message) setError(message);
       })
       .finally(() => {
@@ -100,7 +102,7 @@ export default function ProductsPage() {
       });
 
     return () => controller.abort();
-  }, [paramsKey]);
+  }, [paramsKey, t]);
 
   function updateDraft(field, value) {
     setDraft(current => ({...current, [field]: value}));
@@ -140,59 +142,59 @@ export default function ProductsPage() {
         <Typography component="p" variant="overline" color="secondary.main" fontWeight={800}>
           Catalog
         </Typography>
-        <Typography component="h1" variant="h3" fontWeight={850}>Sản phẩm</Typography>
+        <Typography component="h1" variant="h3" fontWeight={850}>{t('products.title')}</Typography>
         <Typography color="text.secondary" sx={{mt: 1}}>
-          Tìm cấu hình phù hợp bằng danh mục, thương hiệu, khoảng giá và đánh giá.
+          {t('products.description')}
         </Typography>
       </Box>
 
       <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '280px minmax(0, 1fr)'}, gap: 3, alignItems: 'start'}}>
         <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{p: 2.5, position: {md: 'sticky'}, top: {md: 96}}}>
           <Stack spacing={2.25}>
-            <Typography component="h2" variant="h6" fontWeight={800}>Bộ lọc</Typography>
+            <Typography component="h2" variant="h6" fontWeight={800}>{t('products.filters')}</Typography>
             <TextField
-              label="Từ khóa"
+              label={t('products.keyword')}
               value={draft.search}
               onChange={event => updateDraft('search', event.target.value)}
               inputProps={{maxLength: 100}}
               fullWidth
             />
             <FormControl fullWidth>
-              <InputLabel id="category-filter-label">Danh mục</InputLabel>
+              <InputLabel id="category-filter-label">{t('products.category')}</InputLabel>
               <Select
                 labelId="category-filter-label"
-                label="Danh mục"
+                label={t('products.category')}
                 value={draft.category}
                 onChange={event => updateDraft('category', event.target.value)}
               >
-                <MenuItem value="">Tất cả danh mục</MenuItem>
+                <MenuItem value="">{t('products.allCategories')}</MenuItem>
                 {filterOptions.categories.map(category => (
                   <MenuItem key={category.slug} value={category.slug}>{category.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel id="brand-filter-label">Thương hiệu</InputLabel>
+              <InputLabel id="brand-filter-label">{t('products.brand')}</InputLabel>
               <Select
                 labelId="brand-filter-label"
-                label="Thương hiệu"
+                label={t('products.brand')}
                 value={draft.brand}
                 onChange={event => updateDraft('brand', event.target.value)}
               >
-                <MenuItem value="">Tất cả thương hiệu</MenuItem>
+                <MenuItem value="">{t('products.allBrands')}</MenuItem>
                 {filterOptions.brands.map(brand => <MenuItem key={brand} value={brand}>{brand}</MenuItem>)}
               </Select>
             </FormControl>
             <Stack direction={{xs: 'column', sm: 'row'}} spacing={1.5}>
               <TextField
-                label="Giá từ"
+                label={t('products.priceFrom')}
                 type="number"
                 value={draft.minPrice}
                 onChange={event => updateDraft('minPrice', event.target.value)}
                 inputProps={{min: 0, step: 100000}}
               />
               <TextField
-                label="Giá đến"
+                label={t('products.priceTo')}
                 type="number"
                 value={draft.maxPrice}
                 onChange={event => updateDraft('maxPrice', event.target.value)}
@@ -200,22 +202,22 @@ export default function ProductsPage() {
               />
             </Stack>
             <FormControl fullWidth>
-              <InputLabel id="rating-filter-label">Đánh giá tối thiểu</InputLabel>
+              <InputLabel id="rating-filter-label">{t('products.minRating')}</InputLabel>
               <Select
                 labelId="rating-filter-label"
-                label="Đánh giá tối thiểu"
+                label={t('products.minRating')}
                 value={draft.minRating}
                 onChange={event => updateDraft('minRating', event.target.value)}
               >
-                <MenuItem value="">Tất cả đánh giá</MenuItem>
-                {[4, 3, 2, 1].map(value => <MenuItem key={value} value={String(value)}>{value} sao trở lên</MenuItem>)}
+                <MenuItem value="">{t('products.allRatings')}</MenuItem>
+                {[4, 3, 2, 1].map(value => <MenuItem key={value} value={String(value)}>{t('products.starsUp',{count:value})}</MenuItem>)}
               </Select>
             </FormControl>
-            <Button type="submit" variant="contained" size="large">Áp dụng</Button>
-            <Button type="button" color="inherit" onClick={() => setSearchParams({})}>Xóa bộ lọc</Button>
+            <Button type="submit" variant="contained" size="large">{t('products.apply')}</Button>
+            <Button type="button" color="inherit" onClick={() => setSearchParams({})}>{t('products.clear')}</Button>
             {filterOptions.priceRange.max > 0 && (
               <Typography variant="caption" color="text.secondary">
-                Khoảng giá dữ liệu: {filterOptions.priceRange.min.toLocaleString('vi-VN')}–{filterOptions.priceRange.max.toLocaleString('vi-VN')} ₫
+                {t('products.dataRange')}: {filterOptions.priceRange.min.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')}–{filterOptions.priceRange.max.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')} ₫
               </Typography>
             )}
           </Stack>
@@ -223,11 +225,11 @@ export default function ProductsPage() {
 
         <Stack spacing={3}>
           <Stack direction={{xs: 'column', sm: 'row'}} spacing={2} alignItems={{sm: 'center'}} justifyContent="space-between">
-            <Typography fontWeight={700}>{meta.totalItems} sản phẩm</Typography>
+            <Typography fontWeight={700}>{t('products.count',{count:meta.totalItems})}</Typography>
             <FormControl size="small" sx={{minWidth: 190}}>
-              <InputLabel id="sort-label">Sắp xếp</InputLabel>
-              <Select labelId="sort-label" label="Sắp xếp" value={query.sort} onChange={event => changeSort(event.target.value)}>
-                {sortOptions.map(([value, label]) => <MenuItem key={value} value={value}>{label}</MenuItem>)}
+              <InputLabel id="sort-label">{t('products.sort')}</InputLabel>
+              <Select labelId="sort-label" label={t('products.sort')} value={query.sort} onChange={event => changeSort(event.target.value)}>
+                {sortOptions.map(([value, key]) => <MenuItem key={value} value={value}>{t(key)}</MenuItem>)}
               </Select>
             </FormControl>
           </Stack>
@@ -235,11 +237,11 @@ export default function ProductsPage() {
           {error && <Alert severity="error">{error}</Alert>}
           {loading && (
             <Box sx={{display: 'grid', minHeight: 320, placeItems: 'center'}}>
-              <CircularProgress aria-label="Đang tải sản phẩm"/>
+              <CircularProgress aria-label={t('products.loading')}/>
             </Box>
           )}
           {!loading && !error && products.length === 0 && (
-            <Alert severity="info">Không tìm thấy sản phẩm phù hợp. Hãy thử xóa bớt bộ lọc.</Alert>
+            <Alert severity="info">{t('products.empty')}</Alert>
           )}
           {!loading && !error && products.length > 0 && (
             <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))'}, gap: 2.5}}>
@@ -258,7 +260,7 @@ export default function ProductsPage() {
               disabled={loading}
             />
             <Typography variant="caption" color="text.secondary">
-              Trang {Math.min(query.page, Math.max(1, meta.totalPages))} / {Math.max(1, meta.totalPages)}
+              {t('products.page',{current:Math.min(query.page, Math.max(1, meta.totalPages)),total:Math.max(1, meta.totalPages)})}
             </Typography>
           </Stack>
         </Stack>

@@ -10,6 +10,8 @@ const realtimeTopics = [
 ];
 
 const objectIdPattern = /^[a-f\d]{24}$/i;
+const gatewayInstance =
+  process.env.INSTANCE_ID || process.env.HOSTNAME || 'gateway';
 
 export function productRoom(productId) {
   return `product:${productId}`;
@@ -60,7 +62,7 @@ export function createRealtimeService({
   server,
   redis,
   kafka = kafkaClient(
-    `realtime-${process.env.INSTANCE_ID || 'gateway'}`
+    `realtime-${gatewayInstance}`
   )
 }) {
   const io = new Server(server, {
@@ -90,7 +92,7 @@ export function createRealtimeService({
       ready = false;
       log('error', 'Realtime consumer crashed', {
         service: 'api-gateway',
-        instance: process.env.INSTANCE_ID,
+        instance: gatewayInstance,
         error: payload.error.message
       });
     });
@@ -110,7 +112,7 @@ export function createRealtimeService({
           emitProductEvent(io, event);
           log('info', 'Realtime event emitted', {
             service: 'api-gateway',
-            instance: process.env.INSTANCE_ID,
+            instance: gatewayInstance,
             eventId: event.eventId,
             eventType: event.eventType,
             productId: event.payload.productId
@@ -118,7 +120,7 @@ export function createRealtimeService({
         } catch (error) {
           log('warn', 'Realtime event ignored', {
             service: 'api-gateway',
-            instance: process.env.INSTANCE_ID,
+            instance: gatewayInstance,
             topic,
             error: error.message
           });

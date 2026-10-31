@@ -23,6 +23,7 @@ import {
 import {useCart} from '../../features/cart/CartContext.jsx';
 import {formatVnd} from '../../features/products/productFormat.js';
 import {fetchLoyalty} from '../../features/loyalty/loyaltyApi.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 const emptyForm = {
   fullName: '',
@@ -35,14 +36,8 @@ const emptyForm = {
   paymentMethod: 'COD'
 };
 
-const addressFields = [
-  ['addressLine', 'Số nhà, tên đường'],
-  ['ward', 'Phường / xã'],
-  ['district', 'Quận / huyện'],
-  ['province', 'Tỉnh / thành phố']
-];
-
 export default function CheckoutPage() {
+  const {t} = useLanguage();
   const navigate = useNavigate();
   const {user} = useAuth();
   const {cart, loading: cartLoading} = useCart();
@@ -57,6 +52,12 @@ export default function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState('');
   const [couponMessage, setCouponMessage] = useState('');
+  const addressFields = [
+    ['addressLine', t('address.street')],
+    ['ward', t('address.ward')],
+    ['district', t('address.district')],
+    ['province', t('address.province')]
+  ];
 
   useEffect(() => {
     if (!user) return;
@@ -110,7 +111,7 @@ export default function CheckoutPage() {
           setError(
             cartErrorMessage(
               requestError,
-              'Không thể tính đơn hàng.'
+              t('checkout.calculateError')
             )
           );
         }
@@ -122,7 +123,7 @@ export default function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, [cartLoading, cart.items.length, couponCode, pointsToRedeem]);
+  }, [cartLoading, cart.items.length, couponCode, pointsToRedeem, t]);
 
   function change(field) {
     return event => {
@@ -138,7 +139,7 @@ export default function CheckoutPage() {
 
     if (!code) {
       setCouponCode('');
-      setCouponMessage('Đã bỏ mã giảm giá.');
+      setCouponMessage(t('checkout.couponRemoved'));
       return;
     }
 
@@ -148,14 +149,14 @@ export default function CheckoutPage() {
       setCouponCode(result.code);
       setCouponInput(result.code);
       setCouponMessage(
-        `Mã hợp lệ, giảm ${formatVnd(result.discountAmount)}.`
+        t('checkout.couponValid',{amount:formatVnd(result.discountAmount)})
       );
     } catch (requestError) {
       setCouponMessage('');
       setError(
         cartErrorMessage(
           requestError,
-          'Mã giảm giá không hợp lệ.'
+          t('checkout.couponInvalid')
         )
       );
     }
@@ -195,7 +196,7 @@ export default function CheckoutPage() {
       setError(
         cartErrorMessage(
           requestError,
-          'Không thể tạo đơn hàng.'
+          t('checkout.createError')
         )
       );
     } finally {
@@ -206,7 +207,7 @@ export default function CheckoutPage() {
   if (cartLoading) {
     return (
       <Box sx={{display: 'grid', minHeight: 360, placeItems: 'center'}}>
-        <CircularProgress aria-label="Đang tải checkout"/>
+        <CircularProgress aria-label={t('checkout.loading')}/>
       </Box>
     );
   }
@@ -215,9 +216,9 @@ export default function CheckoutPage() {
     return (
       <Alert
         severity="info"
-        action={<Button component={Link} to="/products">Xem sản phẩm</Button>}
+        action={<Button component={Link} to="/products">{t('common.viewProduct')}</Button>}
       >
-        Giỏ hàng đang trống nên chưa thể thanh toán.
+        {t('checkout.empty')}
       </Alert>
     );
   }
@@ -226,10 +227,10 @@ export default function CheckoutPage() {
     <Stack component="form" spacing={3} onSubmit={submit}>
       <Box>
         <Typography component="h1" variant="h4" fontWeight={850}>
-          Thanh toán
+          {t('checkout.title')}
         </Typography>
         <Typography color="text.secondary">
-          Giá và tồn kho sẽ được backend kiểm tra lại trước khi tạo đơn.
+          {t('checkout.description')}
         </Typography>
       </Box>
 
@@ -247,11 +248,11 @@ export default function CheckoutPage() {
           <Paper variant="outlined" sx={{p: {xs: 2.5, sm: 3.5}}}>
             <Stack spacing={2}>
               <Typography component="h2" variant="h6" fontWeight={850}>
-                Người nhận hàng
+                {t('checkout.recipient')}
               </Typography>
               <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr'}, gap: 2}}>
                 <TextField
-                  label="Họ và tên"
+                  label={t('checkout.fullName')}
                   required
                   value={form.fullName}
                   onChange={change('fullName')}
@@ -264,7 +265,7 @@ export default function CheckoutPage() {
                   onChange={change('email')}
                 />
                 <TextField
-                  label="Số điện thoại"
+                  label={t('address.phone')}
                   required
                   value={form.phone}
                   onChange={change('phone')}
@@ -276,7 +277,7 @@ export default function CheckoutPage() {
           <Paper variant="outlined" sx={{p: {xs: 2.5, sm: 3.5}}}>
             <Stack spacing={2}>
               <Typography component="h2" variant="h6" fontWeight={850}>
-                Địa chỉ giao hàng
+                {t('address.title')}
               </Typography>
               <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr'}, gap: 2}}>
                 {addressFields.map(([field, label], index) => (
@@ -296,16 +297,16 @@ export default function CheckoutPage() {
           <Paper variant="outlined" sx={{p: {xs: 2.5, sm: 3.5}}}>
             <Stack spacing={2}>
               <Typography component="h2" variant="h6" fontWeight={850}>
-                Thanh toán
+                {t('checkout.payment')}
               </Typography>
               <TextField
                 select
-                label="Phương thức"
+                label={t('checkout.method')}
                 value={form.paymentMethod}
                 onChange={change('paymentMethod')}
               >
-                <MenuItem value="COD">Thanh toán khi nhận hàng</MenuItem>
-                <MenuItem value="SIMULATED_ONLINE">Thanh toán online mô phỏng</MenuItem>
+                <MenuItem value="COD">{t('checkout.cod')}</MenuItem>
+                <MenuItem value="SIMULATED_ONLINE">{t('checkout.online')}</MenuItem>
               </TextField>
             </Stack>
           </Paper>
@@ -314,7 +315,7 @@ export default function CheckoutPage() {
         <Paper variant="outlined" sx={{p: 3, position: {md: 'sticky'}, top: {md: 96}}}>
           <Stack spacing={2}>
             <Typography component="h2" variant="h6" fontWeight={850}>
-              Đơn hàng
+              {t('checkout.order')}
             </Typography>
 
             {cart.items.map(item => (
@@ -332,14 +333,14 @@ export default function CheckoutPage() {
 
             <Stack direction="row" spacing={1}>
               <TextField
-                label="Mã giảm giá"
+                label={t('checkout.coupon')}
                 size="small"
                 value={couponInput}
                 onChange={event => setCouponInput(event.target.value.toUpperCase())}
                 inputProps={{maxLength: 50}}
               />
               <Button type="button" variant="outlined" onClick={applyCoupon}>
-                Áp dụng
+                {t('checkout.apply')}
               </Button>
             </Stack>
 
@@ -347,7 +348,7 @@ export default function CheckoutPage() {
 
             {user && (
               <TextField
-                label={`Dùng điểm (đang có ${pointsBalance})`}
+                label={t('checkout.points',{count:pointsBalance})}
                 type="number"
                 size="small"
                 value={pointsToRedeem}
@@ -356,7 +357,7 @@ export default function CheckoutPage() {
                   setPointsToRedeem(Number.isInteger(value) && value >= 0 ? value : 0);
                 }}
                 inputProps={{min: 0, max: Math.min(pointsBalance, preview?.loyalty?.maximumPoints ?? pointsBalance), step: 1}}
-                helperText="1 điểm tương đương 1.000 ₫"
+                helperText={t('checkout.pointsHelp')}
               />
             )}
 
@@ -365,30 +366,30 @@ export default function CheckoutPage() {
             {preview && !loadingPreview && (
               <>
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography color="text.secondary">Tạm tính</Typography>
+                  <Typography color="text.secondary">{t('cart.subtotal')}</Typography>
                   <Typography>{formatVnd(preview.pricing.subtotal)}</Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography color="text.secondary">Giảm giá</Typography>
+                  <Typography color="text.secondary">{t('checkout.discount')}</Typography>
                   <Typography color="success.main">
                     −{formatVnd(preview.pricing.discountAmount)}
                   </Typography>
                 </Stack>
                 {preview.pricing.pointsDiscount > 0 && (
                   <Stack direction="row" justifyContent="space-between">
-                    <Typography color="text.secondary">Đổi điểm</Typography>
+                    <Typography color="text.secondary">{t('checkout.redeem')}</Typography>
                     <Typography color="success.main">
                       −{formatVnd(preview.pricing.pointsDiscount)}
                     </Typography>
                   </Stack>
                 )}
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography color="text.secondary">Phí giao hàng</Typography>
+                  <Typography color="text.secondary">{t('checkout.shipping')}</Typography>
                   <Typography>{formatVnd(preview.pricing.shippingFee)}</Typography>
                 </Stack>
                 <Divider/>
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography fontWeight={850}>Tổng cộng</Typography>
+                  <Typography fontWeight={850}>{t('checkout.total')}</Typography>
                   <Typography color="primary.main" fontWeight={900}>
                     {formatVnd(preview.pricing.total)}
                   </Typography>
@@ -402,10 +403,10 @@ export default function CheckoutPage() {
               size="large"
               disabled={placing || loadingPreview || !preview}
             >
-              {placing ? 'Đang tạo đơn...' : 'Đặt hàng'}
+              {placing ? t('checkout.placing') : t('checkout.place')}
             </Button>
             <Button component={Link} to="/cart">
-              Quay lại giỏ hàng
+              {t('checkout.backCart')}
             </Button>
           </Stack>
         </Paper>

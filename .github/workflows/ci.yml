@@ -76,7 +76,7 @@ jobs:
         run: npm run build
 
   docker-integration:
-    name: Docker integration
+    name: Backend build and integration
     needs: [lint, unit-tests, frontend-build]
     runs-on: ubuntu-latest
     timeout-minutes: 40
