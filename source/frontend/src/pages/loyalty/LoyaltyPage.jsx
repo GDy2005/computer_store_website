@@ -55,7 +55,9 @@ export default function LoyaltyPage() {
       </Paper>
       {error && <Alert severity="error">{error}</Alert>}
       {loading && <Box sx={{display: 'grid', placeItems: 'center', minHeight: 180}}><CircularProgress/></Box>}
-      {!loading && result.transactions.length === 0 && <Alert severity="info">{t('loyalty.empty')}</Alert>}
+      {!loading && !error && result.transactions.length === 0 && (
+        <Alert severity="info">{t('loyalty.empty')}</Alert>
+      )}
       {!loading && result.transactions.map(transaction => (
         <Paper key={transaction.id} variant="outlined" sx={{p: 2.5}}>
           <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={1}>
@@ -73,7 +75,7 @@ export default function LoyaltyPage() {
           </Stack>
         </Paper>
       ))}
-      {!loading && (
+      {!loading && !error && (
         <Stack alignItems="center">
           <Pagination
             count={Math.max(1, result.meta.totalPages)}
