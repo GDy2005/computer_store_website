@@ -10,8 +10,6 @@ import {
 } from '@mui/material';
 import {Link} from 'react-router-dom';
 import {useLanguage} from '../i18n/LanguageContext.jsx';
-import UiIcon from '../../components/UiIcon.jsx';
-
 import {
   availableProductStock,
   formatProductPrice,
@@ -30,14 +28,14 @@ export default function ProductCard({product}) {
       sx={{
         height: '100%',
         overflow: 'hidden',
-        bgcolor: 'rgba(255,255,255,.92)',
+        bgcolor: 'common.white',
         transition: 'transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease',
         '&:hover': {
-          transform: 'translateY(-7px)',
-          boxShadow: '0 22px 46px rgba(23,63,53,0.14)',
-          borderColor: 'rgba(18,76,61,.2)'
+          transform: 'translateY(-4px)',
+          boxShadow: '0 14px 30px rgba(31,41,55,.12)',
+          borderColor: 'rgba(246,173,50,.72)'
         },
-        '&:hover .product-image': {transform: 'scale(1.055)'}
+        '&:hover .product-image': {transform: 'scale(1.04)'}
       }}
     >
       <CardActionArea
@@ -45,7 +43,7 @@ export default function ProductCard({product}) {
         to={`/products/${product.slug}`}
         sx={{display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'stretch'}}
       >
-        <Box sx={{position:'relative',width:'100%',aspectRatio:'1 / 1',overflow:'hidden',bgcolor:'#f2f4ef'}}>
+        <Box sx={{position: 'relative', width: '100%', aspectRatio: '1 / 1', overflow: 'hidden', bgcolor: '#f4f5f7'}}>
           <Box
             className="product-image"
             component="img"
@@ -53,47 +51,44 @@ export default function ProductCard({product}) {
             alt={product.images?.[0]?.alt || product.name}
             onError={handleImageError}
             loading="lazy"
-            sx={{width:'100%',height:'100%',objectFit:'contain',p:2.5,transition:'transform 350ms cubic-bezier(.2,.75,.3,1)'}}
+            sx={{width: '100%', height: '100%', objectFit: 'contain', p: {xs: 1.25, sm: 2}, transition: 'transform 320ms cubic-bezier(.2,.75,.3,1)'}}
           />
-          <Chip label={stock > 0 ? t('catalog.stockShort',{count:stock}) : t('catalog.outOfStock')} size="small" color={stock > 0 ? 'primary' : 'error'} sx={{position:'absolute',top:12,right:12,fontWeight:800}}/>
+          <Chip
+            label={stock > 0 ? t('catalog.stockShort', {count: stock}) : t('catalog.outOfStock')}
+            size="small"
+            color={stock > 0 ? 'default' : 'error'}
+            sx={{position: 'absolute', top: 9, right: 9, bgcolor: stock > 0 ? 'rgba(36,39,43,.82)' : undefined, color: stock > 0 ? 'common.white' : undefined, backdropFilter: 'blur(6px)', fontSize: 11}}
+          />
         </Box>
-        <CardContent sx={{display: 'flex', flexGrow: 1, flexDirection: 'column', gap: 1.25}}>
-          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-            <Typography variant="overline" color="text.secondary" sx={{lineHeight: 1.2}}>
+        <CardContent sx={{display: 'flex', flexGrow: 1, flexDirection: 'column', gap: 0.8, p: {xs: 1.25, sm: 1.6}, '&:last-child': {pb: {xs: 1.4, sm: 1.8}}}}>
+          <Stack direction="row" spacing={0.75} alignItems="center" justifyContent="space-between">
+            <Typography variant="caption" color="text.secondary" fontWeight={750} noWrap>
               {product.brand}
             </Typography>
-            {category && <Chip label={category} size="small" variant="outlined"/>}
+            {category && <Typography variant="caption" color="text.secondary" noWrap>{category}</Typography>}
           </Stack>
-          <Typography component="h3" variant="h6" sx={{fontWeight: 750, lineHeight: 1.3}}>
-            {product.name}
-          </Typography>
           <Typography
-            variant="body2"
-            color="text.secondary"
+            component="h3"
             sx={{
+              fontWeight: 750,
+              fontSize: {xs: '0.9rem', sm: '0.98rem'},
+              lineHeight: 1.4,
               display: '-webkit-box',
               overflow: 'hidden',
               WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 2
+              WebkitLineClamp: 2,
+              minHeight: {xs: '2.52rem', sm: '2.75rem'}
             }}
           >
-            {product.shortDescription}
+            {product.name}
           </Typography>
           <Box sx={{flexGrow: 1}}/>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Rating value={product.averageRating || 0} precision={0.5} size="small" readOnly/>
-            <Typography variant="caption" color="text.secondary">
-              ({product.ratingCount || 0})
-            </Typography>
-          </Stack>
-          <Typography color="primary.main" fontWeight={850} sx={{fontSize: '1.08rem'}}>
+          <Typography color="text.primary" fontWeight={900} sx={{fontSize: {xs: '0.92rem', sm: '1rem'}}}>
             {formatProductPrice(product)}
           </Typography>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="caption" color={stock > 0 ? 'success.main' : 'error.main'} fontWeight={750}>
-              {stock > 0 ? t('catalog.stock',{count:stock}) : t('catalog.outOfStock')}
-            </Typography>
-            <UiIcon name="arrowRight" color="primary" sx={{fontSize:20}}/>
+          <Stack direction="row" spacing={0.6} alignItems="center">
+            <Rating value={product.averageRating || 0} precision={0.5} size="small" readOnly sx={{fontSize: {xs: 15, sm: 17}}}/>
+            <Typography variant="caption" color="text.secondary">({product.ratingCount || 0})</Typography>
           </Stack>
         </CardContent>
       </CardActionArea>

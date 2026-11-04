@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Alert,
   Box,
@@ -25,40 +25,36 @@ import {
   fetchDashboardSummary
 } from '../../features/admin/adminApi.js';
 import AnalyticsChart from '../../features/admin/AnalyticsChart.jsx';
+import AnalyticsPieChart from '../../features/admin/AnalyticsPieChart.jsx';
 import {AdminLoading, AdminPageHeader} from '../../features/admin/AdminUi.jsx';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 import {
   formatAdminDate,
   formatAdminMoney,
   formatAdminNumber
 } from '../../features/admin/adminFormat.js';
+import UiIcon from '../../components/UiIcon.jsx';
 
-const periodOptions = [
-  ['year', 'Năm hiện tại'],
-  ['quarter', 'Quý hiện tại'],
-  ['month', 'Tháng hiện tại'],
-  ['week', 'Tuần hiện tại'],
-  ['custom', 'Khoảng tùy chọn']
-];
-
-function compactNumber(value) {
-  return new Intl.NumberFormat('vi-VN', {
+function compactNumber(value, locale = 'vi') {
+  return new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
     notation: 'compact',
     maximumFractionDigits: 1
   }).format(Number(value || 0));
 }
 
-function metricCards(summary) {
+function metricCards(summary, t, locale) {
   return [
-    ['Tổng người dùng', formatAdminNumber(summary.totalUsers)],
-    ['Người dùng mới', formatAdminNumber(summary.newUsers)],
-    ['Tổng đơn hợp lệ', formatAdminNumber(summary.totalOrders)],
-    ['Doanh thu', formatAdminMoney(summary.revenue)],
-    ['Lợi nhuận', formatAdminMoney(summary.profit)],
-    ['Sản phẩm đã bán', formatAdminNumber(summary.productsSold)]
+    {label: t('admin.dashboard.metrics.totalUsers'), value: formatAdminNumber(summary.totalUsers, locale), icon: 'people', color: '#292929', background: '#eeeeeb'},
+    {label: t('admin.dashboard.metrics.newUsers'), value: formatAdminNumber(summary.newUsers, locale), icon: 'user', color: '#9a6100', background: '#fff2d5'},
+    {label: t('admin.dashboard.metrics.totalOrders'), value: formatAdminNumber(summary.totalOrders, locale), icon: 'receipt', color: '#4d4d49', background: '#f0f0ed'},
+    {label: t('admin.dashboard.metrics.revenue'), value: formatAdminMoney(summary.revenue, locale), icon: 'dashboard', color: '#9a6100', background: '#fff2d5'},
+    {label: t('admin.dashboard.metrics.profit'), value: formatAdminMoney(summary.profit, locale), icon: 'coupon', color: '#292929', background: '#eeeeeb'},
+    {label: t('admin.dashboard.metrics.productsSold'), value: formatAdminNumber(summary.productsSold, locale), icon: 'package', color: '#9a6100', background: '#fff6e4'}
   ];
 }
 
 export default function AdminDashboardPage() {
+  const {locale, t} = useLanguage();
   const [summary, setSummary] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [draft, setDraft] = useState({period: 'month', startDate: '', endDate: ''});
@@ -75,14 +71,14 @@ export default function AdminDashboardPage() {
     fetchDashboardSummary({signal: controller.signal})
       .then(setSummary)
       .catch(error => {
-        const message = adminErrorMessage(error, 'Không thể tải dashboard tổng quan.');
+        const message = adminErrorMessage(error, t('admin.dashboard.errors.summary'));
         if (message) setSummaryError(message);
       })
       .finally(() => {
         if (!controller.signal.aborted) setSummaryLoading(false);
       });
     return () => controller.abort();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -91,19 +87,14 @@ export default function AdminDashboardPage() {
     fetchDashboardAnalytics(query, {signal: controller.signal})
       .then(setAnalytics)
       .catch(error => {
-        const message = adminErrorMessage(error, 'Không thể tải dữ liệu phân tích.');
+        const message = adminErrorMessage(error, t('admin.dashboard.errors.analytics'));
         if (message) setAnalyticsError(message);
       })
       .finally(() => {
         if (!controller.signal.aborted) setAnalyticsLoading(false);
       });
     return () => controller.abort();
-  }, [query]);
-
-  const categoryMax = useMemo(() => Math.max(
-    1,
-    ...(analytics?.categoryBreakdown || []).map(item => Number(item.revenue || 0))
-  ), [analytics]);
+  }, [query, t]);
 
   function applyPeriod(event) {
     event.preventDefault();
@@ -111,11 +102,11 @@ export default function AdminDashboardPage() {
 
     if (draft.period === 'custom') {
       if (!draft.startDate || !draft.endDate) {
-        setValidationError('Hãy chọn đủ ngày bắt đầu và ngày kết thúc.');
+        setValidationError(t('admin.dashboard.validation.missingDates'));
         return;
       }
       if (draft.startDate > draft.endDate) {
-        setValidationError('Ngày bắt đầu không được sau ngày kết thúc.');
+        setValidationError(t('admin.dashboard.validation.dateOrder'));
         return;
       }
     }
@@ -128,18 +119,26 @@ export default function AdminDashboardPage() {
   return (
     <Stack spacing={3}>
       <AdminPageHeader
-        title="Dashboard"
-        description="Tổng quan kinh doanh và phân tích theo khoảng thời gian từ Analytics Service."
+        eyebrow={t('admin.common.eyebrow')}
+        title={t('admin.dashboard.title')}
+        description={t('admin.dashboard.description')}
       />
 
       {summaryError && <Alert severity="error">{summaryError}</Alert>}
-      {summaryLoading && <AdminLoading label="Đang tải số liệu tổng quan"/>}
+      {summaryLoading && <AdminLoading label={t('admin.dashboard.loading.summary')}/>}
       {!summaryLoading && summary && (
         <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)'}, gap: 2}}>
-          {metricCards(summary).map(([label, value]) => (
-            <Paper key={label} variant="outlined" sx={{p: 2.5}}>
-              <Typography color="text.secondary" variant="body2">{label}</Typography>
-              <Typography variant="h5" fontWeight={900} sx={{mt: 0.5}}>{value}</Typography>
+          {metricCards(summary, t, locale).map(metric => (
+            <Paper key={metric.label} variant="outlined" sx={{p: 2.5, boxShadow: '0 7px 22px rgba(31,41,55,.05)', transition: 'transform 180ms ease, box-shadow 180ms ease', '&:hover': {transform: 'translateY(-3px)', boxShadow: '0 12px 28px rgba(31,41,55,.1)'}}}>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                <Box>
+                  <Typography color="text.secondary" variant="body2" fontWeight={650}>{metric.label}</Typography>
+                  <Typography variant="h5" fontWeight={900} sx={{mt: 0.65}}>{metric.value}</Typography>
+                </Box>
+                <Box sx={{display: 'grid', width: 48, height: 48, flexShrink: 0, placeItems: 'center', borderRadius: 2.5, bgcolor: metric.background, color: metric.color}}>
+                  <UiIcon name={metric.icon}/>
+                </Box>
+              </Stack>
             </Paper>
           ))}
         </Box>
@@ -149,24 +148,24 @@ export default function AdminDashboardPage() {
         <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
           <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={1} mb={2}>
             <Box>
-              <Typography component="h2" variant="h6" fontWeight={850}>Sản phẩm bán chạy</Typography>
-              <Typography variant="body2" color="text.secondary">Tính từ các đơn hợp lệ, không gồm đơn đã hủy.</Typography>
+              <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.dashboard.bestSellers.title')}</Typography>
+              <Typography variant="body2" color="text.secondary">{t('admin.dashboard.bestSellers.description')}</Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              Cập nhật {formatAdminDate(summary.updatedAt)}
+              {t('admin.dashboard.bestSellers.updated', {date: formatAdminDate(summary.updatedAt, {locale})})}
             </Typography>
           </Stack>
           {(summary.bestSellers || []).length === 0 ? (
-            <Alert severity="info">Chưa có dữ liệu bán hàng.</Alert>
+            <Alert severity="info">{t('admin.dashboard.bestSellers.empty')}</Alert>
           ) : (
             <TableContainer>
-              <Table size="small" aria-label="Sản phẩm bán chạy">
+              <Table size="small" aria-label={t('admin.dashboard.bestSellers.aria')}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Sản phẩm</TableCell>
-                    <TableCell>Danh mục</TableCell>
-                    <TableCell align="right">Số lượng</TableCell>
-                    <TableCell align="right">Doanh thu</TableCell>
+                    <TableCell>{t('admin.dashboard.table.product')}</TableCell>
+                    <TableCell>{t('admin.dashboard.table.category')}</TableCell>
+                    <TableCell align="right">{t('admin.dashboard.table.quantity')}</TableCell>
+                    <TableCell align="right">{t('admin.dashboard.table.revenue')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -174,8 +173,8 @@ export default function AdminDashboardPage() {
                     <TableRow key={item.productId || item.productName}>
                       <TableCell sx={{fontWeight: 700}}>{item.productName}</TableCell>
                       <TableCell>{item.categoryName || '—'}</TableCell>
-                      <TableCell align="right">{formatAdminNumber(item.quantity)}</TableCell>
-                      <TableCell align="right">{formatAdminMoney(item.revenue)}</TableCell>
+                      <TableCell align="right">{formatAdminNumber(item.quantity, locale)}</TableCell>
+                      <TableCell align="right">{formatAdminMoney(item.revenue, locale)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -185,31 +184,33 @@ export default function AdminDashboardPage() {
         </Paper>
       )}
 
-      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
-        <Typography component="h2" variant="h6" fontWeight={850}>Phân tích nâng cao</Typography>
+      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2, sm: 3}, bgcolor: 'secondary.light'}}>
+        <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.dashboard.analytics.title')}</Typography>
         <Stack direction={{xs: 'column', md: 'row'}} spacing={2} alignItems={{md: 'center'}} sx={{mt: 2}}>
           <FormControl sx={{minWidth: 210}}>
-            <InputLabel id="analytics-period-label">Khoảng thời gian</InputLabel>
+            <InputLabel id="analytics-period-label">{t('admin.dashboard.analytics.period')}</InputLabel>
             <Select
               labelId="analytics-period-label"
-              label="Khoảng thời gian"
+              label={t('admin.dashboard.analytics.period')}
               value={draft.period}
               onChange={event => setDraft(current => ({...current, period: event.target.value}))}
             >
-              {periodOptions.map(([value, label]) => <MenuItem key={value} value={value}>{label}</MenuItem>)}
+              {['year', 'quarter', 'month', 'week', 'custom'].map(value => (
+                <MenuItem key={value} value={value}>{t(`admin.dashboard.period.${value}`)}</MenuItem>
+              ))}
             </Select>
           </FormControl>
           {draft.period === 'custom' && (
             <>
               <TextField
-                label="Từ ngày"
+                label={t('admin.dashboard.analytics.startDate')}
                 type="date"
                 value={draft.startDate}
                 onChange={event => setDraft(current => ({...current, startDate: event.target.value}))}
                 InputLabelProps={{shrink: true}}
               />
               <TextField
-                label="Đến ngày"
+                label={t('admin.dashboard.analytics.endDate')}
                 type="date"
                 value={draft.endDate}
                 onChange={event => setDraft(current => ({...current, endDate: event.target.value}))}
@@ -217,83 +218,82 @@ export default function AdminDashboardPage() {
               />
             </>
           )}
-          <Button type="submit" variant="contained" size="large">Áp dụng</Button>
+          <Button type="submit" variant="contained" size="large">{t('admin.dashboard.analytics.apply')}</Button>
         </Stack>
         {validationError && <Alert severity="warning" sx={{mt: 2}}>{validationError}</Alert>}
       </Paper>
 
       {analyticsError && <Alert severity="error">{analyticsError}</Alert>}
-      {analyticsLoading && <AdminLoading label="Đang tổng hợp dữ liệu phân tích"/>}
+      {analyticsLoading && <AdminLoading label={t('admin.dashboard.loading.analytics')}/>}
       {!analyticsLoading && analytics && (
         <Stack spacing={3}>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             <Chip label={`${analytics.range?.startDate || '—'} → ${analytics.range?.endDate || '—'}`} variant="outlined"/>
-            <Chip label={`${formatAdminNumber(analytics.totals?.orders)} đơn`} color="primary" variant="outlined"/>
-            <Chip label={`${formatAdminNumber(analytics.totals?.productsSold)} sản phẩm`} color="secondary" variant="outlined"/>
+            <Chip label={t('admin.dashboard.analytics.orderCount', {count: formatAdminNumber(analytics.totals?.orders, locale)})} color="primary" variant="outlined"/>
+            <Chip label={t('admin.dashboard.analytics.productCount', {count: formatAdminNumber(analytics.totals?.productsSold, locale)})} color="secondary" variant="outlined"/>
           </Stack>
 
           <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', xl: 'repeat(2, minmax(0, 1fr))'}, gap: 3}}>
             <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}, minWidth: 0}}>
-              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>Doanh thu và lợi nhuận</Typography>
+              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>{t('admin.dashboard.charts.revenueProfit')}</Typography>
               <AnalyticsChart
-                title="Biểu đồ doanh thu và lợi nhuận theo thời gian"
+                title={t('admin.dashboard.charts.revenueProfitAria')}
                 series={analytics.series || []}
                 lines={[
-                  {key: 'revenue', label: 'Doanh thu', color: '#173f35'},
-                  {key: 'profit', label: 'Lợi nhuận', color: '#d79537'}
+                  {key: 'revenue', label: t('admin.dashboard.metrics.revenue'), color: '#f6ad32'},
+                  {key: 'profit', label: t('admin.dashboard.metrics.profit'), color: '#202020'}
                 ]}
-                valueFormatter={compactNumber}
+                valueFormatter={value => compactNumber(value, locale)}
+                emptyLabel={t('admin.dashboard.charts.empty')}
               />
             </Paper>
             <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}, minWidth: 0}}>
-              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>Đơn hàng và sản lượng</Typography>
+              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>{t('admin.dashboard.charts.ordersProducts')}</Typography>
               <AnalyticsChart
-                title="Biểu đồ đơn hàng và số lượng sản phẩm theo thời gian"
+                title={t('admin.dashboard.charts.ordersProductsAria')}
                 series={analytics.series || []}
                 lines={[
-                  {key: 'orders', label: 'Đơn hàng', color: '#316b83'},
-                  {key: 'productsSold', label: 'Sản phẩm', color: '#9b5b23'}
+                  {key: 'orders', label: t('admin.dashboard.charts.orders'), color: '#6b6b68'},
+                  {key: 'productsSold', label: t('admin.dashboard.charts.products'), color: '#cf8100'}
                 ]}
-                valueFormatter={value => formatAdminNumber(Math.round(value))}
+                valueFormatter={value => formatAdminNumber(Math.round(value), locale)}
+                emptyLabel={t('admin.dashboard.charts.empty')}
               />
             </Paper>
           </Box>
 
           <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', lg: 'minmax(0, 0.9fr) minmax(0, 1.1fr)'}, gap: 3}}>
             <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
-              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>Doanh thu theo danh mục</Typography>
-              <Stack spacing={2}>
-                {(analytics.categoryBreakdown || []).length === 0 && <Typography color="text.secondary">Chưa có dữ liệu.</Typography>}
-                {(analytics.categoryBreakdown || []).map(item => (
-                  <Box key={item.categoryName}>
-                    <Stack direction="row" justifyContent="space-between" gap={2}>
-                      <Typography fontWeight={700}>{item.categoryName}</Typography>
-                      <Typography variant="body2">{formatAdminMoney(item.revenue)}</Typography>
-                    </Stack>
-                    <Box sx={{height: 8, bgcolor: 'action.hover', borderRadius: 4, mt: 0.75, overflow: 'hidden'}}>
-                      <Box sx={{width: `${Math.max(2, Number(item.revenue || 0) / categoryMax * 100)}%`, height: '100%', bgcolor: 'primary.main'}}/>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {formatAdminNumber(item.quantity)} sản phẩm · Lợi nhuận {formatAdminMoney(item.profit)}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
+              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>{t('admin.dashboard.charts.categoryRevenue')}</Typography>
+              <AnalyticsPieChart
+                title={t('admin.dashboard.charts.categoryRevenueAria')}
+                data={analytics.categoryBreakdown || []}
+                labelKey="categoryName"
+                valueKey="revenue"
+                valueFormatter={value => formatAdminMoney(value, locale)}
+                centerFormatter={value => compactNumber(value, locale)}
+                detailFormatter={item => t('admin.dashboard.charts.categoryDetail', {
+                  count: formatAdminNumber(item.quantity, locale),
+                  profit: formatAdminMoney(item.profit, locale)
+                })}
+                emptyLabel={t('admin.dashboard.charts.empty')}
+                totalLabel={t('admin.dashboard.charts.totalRevenue')}
+              />
             </Paper>
 
             <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}, minWidth: 0}}>
-              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>Chi tiết theo sản phẩm</Typography>
+              <Typography component="h2" variant="h6" fontWeight={850} mb={2}>{t('admin.dashboard.productDetail.title')}</Typography>
               {(analytics.productBreakdown || []).length === 0 ? (
-                <Typography color="text.secondary">Chưa có dữ liệu.</Typography>
+                <Typography color="text.secondary">{t('admin.dashboard.productDetail.empty')}</Typography>
               ) : (
                 <TableContainer sx={{maxHeight: 360}}>
-                  <Table size="small" stickyHeader aria-label="Chi tiết doanh thu theo sản phẩm">
+                  <Table size="small" stickyHeader aria-label={t('admin.dashboard.productDetail.aria')}>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Sản phẩm</TableCell>
-                        <TableCell align="right">SL</TableCell>
-                        <TableCell align="right">Doanh thu</TableCell>
-                        <TableCell align="right">Lợi nhuận</TableCell>
+                        <TableCell>{t('admin.dashboard.table.product')}</TableCell>
+                        <TableCell align="right">{t('admin.dashboard.table.quantityShort')}</TableCell>
+                        <TableCell align="right">{t('admin.dashboard.table.revenue')}</TableCell>
+                        <TableCell align="right">{t('admin.dashboard.table.profit')}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -303,9 +303,9 @@ export default function AdminDashboardPage() {
                             <Typography variant="body2" fontWeight={700}>{item.productName}</Typography>
                             <Typography variant="caption" color="text.secondary">{item.categoryName}</Typography>
                           </TableCell>
-                          <TableCell align="right">{formatAdminNumber(item.quantity)}</TableCell>
-                          <TableCell align="right">{formatAdminMoney(item.revenue)}</TableCell>
-                          <TableCell align="right">{formatAdminMoney(item.profit)}</TableCell>
+                          <TableCell align="right">{formatAdminNumber(item.quantity, locale)}</TableCell>
+                          <TableCell align="right">{formatAdminMoney(item.revenue, locale)}</TableCell>
+                          <TableCell align="right">{formatAdminMoney(item.profit, locale)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

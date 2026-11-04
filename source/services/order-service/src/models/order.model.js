@@ -137,22 +137,35 @@ const orderSchema = new Schema(
     payment: {
       method: {
         type: String,
-        enum: ['COD', 'SIMULATED_ONLINE'],
+        enum: ['COD', 'SIMULATED_ONLINE', 'VNPAY'],
         required: true
       },
       status: {
         type: String,
-        enum: ['PENDING', 'PAID', 'FAILED'],
+        enum: ['PENDING', 'PAID', 'FAILED', 'REFUND_REQUIRED'],
         required: true
       },
       transactionId: {
         type: String,
+        default: null
+      },
+      gatewayRequestId: {
+        type: String,
+        default: null
+      },
+      responseCode: {
+        type: String,
+        default: null
+      },
+      paidAt: {
+        type: Date,
         default: null
       }
     },
     workflowStatus: {
       type: String,
       enum: [
+        'AWAITING_PAYMENT',
         'AWAITING_INVENTORY',
         'CONFIRMED',
         'REJECTED'
@@ -192,6 +205,7 @@ const orderSchema = new Schema(
 orderSchema.index({userId: 1, createdAt: -1});
 orderSchema.index({status: 1, createdAt: -1});
 orderSchema.index({workflowStatus: 1, createdAt: 1});
+orderSchema.index({'payment.gatewayRequestId': 1, 'payment.method': 1});
 
 export function getOrderModel(connection) {
   return connection.models.Order ||

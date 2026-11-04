@@ -58,6 +58,8 @@ export function createCheckoutService({
   loyaltyService,
   identityClient
 }) {
+  const onlinePaymentMethods = new Set(['VNPAY']);
+
   async function preview({
     owner,
     couponCode,
@@ -218,9 +220,10 @@ export function createCheckoutService({
             }
           : null;
 
+        const newOrderNumber = orderNumber();
         const [order] = await Order.create(
           [{
-            orderNumber: orderNumber(),
+            orderNumber: newOrderNumber,
             checkoutId: input.checkoutId,
             cartId: cart.cartId,
             userId: identity.userId,
@@ -253,14 +256,21 @@ export function createCheckoutService({
                 input.paymentMethod ===
                 'SIMULATED_ONLINE'
                   ? 'PAID'
-                  : 'PENDING'
+                  : 'PENDING',
+              gatewayRequestId: onlinePaymentMethods.has(input.paymentMethod)
+                ? newOrderNumber.replaceAll('-', '')
+                : null
             },
             workflowStatus:
-              'AWAITING_INVENTORY',
+              onlinePaymentMethods.has(input.paymentMethod)
+                ? 'AWAITING_PAYMENT'
+                : 'AWAITING_INVENTORY',
             status: 'PENDING',
             statusHistory: [{
               status: 'PENDING',
-              note: 'Waiting for inventory'
+              note: onlinePaymentMethods.has(input.paymentMethod)
+                ? 'Waiting for online payment'
+                : 'Waiting for inventory'
             }]
           }],
           {session}
@@ -274,12 +284,14 @@ export function createCheckoutService({
           session
         });
 
-        await enqueueOrderCreated({
-          Outbox,
-          order,
-          correlationId: requestId,
-          session
-        });
+        if (!onlinePaymentMethods.has(input.paymentMethod)) {
+          await enqueueOrderCreated({
+            Outbox,
+            order,
+            correlationId: requestId,
+            session
+          });
+        }
 
         return order;
       });
@@ -302,7 +314,7 @@ export function createCheckoutService({
       ...ownerQuery
     })
       .select(
-        'orderNumber status workflowStatus cancellationReason createdAt'
+        'orderNumber status workflowStatus cancellationReason payment createdAt'
       )
       .lean();
 

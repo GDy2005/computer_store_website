@@ -19,12 +19,12 @@ export default function ProductSection({
       <Stack
         direction={{xs: 'column', sm: 'row'}}
         spacing={2}
-        alignItems={{sm: 'flex-end'}}
+        alignItems={{sm: 'center'}}
         justifyContent="space-between"
-        sx={{mb: 3}}
+        sx={{mb: 2.25}}
       >
         <Stack spacing={0.75}>
-          <Typography component="h2" variant="h4" fontWeight={850}>{title}</Typography>
+          <Typography component="h2" variant="h5" fontWeight={850}>{title}</Typography>
           {description && <Typography color="text.secondary">{description}</Typography>}
         </Stack>
         <Button component={Link} to={actionTo} endIcon={<UiIcon name="arrowRight"/>} sx={{alignSelf: {xs: 'flex-start', sm: 'auto'}}}>
@@ -34,8 +34,13 @@ export default function ProductSection({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))'},
-          gap: 2.5
+          gridTemplateColumns: {
+            xs: 'repeat(2, minmax(0, 1fr))',
+            sm: 'repeat(3, minmax(0, 1fr))',
+            md: 'repeat(4, minmax(0, 1fr))',
+            lg: 'repeat(5, minmax(0, 1fr))'
+          },
+          gap: {xs: 1.15, sm: 1.6}
         }}
       >
         {products.map(product => <ProductCard key={product._id} product={product}/>)}

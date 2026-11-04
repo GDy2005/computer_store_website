@@ -8,7 +8,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useSearchParams} from 'react-router-dom';
 
 import {
   cartErrorMessage,
@@ -22,6 +22,7 @@ const terminalStates = new Set(['CONFIRMED', 'REJECTED']);
 export default function OrderProcessingPage() {
   const {t} = useLanguage();
   const {orderNumber} = useParams();
+  const [searchParams] = useSearchParams();
   const {refresh} = useCart();
   const [order, setOrder] = useState(null);
   const [error, setError] = useState('');
@@ -67,6 +68,7 @@ export default function OrderProcessingPage() {
 
   const confirmed = order?.workflowStatus === 'CONFIRMED';
   const rejected = order?.workflowStatus === 'REJECTED';
+  const paymentOutcome = searchParams.get('payment');
 
   return (
     <Paper variant="outlined" sx={{maxWidth: 700, mx: 'auto', p: {xs: 3, md: 6}}}>
@@ -88,7 +90,11 @@ export default function OrderProcessingPage() {
 
         {!confirmed && !rejected && (
           <Alert severity="info" sx={{width: '100%'}}>
-            {t('processing.wait')}
+            {paymentOutcome === 'success'
+              ? t('processing.paymentReceived')
+              : paymentOutcome === 'pending'
+                ? t('processing.paymentPending')
+                : t('processing.wait')}
           </Alert>
         )}
 
@@ -100,7 +106,11 @@ export default function OrderProcessingPage() {
 
         {rejected && (
           <Alert severity="error" sx={{width: '100%'}}>
-            {order.cancellationReason || t('processing.stockRejected')}
+            {order.payment?.status === 'REFUND_REQUIRED'
+              ? t('processing.refundRequired')
+              : paymentOutcome === 'failed' || order.payment?.status === 'FAILED'
+              ? t('processing.paymentFailed')
+              : order.cancellationReason || t('processing.stockRejected')}
           </Alert>
         )}
 

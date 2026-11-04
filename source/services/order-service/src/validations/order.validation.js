@@ -145,6 +145,7 @@ export const validatePlaceOrder = middleware(body => {
     'checkoutId',
     'couponCode',
     'paymentMethod',
+    'paymentLocale',
     'pointsToRedeem',
     'customer',
     'shippingAddress'
@@ -173,8 +174,12 @@ export const validatePlaceOrder = middleware(body => {
   const paymentMethod = body.paymentMethod || 'COD';
   const pointsToRedeem = body.pointsToRedeem ?? 0;
 
-  if (!['COD', 'SIMULATED_ONLINE'].includes(paymentMethod)) {
+  if (!['COD', 'VNPAY'].includes(paymentMethod)) {
     fail('Invalid paymentMethod');
+  }
+  const paymentLocale = body.paymentLocale || 'vi';
+  if (!['vi', 'en'].includes(paymentLocale)) {
+    fail('Invalid paymentLocale');
   }
   if (
     !Number.isInteger(pointsToRedeem) ||
@@ -190,6 +195,7 @@ export const validatePlaceOrder = middleware(body => {
       ? couponCode(body.couponCode)
       : null,
     paymentMethod,
+    paymentLocale,
     pointsToRedeem,
     customer: {
       fullName: text(body.customer.fullName, 'fullName', 100),

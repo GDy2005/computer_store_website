@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Computer Store">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#176b55"/>
+      <stop offset="1" stop-color="#082c24"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffd47a"/>
+      <stop offset="1" stop-color="#e99a24"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <path d="M46 7h11v11L46 7Z" fill="url(#accent)" opacity=".95"/>
+  <path d="M31 19.5a15 15 0 1 0 0 25" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M48 22H37.5a5.5 5.5 0 0 0 0 11H43a5.5 5.5 0 0 1 0 11H32" fill="none" stroke="url(#accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

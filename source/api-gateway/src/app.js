@@ -34,6 +34,16 @@ const healthServiceNames = (
 const gatewayInstance =
   process.env.INSTANCE_ID || process.env.HOSTNAME || 'gateway';
 
+export function requireAdminSession(req, res, next) {
+  if (!req.session?.userId) {
+    return next(new AppError(401, 'AUTH_REQUIRED', 'Authentication required'));
+  }
+  if (req.session.role !== 'ADMIN') {
+    return next(new AppError(403, 'FORBIDDEN', 'Admin access required'));
+  }
+  return next();
+}
+
 export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   const app = express();
   app.set('trust proxy', 1);
@@ -55,7 +65,7 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   app.use(async (req,res,next) => {
     try { const key = `rate:${req.ip}:${Math.floor(Date.now()/60000)}`; const count = await redis.incr(key); if(count===1) await redis.expire(key,120); if(count>300) throw new AppError(429,'RATE_LIMITED','Too many requests'); next(); } catch(error) { next(error); }
   });
-  app.get('/api/v1/foundation/status', async (req,res,next) => {
+  app.get('/api/v1/foundation/status', requireAdminSession, async (req,res,next) => {
     try {
       const data = await Promise.all(Object.entries(serviceUrls).map(async ([name,url]) => {
         const response = await fetch(`${url}/internal/foundation`, {headers:{'x-internal-token':signedContext(process.env.INTERNAL_SERVICE_SECRET,req.requestId)},signal:AbortSignal.timeout(5000)});
@@ -90,16 +100,20 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
     const headers = {...req.headers, host:target.host, 'x-internal-token':signedContext(process.env.INTERNAL_SERVICE_SECRET,req.requestId,req.session),'x-request-id':req.requestId};
     for(const key of ['x-user-id','x-user-role','cookie','connection','upgrade']) delete headers[key];
     const upstream = http.request({hostname:target.hostname,port:target.port,path:rewrite(req.url),method:req.method,headers},response=>{res.status(response.statusCode);for(const [key,value] of Object.entries(response.headers))if(!['connection','transfer-encoding'].includes(key) && value!==undefined)res.setHeader(key,value);response.pipe(res);});
-    upstream.setTimeout(10000,()=>upstream.destroy(new Error('Upstream timeout')));
+    const timeoutMs = name === 'order' &&
+      /^\/api\/v1\/(checkout|payments)(\/|$)/.test(req.originalUrl)
+      ? 35000
+      : 10000;
+    upstream.setTimeout(timeoutMs,()=>upstream.destroy(new Error('Upstream timeout')));
     upstream.on('error',()=>next(new AppError(502,'UPSTREAM_UNAVAILABLE','Upstream unavailable')));
     req.on('aborted',()=>upstream.destroy());req.pipe(upstream);
   };
-  app.use('/api/v1/foundation/:service', (req,res,next) => {
+  app.use('/api/v1/foundation/:service', requireAdminSession, (req,res,next) => {
     if (process.env.FOUNDATION_PROBES_ENABLED !== 'true') return next(new AppError(404,'NOT_FOUND','Foundation tools disabled'));
     const name=req.params.service; if(!serviceUrls[name]) return next(new AppError(404,'NOT_FOUND','Unknown service'));
     return proxy(name, path=>`/internal/foundation${path}`)(req,res,next);
   });
-  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','orders','loyalty','admin/orders','admin/coupons'],analytics:['admin/dashboard'],search:['search'],ai:['ai']};
+  const routes = {identity:['auth','users','admin/users'],catalog:['products','categories','admin/products','admin/categories'],order:['cart','coupons','checkout','payments','orders','loyalty','admin/orders','admin/coupons'],analytics:['admin/dashboard'],search:['search'],ai:['ai']};
   for(const [name, prefixes] of Object.entries(routes)) for(const prefix of prefixes) app.use(`/api/v1/${prefix}`,proxy(name,path=>`/api/v1/${prefix}${path}`));
   app.use((req,res,next)=>next(new AppError(404,'NOT_FOUND','Endpoint not found')));app.use(errorHandler);return app;
 }

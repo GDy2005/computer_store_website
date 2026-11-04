@@ -19,9 +19,9 @@ function pointsFor(series, key, maxValue) {
   }).join(' ');
 }
 
-export default function AnalyticsChart({series, lines, title, valueFormatter}) {
+export default function AnalyticsChart({series, lines, title, valueFormatter, emptyLabel = 'Chưa có dữ liệu trong khoảng thời gian này.'}) {
   if (!series?.length) {
-    return <Typography color="text.secondary">Chưa có dữ liệu trong khoảng thời gian này.</Typography>;
+    return <Typography color="text.secondary">{emptyLabel}</Typography>;
   }
 
   const maxValue = Math.max(
@@ -53,8 +53,8 @@ export default function AnalyticsChart({series, lines, title, valueFormatter}) {
             const value = maxValue * (1 - fraction);
             return (
               <g key={fraction}>
-                <line x1={LEFT} y1={y} x2={WIDTH - RIGHT} y2={y} stroke="#dfe4df" strokeWidth="1"/>
-                <text x={LEFT - 8} y={y + 4} textAnchor="end" fontSize="10" fill="#647067">
+                <line x1={LEFT} y1={y} x2={WIDTH - RIGHT} y2={y} stroke="#e3e6ea" strokeWidth="1"/>
+                <text x={LEFT - 8} y={y + 4} textAnchor="end" fontSize="10" fill="#69717d">
                   {valueFormatter(value, {compact: true})}
                 </text>
               </g>
@@ -76,7 +76,7 @@ export default function AnalyticsChart({series, lines, title, valueFormatter}) {
             const divisor = Math.max(1, series.length - 1);
             const x = LEFT + (WIDTH - LEFT - RIGHT) * index / divisor;
             return (
-              <text key={`${item.date || item.label}-${index}`} x={x} y={HEIGHT - 15} textAnchor="middle" fontSize="10" fill="#647067">
+              <text key={`${item.date || item.label}-${index}`} x={x} y={HEIGHT - 15} textAnchor="middle" fontSize="10" fill="#69717d">
                 {item.label || item.date}
               </text>
             );

@@ -1,19 +1,26 @@
 import {useEffect, useState} from 'react';
 import {
   AppBar,
+  Avatar,
   Badge,
   Box,
   Button,
   CircularProgress,
+  ClickAwayListener,
+  Collapse,
   Container,
   Divider,
   Drawer,
+  Fade,
   IconButton,
+  InputBase,
   List,
   ListItemButton,
   ListItemText,
   Menu,
   MenuItem,
+  Paper,
+  Popper,
   Stack,
   Toolbar,
   Tooltip,
@@ -24,285 +31,473 @@ import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {useAuth} from '../features/auth/AuthContext.jsx';
 import {useCart} from '../features/cart/CartContext.jsx';
 import {useLanguage} from '../features/i18n/LanguageContext.jsx';
+import {fetchCategories} from '../features/products/catalogApi.js';
 import UiIcon from './UiIcon.jsx';
 
-function LanguageSwitch({compact = false}) {
+function initials(user) {
+  const source = user?.fullName || user?.displayName || user?.email || 'G';
+  return source
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0])
+    .join('')
+    .toUpperCase();
+}
+
+function categoryIconName(slug = '') {
+  if (slug.includes('laptop')) return 'laptop';
+  if (slug.includes('man-hinh')) return 'monitor';
+  if (slug.includes('ban-phim')) return 'keyboard';
+  if (slug.includes('chuot')) return 'mouse';
+  if (slug.includes('ssd') || slug.includes('luu-tru')) return 'storage';
+  return 'package';
+}
+
+function StoreLogo({compact = false}) {
+  return (
+    <Stack
+      component={Link}
+      to="/"
+      direction="row"
+      alignItems="center"
+      spacing={1.15}
+      sx={{color: 'inherit', textDecoration: 'none', flexShrink: 0}}
+    >
+      <Box
+        aria-hidden="true"
+        sx={{
+          display: 'grid',
+          width: compact ? 38 : 44,
+          height: compact ? 38 : 44,
+          placeItems: 'center',
+          bgcolor: '#151515',
+          color: 'secondary.main',
+          fontWeight: 950,
+          letterSpacing: -1,
+          clipPath: 'polygon(0 0, 82% 0, 100% 18%, 100% 100%, 18% 100%, 0 82%)'
+        }}
+      >
+        CS
+      </Box>
+      {!compact && (
+        <Box>
+          <Typography sx={{fontWeight: 950, letterSpacing: 1.3, lineHeight: 1, fontSize: {xs: 14, sm: 17}}}>COMPUTER</Typography>
+          <Typography variant="caption" color="secondary.dark" fontWeight={900} letterSpacing={4}>STORE</Typography>
+        </Box>
+      )}
+    </Stack>
+  );
+}
+
+function LanguageSwitch({withLabel = false}) {
   const {locale, setLocale, t} = useLanguage();
 
   return (
+    <Stack direction="row" alignItems="center" spacing={withLabel ? 1 : 0.35}>
+      {withLabel && (
+        <Stack direction="row" spacing={0.65} alignItems="center" sx={{mr: 'auto'}}>
+          <UiIcon name="globe" sx={{fontSize: 18, color: 'text.secondary'}}/>
+          <Typography variant="body2" fontWeight={750}>{t('nav.language')}</Typography>
+        </Stack>
+      )}
+      <Box role="group" aria-label={t('nav.language')} sx={{display: 'flex', alignItems: 'center', p: 0.3, border: '1px solid', borderColor: 'divider', borderRadius: 99, bgcolor: 'background.paper'}}>
+        {['vi', 'en'].map(value => (
+          <Button
+            key={value}
+            size="small"
+            aria-pressed={locale === value}
+            onClick={() => setLocale(value)}
+            sx={{
+              minWidth: 36,
+              minHeight: 29,
+              borderRadius: 99,
+              px: 0.8,
+              py: 0,
+              color: locale === value ? '#151515' : 'text.secondary',
+              bgcolor: locale === value ? 'secondary.main' : 'transparent',
+              '&:hover': {bgcolor: locale === value ? 'secondary.dark' : 'action.hover'}
+            }}
+          >
+            {value.toUpperCase()}
+          </Button>
+        ))}
+      </Box>
+    </Stack>
+  );
+}
+
+function SearchBox({value, onChange, onSubmit, t}) {
+  return (
     <Box
-      role="group"
-      aria-label={t('nav.language')}
+      component="form"
+      role="search"
+      onSubmit={onSubmit}
       sx={{
-        display:'flex',alignItems:'center',gap:0.25,p:0.35,
-        border:'1px solid',borderColor:'divider',borderRadius:999,
-        bgcolor:'rgba(255,255,255,0.72)'
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: 760,
+        height: 48,
+        mx: 'auto',
+        borderBottom: '2px solid #151515',
+        bgcolor: 'common.white'
       }}
     >
-      {!compact && <UiIcon name="globe" sx={{ml:0.7,fontSize:17,color:'text.secondary'}}/>}
-      {['vi','en'].map(value => (
-        <Button
-          key={value}
-          size="small"
-          aria-pressed={locale === value}
-          onClick={() => setLocale(value)}
-          sx={{
-            minWidth:34,px:0.8,py:0.25,
-            color:locale === value ? 'common.white' : 'text.secondary',
-            bgcolor:locale === value ? 'primary.main' : 'transparent',
-            '&:hover':{bgcolor:locale === value ? 'primary.dark' : 'action.hover'}
-          }}
-        >
-          {value.toUpperCase()}
-        </Button>
-      ))}
+      <UiIcon name="search" sx={{ml: 1, color: 'text.secondary'}}/>
+      <InputBase
+        autoFocus
+        value={value}
+        onChange={onChange}
+        placeholder={t('nav.searchPlaceholder')}
+        inputProps={{'aria-label': t('nav.searchLabel'), maxLength: 100}}
+        sx={{flex: 1, minWidth: 0, px: 1.5, fontSize: 15}}
+      />
+      <Button type="submit" variant="contained" sx={{borderRadius: 0, height: 40, my: 0.5}}>
+        {t('nav.searchAction')}
+      </Button>
     </Box>
   );
 }
 
 export default function SiteHeader() {
-  const {pathname} = useLocation();
+  const {pathname, search} = useLocation();
   const navigate = useNavigate();
   const {user, loading, logout} = useAuth();
   const {cart} = useCart();
   const {t} = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountAnchor, setAccountAnchor] = useState(null);
+  const [categoryAnchor, setCategoryAnchor] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 44);
+    const update = () => setScrolled(window.scrollY > 12);
     update();
-    window.addEventListener('scroll', update, {passive:true});
+    window.addEventListener('scroll', update, {passive: true});
     return () => window.removeEventListener('scroll', update);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchCategories({signal: controller.signal})
+      .then(setCategories)
+      .catch(error => {
+        if (error.code !== 'ERR_CANCELED') setCategories([]);
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    setSearchValue(pathname === '/products' ? new URLSearchParams(search).get('search') || '' : '');
+  }, [pathname, search]);
+
+  const selectedCategory = pathname === '/products'
+    ? new URLSearchParams(search).get('category') || ''
+    : '';
   const navigation = [
-    {label:t('nav.home'),to:'/'},
-    {label:t('nav.products'),to:'/products'},
-    {label:t('nav.system'),to:'/foundation'}
+    {label: t('nav.home'), to: '/'},
+    {label: t('nav.categories'), categoryMenu: true},
+    {label: t('nav.products'), to: '/products'}
   ];
-
-  const active = to => (
-    to === '/'
-      ? pathname === '/'
-      : pathname === to || pathname.startsWith(`${to}/`)
-  );
-
-  const userNavigation = user
+  const accountNavigation = user
     ? [
-        ...(user.role === 'ADMIN' ? [{label:t('nav.admin'),to:'/admin'}] : []),
-        {label:t('nav.orders'),to:'/orders'},
-        {label:t('nav.profile'),to:'/profile'}
+        ...(user.role === 'ADMIN' ? [{label: t('nav.admin'), to: '/admin', icon: 'dashboard'}] : []),
+        {label: t('nav.profile'), to: '/profile', icon: 'user'},
+        {label: t('nav.orders'), to: '/orders', icon: 'receipt'}
       ]
-    : [{label:t('nav.login'),to:'/login'}];
+    : [{label: t('nav.login'), to: '/login', icon: 'user'}];
 
-  const allNavigation = [
-    ...navigation,
-    {label:`${t('nav.cart')} (${cart.totalItems})`,to:'/cart'},
-    ...userNavigation
-  ];
+  function active(to) {
+    if (to === '/') return pathname === '/';
+    if (to === '/products' && selectedCategory) return false;
+    return pathname === to || pathname.startsWith(`${to}/`);
+  }
+
+  function submitSearch(event) {
+    event.preventDefault();
+    const value = searchValue.trim();
+    navigate(value ? `/products?search=${encodeURIComponent(value)}` : '/products');
+    setSearchOpen(false);
+    setMobileOpen(false);
+  }
 
   async function signOut() {
     try {
       await logout();
-      setMobileOpen(false);
       setAccountAnchor(null);
+      setMobileOpen(false);
       navigate('/');
     } catch {
       navigate('/login');
     }
   }
 
+  const navButtonSx = selected => ({
+    minHeight: 70,
+    px: 1.3,
+    borderRadius: 0,
+    color: 'text.primary',
+    fontSize: 12,
+    fontWeight: 850,
+    letterSpacing: 0.8,
+    borderBottom: '3px solid',
+    borderColor: selected ? 'secondary.main' : 'transparent',
+    '&:hover': {bgcolor: 'transparent', borderColor: 'secondary.main'}
+  });
+
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        color:'text.primary',
-        bgcolor:scrolled ? 'rgba(255,255,255,0.76)' : 'rgba(255,255,255,0.96)',
-        opacity:scrolled ? 0.9 : 1,
-        borderBottom:'1px solid',
-        borderColor:scrolled ? 'rgba(21,33,30,0.1)' : 'transparent',
-        backdropFilter:'blur(18px) saturate(145%)',
-        transition:'opacity 240ms ease, background-color 240ms ease, box-shadow 240ms ease',
-        boxShadow:scrolled ? '0 10px 34px rgba(18,45,38,0.08)' : 'none',
-        '&:hover,&:focus-within':{opacity:1}
+        color: 'text.primary',
+        bgcolor: scrolled ? 'rgba(255,255,255,.78)' : 'rgba(255,255,255,.98)',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        backdropFilter: 'blur(18px) saturate(145%)',
+        boxShadow: scrolled ? '0 8px 24px rgba(0,0,0,.08)' : 'none',
+        transition: 'background-color 220ms ease, box-shadow 220ms ease'
       }}
     >
       <Box
         sx={{
-          display:'grid',overflow:'hidden',
-          maxHeight:scrolled ? 0 : 34,minHeight:scrolled ? 0 : 34,
-          placeItems:'center',bgcolor:'#0a201b',color:'rgba(255,255,255,0.86)',
-          transition:'max-height 260ms ease, min-height 260ms ease, opacity 200ms ease',
-          opacity:scrolled ? 0 : 1
+          display: 'grid',
+          height: 31,
+          overflow: 'hidden',
+          placeItems: 'center',
+          bgcolor: scrolled ? 'rgba(0,0,0,.88)' : '#000',
+          color: 'common.white',
+          transition: 'background-color 220ms ease'
         }}
       >
-        <Typography variant="caption" fontWeight={750} letterSpacing={0.35} textAlign="center" px={2}>
-          {t('nav.announcement')}
-        </Typography>
+        <Typography variant="caption" fontWeight={850} letterSpacing={0.5}>ANNOUNCEMENT</Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'grid',
+          height: 40,
+          overflow: 'hidden',
+          placeItems: 'center',
+          bgcolor: scrolled ? 'rgba(36,36,36,.9)' : '#242424',
+          color: 'common.white',
+          transition: 'background-color 220ms ease'
+        }}
+      >
+        <Stack direction="row" spacing={3} alignItems="center" px={2}>
+          <Typography variant="caption" textAlign="center">{t('nav.announcement')}</Typography>
+          <Typography component={Link} to="/products" variant="caption" fontWeight={850} sx={{display: {xs: 'none', sm: 'block'}, color: 'secondary.main'}}>
+            {t('home.shopNow')} →
+          </Typography>
+        </Stack>
       </Box>
 
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{minHeight:{xs:66,md:78},gap:{xs:1,md:3}}}>
-          <Stack
-            component={Link}
-            to="/"
-            direction="row"
-            alignItems="center"
-            spacing={1.2}
-            sx={{color:'inherit',textDecoration:'none',minWidth:{md:240},flexGrow:{xs:1,md:0}}}
-          >
-            <Box
-              aria-hidden="true"
-              sx={{
-                display:'grid',width:39,height:39,placeItems:'center',
-                borderRadius:'12px 12px 4px 12px',bgcolor:'primary.main',
-                color:'common.white',fontWeight:950,letterSpacing:-1,
-                boxShadow:'inset -8px -8px 0 rgba(0,0,0,0.1)'
-              }}
-            >
-              CS
-            </Box>
-            <Box>
-              <Typography fontWeight={950} letterSpacing={0.8} lineHeight={1}>COMPUTER</Typography>
-              <Typography variant="caption" color="secondary.dark" fontWeight={900} letterSpacing={3.2}>STORE</Typography>
-            </Box>
-          </Stack>
-
-          <Stack
-            component="nav"
-            direction="row"
-            spacing={0.5}
-            aria-label="Main navigation"
-            sx={{display:{xs:'none',md:'flex'},flexGrow:1,justifyContent:'center'}}
-          >
-            {navigation.map(item => (
+        <Toolbar disableGutters sx={{minHeight: {xs: 66, md: 88}}}>
+          <Stack component="nav" direction="row" aria-label="Main navigation" sx={{display: {xs: 'none', md: 'flex'}, flex: 1, minWidth: 0}}>
+            {navigation.map(item => item.categoryMenu ? (
               <Button
-                key={item.to}
-                component={Link}
-                to={item.to}
-                aria-current={active(item.to) ? 'page' : undefined}
-                sx={{
-                  position:'relative',color:'text.primary',px:1.75,
-                  '&::after':{
-                    content:'""',position:'absolute',right:18,bottom:3,left:18,height:2,
-                    borderRadius:2,bgcolor:'secondary.main',
-                    transform:active(item.to) ? 'scaleX(1)' : 'scaleX(0)',
-                    transition:'transform 180ms ease'
-                  },
-                  '&:hover::after':{transform:'scaleX(1)'}
-                }}
+                key="categories"
+                onClick={event => setCategoryAnchor(event.currentTarget)}
+                aria-haspopup="true"
+                aria-expanded={Boolean(categoryAnchor)}
+                endIcon={<UiIcon name="chevronDown" sx={{fontSize: 17}}/>}
+                sx={navButtonSx(Boolean(selectedCategory) || Boolean(categoryAnchor))}
               >
                 {item.label}
               </Button>
+            ) : (
+              <Button key={item.to} component={Link} to={item.to} sx={navButtonSx(active(item.to))}>{item.label}</Button>
             ))}
           </Stack>
 
-          <Stack direction="row" alignItems="center" spacing={0.75}>
-            <Box sx={{display:{xs:'none',lg:'block'}}}><LanguageSwitch/></Box>
+          <Box sx={{display: {xs: 'none', md: 'block'}}}><StoreLogo/></Box>
+          <Box sx={{display: {xs: 'block', md: 'none'}}}><StoreLogo compact/></Box>
+
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={0.35} sx={{flex: 1}}>
+            <Tooltip title={t('nav.searchAction')}>
+              <IconButton onClick={() => setSearchOpen(value => !value)} aria-expanded={searchOpen} aria-label={t('nav.searchAction')}>
+                <UiIcon name={searchOpen ? 'close' : 'search'}/>
+              </IconButton>
+            </Tooltip>
+            <Box sx={{display: {xs: 'none', xl: 'block'}}}><LanguageSwitch/></Box>
+            {!loading && user?.role === 'ADMIN' && (
+              <Tooltip title={t('nav.admin')}>
+                <IconButton component={Link} to="/admin" color={pathname.startsWith('/admin') ? 'secondary' : 'default'}>
+                  <UiIcon name="dashboard"/>
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title={t('nav.cart')}>
-              <IconButton
-                component={Link}
-                to="/cart"
-                aria-current={pathname.startsWith('/cart') || pathname.startsWith('/checkout') ? 'page' : undefined}
-                sx={{color:'text.primary',bgcolor:pathname.startsWith('/cart') ? 'primary.light' : 'transparent'}}
-              >
+              <IconButton component={Link} to="/cart" aria-label={t('nav.cart')}>
                 <Badge badgeContent={cart.totalItems} color="secondary" max={99}>
                   <UiIcon name="cart"/>
                 </Badge>
               </IconButton>
             </Tooltip>
-
-            {loading && <CircularProgress size={22}/>}
-            {!loading && !user && (
-              <Tooltip title={t('nav.login')}>
-                <IconButton component={Link} to="/login" sx={{color:'text.primary'}}>
-                  <UiIcon name="user"/>
+            {loading ? (
+              <CircularProgress size={26}/>
+            ) : (
+              <Tooltip title={user?.fullName || user?.email || t('nav.guest')}>
+                <IconButton
+                  onClick={event => setAccountAnchor(current => current ? null : event.currentTarget)}
+                  aria-haspopup="true"
+                  aria-expanded={Boolean(accountAnchor)}
+                  sx={{p: 0.4}}
+                >
+                  <Avatar
+                    src={user?.avatarUrl || user?.picture || undefined}
+                    alt={user?.fullName || user?.email || t('nav.guest')}
+                    sx={{width: 38, height: 38, bgcolor: user ? 'secondary.main' : '#151515', color: user ? '#151515' : 'common.white', fontSize: 14, fontWeight: 900}}
+                  >
+                    {user ? initials(user) : <UiIcon name="user" sx={{fontSize: 21}}/>}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
             )}
-            {!loading && user && (
-              <>
-                <Tooltip title={user.fullName}>
-                  <IconButton
-                    onClick={event => setAccountAnchor(event.currentTarget)}
-                    aria-controls={accountAnchor ? 'account-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={Boolean(accountAnchor)}
-                    sx={{color:'common.white',bgcolor:'primary.main','&:hover':{bgcolor:'primary.dark'}}}
-                  >
-                    <UiIcon name="user"/>
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  id="account-menu"
-                  anchorEl={accountAnchor}
-                  open={Boolean(accountAnchor)}
-                  onClose={() => setAccountAnchor(null)}
-                  slotProps={{paper:{sx:{mt:1.2,minWidth:210,border:'1px solid',borderColor:'divider',boxShadow:'0 20px 50px rgba(8,46,38,0.14)'}}}}
-                >
-                  <Box sx={{px:2,py:1}}>
-                    <Typography fontWeight={850}>{user.fullName}</Typography>
-                    <Typography variant="caption" color="text.secondary">{user.email}</Typography>
-                  </Box>
-                  <Divider/>
-                  {userNavigation.map(item => (
-                    <MenuItem key={item.to} component={Link} to={item.to} onClick={() => setAccountAnchor(null)}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                  <Divider/>
-                  <MenuItem onClick={signOut} sx={{color:'error.main'}}>{t('nav.logout')}</MenuItem>
-                </Menu>
-              </>
-            )}
-
-            <IconButton
-              onClick={() => setMobileOpen(true)}
-              aria-label={t('nav.openMenu')}
-              sx={{display:{xs:'inline-flex',md:'none'},color:'text.primary'}}
-            >
+            <IconButton sx={{display: {md: 'none'}}} onClick={() => setMobileOpen(true)} aria-label={t('nav.openMenu')}>
               <UiIcon name="menu"/>
             </IconButton>
           </Stack>
         </Toolbar>
       </Container>
 
-      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        <Box sx={{width:{xs:300,sm:340},p:2.5}}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-            <Box>
-              <Typography variant="h6" fontWeight={950}>COMPUTER STORE</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {user ? user.fullName : t('nav.guest')}
-              </Typography>
-            </Box>
-            <IconButton onClick={() => setMobileOpen(false)} aria-label={t('chat.close')}><UiIcon name="close"/></IconButton>
-          </Stack>
-          <LanguageSwitch/>
+      <Collapse in={searchOpen} timeout={220}>
+        <Box sx={{borderTop: '1px solid', borderColor: 'divider', bgcolor: 'common.white', py: 1.5, px: 2}}>
+          <SearchBox value={searchValue} onChange={event => setSearchValue(event.target.value)} onSubmit={submitSearch} t={t}/>
         </Box>
-        <Divider/>
-        <List component="nav" aria-label="Mobile navigation" sx={{p:1.5}}>
-          {allNavigation.map(item => (
-            <ListItemButton
-              key={item.to}
-              component={Link}
-              to={item.to}
-              selected={active(item.to) || (item.to === '/cart' && pathname.startsWith('/checkout'))}
-              onClick={() => setMobileOpen(false)}
-              sx={{borderRadius:2.5,mb:0.5,py:1.15}}
-            >
-              <ListItemText primary={item.label} primaryTypographyProps={{fontWeight:active(item.to) ? 900 : 700}}/>
-            </ListItemButton>
-          ))}
+      </Collapse>
+
+      <Menu
+        anchorEl={categoryAnchor}
+        open={Boolean(categoryAnchor)}
+        onClose={() => setCategoryAnchor(null)}
+        disableScrollLock
+        anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+        transformOrigin={{vertical: 'top', horizontal: 'left'}}
+        slotProps={{paper: {sx: {mt: 0.5, minWidth: 260, p: 0.8, border: '1px solid', borderColor: 'divider', boxShadow: '0 18px 48px rgba(0,0,0,.15)'}}}}
+      >
+        <MenuItem component={Link} to="/products" onClick={() => setCategoryAnchor(null)} sx={{borderRadius: 1.5, fontWeight: 850, gap: 1.2}}>
+          <UiIcon name="grid" sx={{fontSize: 20}}/>
+          {t('products.allCategories')}
+        </MenuItem>
+        <Divider sx={{my: 0.6}}/>
+        {categories.map(category => (
+          <MenuItem
+            key={category._id || category.slug}
+            component={Link}
+            to={`/products?category=${category.slug}`}
+            selected={selectedCategory === category.slug}
+            onClick={() => setCategoryAnchor(null)}
+            sx={{borderRadius: 1.5, gap: 1.2, py: 1}}
+          >
+            <Box sx={{display: 'grid', width: 30, height: 30, placeItems: 'center', borderRadius: '50%', bgcolor: 'secondary.light'}}>
+              <UiIcon name={categoryIconName(category.slug)} sx={{fontSize: 18}}/>
+            </Box>
+            {category.name}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Popper open={Boolean(accountAnchor)} anchorEl={accountAnchor} placement="bottom-end" transition sx={{zIndex: theme => theme.zIndex.appBar + 2}}>
+        {({TransitionProps}) => (
+          <Fade {...TransitionProps} timeout={180}>
+            <Box sx={{pt: 1}}>
+              <ClickAwayListener onClickAway={() => setAccountAnchor(null)}>
+                <Paper variant="outlined" sx={{width: 290, overflow: 'hidden', borderRadius: 2, boxShadow: '0 20px 56px rgba(0,0,0,.18)'}}>
+                  <Stack direction="row" spacing={1.35} alignItems="center" sx={{p: 2, bgcolor: '#171717', color: 'common.white'}}>
+                    <Avatar
+                      src={user?.avatarUrl || user?.picture || undefined}
+                      sx={{width: 50, height: 50, bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}
+                    >
+                      {user ? initials(user) : <UiIcon name="user"/>}
+                    </Avatar>
+                    <Box sx={{minWidth: 0}}>
+                      <Typography fontWeight={850} noWrap>{user?.fullName || user?.displayName || t('nav.guest')}</Typography>
+                      <Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}} noWrap>{user?.email || t('nav.login')}</Typography>
+                    </Box>
+                  </Stack>
+                  <Stack sx={{p: 1}}>
+                    {accountNavigation.map(item => (
+                      <Button
+                        key={item.to}
+                        component={Link}
+                        to={item.to}
+                        onClick={() => setAccountAnchor(null)}
+                        color="inherit"
+                        startIcon={<UiIcon name={item.icon} sx={{fontSize: 19}}/>}
+                        sx={{justifyContent: 'flex-start', minHeight: 42}}
+                      >
+                        {item.label}
+                      </Button>
+                    ))}
+                  </Stack>
+                  <Divider/>
+                  <Box sx={{p: 1.4}}><LanguageSwitch withLabel/></Box>
+                  {user && (
+                    <>
+                      <Divider/>
+                      <Button onClick={signOut} color="error" fullWidth sx={{justifyContent: 'flex-start', borderRadius: 0, px: 2, py: 1.25}}>
+                        {t('nav.logout')}
+                      </Button>
+                    </>
+                  )}
+                </Paper>
+              </ClickAwayListener>
+            </Box>
+          </Fade>
+        )}
+      </Popper>
+
+      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        <Box sx={{width: {xs: 300, sm: 360}}} role="presentation">
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{p: 2}}>
+            <StoreLogo/>
+            <IconButton onClick={() => setMobileOpen(false)} aria-label="Close"><UiIcon name="close"/></IconButton>
+          </Stack>
           {user && (
-            <ListItemButton onClick={signOut} sx={{borderRadius:2.5,color:'error.main'}}>
-              <ListItemText primary={t('nav.logout')} primaryTypographyProps={{fontWeight:800}}/>
-            </ListItemButton>
+            <Stack direction="row" spacing={1.25} alignItems="center" sx={{mx: 1.5, mb: 1, p: 1.5, bgcolor: '#171717', color: 'common.white', borderRadius: 2}}>
+              <Avatar sx={{bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}>{initials(user)}</Avatar>
+              <Box sx={{minWidth: 0}}>
+                <Typography fontWeight={800} noWrap>{user.fullName || user.email}</Typography>
+                <Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}} noWrap>{user.email}</Typography>
+              </Box>
+            </Stack>
           )}
-        </List>
+          <Divider/>
+          <List sx={{p: 1.25}}>
+            <ListItemButton component={Link} to="/" onClick={() => setMobileOpen(false)} selected={pathname === '/'}>
+              <ListItemText primary={t('nav.home')} primaryTypographyProps={{fontWeight: 750}}/>
+            </ListItemButton>
+            <ListItemButton component={Link} to="/products" onClick={() => setMobileOpen(false)} selected={pathname === '/products' && !selectedCategory}>
+              <ListItemText primary={t('nav.products')} primaryTypographyProps={{fontWeight: 750}}/>
+            </ListItemButton>
+            <Typography variant="overline" color="text.secondary" fontWeight={800} sx={{display: 'block', px: 2, pt: 2, pb: 0.5}}>{t('nav.categories')}</Typography>
+            {categories.map(category => (
+              <ListItemButton key={category._id || category.slug} component={Link} to={`/products?category=${category.slug}`} onClick={() => setMobileOpen(false)} sx={{pl: 2.5}}>
+                <UiIcon name={categoryIconName(category.slug)} sx={{fontSize: 19, mr: 1.25}}/>
+                <ListItemText primary={category.name}/>
+              </ListItemButton>
+            ))}
+            <Divider sx={{my: 1}}/>
+            {accountNavigation.map(item => (
+              <ListItemButton key={item.to} component={Link} to={item.to} onClick={() => setMobileOpen(false)}>
+                <UiIcon name={item.icon} sx={{fontSize: 19, mr: 1.25}}/>
+                <ListItemText primary={item.label} primaryTypographyProps={{fontWeight: 750}}/>
+              </ListItemButton>
+            ))}
+            {user && (
+              <ListItemButton onClick={signOut} sx={{color: 'error.main'}}>
+                <ListItemText primary={t('nav.logout')} primaryTypographyProps={{fontWeight: 750}}/>
+              </ListItemButton>
+            )}
+          </List>
+          <Divider/>
+          <Box sx={{p: 2}}><LanguageSwitch withLabel/></Box>
+        </Box>
       </Drawer>
     </AppBar>
   );

@@ -137,9 +137,9 @@ export default function ProductsPage() {
   }
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={3.5}>
       <Box>
-        <Typography component="p" variant="overline" color="secondary.main" fontWeight={800}>
+        <Typography component="p" variant="overline" color="primary.main" fontWeight={800}>
           Catalog
         </Typography>
         <Typography component="h1" variant="h3" fontWeight={850}>{t('products.title')}</Typography>
@@ -149,7 +149,7 @@ export default function ProductsPage() {
       </Box>
 
       <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '280px minmax(0, 1fr)'}, gap: 3, alignItems: 'start'}}>
-        <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{p: 2.5, position: {md: 'sticky'}, top: {md: 96}}}>
+        <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{p: 2.5, position: {md: 'sticky'}, top: {md: 142}, boxShadow: '0 8px 24px rgba(31,41,55,.05)'}}>
           <Stack spacing={2.25}>
             <Typography component="h2" variant="h6" fontWeight={800}>{t('products.filters')}</Typography>
             <TextField
@@ -244,7 +244,7 @@ export default function ProductsPage() {
             <Alert severity="info">{t('products.empty')}</Alert>
           )}
           {!loading && !error && products.length > 0 && (
-            <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))'}, gap: 2.5}}>
+            <Box sx={{display: 'grid', gridTemplateColumns: {xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))'}, gap: {xs: 1.25, sm: 2}}}>
               {products.map(product => <ProductCard key={product._id} product={product}/>)}
             </Box>
           )}

@@ -17,7 +17,7 @@ export function AdminPageHeader({eyebrow = 'Quản trị', title, description, a
       gap={2}
     >
       <Box>
-        <Typography component="p" variant="overline" color="secondary.main" fontWeight={850}>
+        <Typography component="p" variant="overline" color="primary.main" fontWeight={850}>
           {eyebrow}
         </Typography>
         <Typography component="h1" variant="h4" fontWeight={850}>{title}</Typography>

@@ -14,24 +14,28 @@ export const orderStatusColors = {
   CANCELLED: 'error'
 };
 
-export function formatAdminMoney(value) {
-  return Number(value || 0).toLocaleString('vi-VN', {
+function localeName(locale) {
+  return locale === 'en' ? 'en-US' : 'vi-VN';
+}
+
+export function formatAdminMoney(value, locale = 'vi') {
+  return Number(value || 0).toLocaleString(localeName(locale), {
     style: 'currency',
     currency: 'VND',
     maximumFractionDigits: 0
   });
 }
 
-export function formatAdminNumber(value) {
-  return Number(value || 0).toLocaleString('vi-VN');
+export function formatAdminNumber(value, locale = 'vi') {
+  return Number(value || 0).toLocaleString(localeName(locale));
 }
 
-export function formatAdminDate(value, {dateOnly = false} = {}) {
+export function formatAdminDate(value, {dateOnly = false, locale = 'vi'} = {}) {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
 
-  return new Intl.DateTimeFormat('vi-VN', {
+  return new Intl.DateTimeFormat(localeName(locale), {
     dateStyle: 'medium',
     ...(dateOnly ? {} : {timeStyle: 'short'}),
     timeZone: 'Asia/Ho_Chi_Minh'

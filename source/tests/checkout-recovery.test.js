@@ -61,6 +61,17 @@ test('inventory rejection refunds coupon only once', async () => {
   assert.equal(order.cancellationReason, 'Insufficient stock');
 });
 
+test('inventory rejection flags a paid sandbox gateway order for refund', async () => {
+  const {service, order} = workflowFixture();
+  order.payment = {method: 'VNPAY', status: 'PAID'};
+  await service.rejected({
+    eventId: randomUUID(),
+    correlationId: 'test',
+    payload: {orderId: order._id, reason: 'Insufficient stock'}
+  }, {});
+  assert.equal(order.payment.status, 'REFUND_REQUIRED');
+});
+
 test('late inventory reservation requests release and cannot confirm a timed-out order', async () => {
   const {service, order, rows} = workflowFixture();
   await service.expire(order._id, new Date('2026-10-18T00:02:00Z'), {});

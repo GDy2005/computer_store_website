@@ -2,6 +2,7 @@ export function createOrderController({
   cartService,
   couponService,
   checkoutService,
+  paymentService,
   customerOrderService,
   loyaltyService
 }) {
@@ -136,6 +137,10 @@ export function createOrderController({
           input: req.body,
           requestId: req.context.requestId
         });
+        const paymentUrl = await paymentService.create(order, {
+          ipAddress: req.get('x-forwarded-for') || req.socket.remoteAddress,
+          locale: req.body.paymentLocale
+        });
 
         res.status(202).json({
           success: true,
@@ -143,11 +148,49 @@ export function createOrderController({
             orderNumber: order.orderNumber,
             status: order.status,
             workflowStatus:
-              order.workflowStatus
+              order.workflowStatus,
+            payment: {
+              method: order.payment.method,
+              status: order.payment.status,
+              paymentUrl
+            }
           }
         });
       } catch (error) {
         next(error);
+      }
+    },
+
+    async vnpayReturn(req, res, next) {
+      try {
+        const result = await paymentService.handleVnpay(
+          req.query,
+          req.context.requestId
+        );
+        res.redirect(302, paymentService.resultUrl({
+          orderNumber: result.order.orderNumber,
+          provider: 'VNPAY',
+          outcome: result.outcome
+        }));
+      } catch (error) {
+        next(error);
+      }
+    },
+
+    async vnpayIpn(req, res) {
+      try {
+        await paymentService.handleVnpay(
+          req.query,
+          req.context.requestId
+        );
+        res.json({RspCode: '00', Message: 'Confirm Success'});
+      } catch (error) {
+        const code = error.code === 'PAYMENT_ORDER_NOT_FOUND'
+          ? '01'
+          : error.code === 'PAYMENT_AMOUNT_MISMATCH'
+            ? '04'
+            : '97';
+        res.json({RspCode: code, Message: error.message});
       }
     },
 

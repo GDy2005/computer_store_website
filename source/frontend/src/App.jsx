@@ -68,7 +68,7 @@ export default function App() {
         tabIndex={-1}
         component="main"
         maxWidth={adminPage || homePage ? 'xl' : 'lg'}
-        sx={{flexGrow:1,py:homePage ? {xs:2,sm:3,md:4} : {xs:3,sm:4,md:7},outline:'none'}}
+        sx={{flexGrow:1,py:homePage ? {xs:2,sm:3,md:4} : {xs:3,sm:4,md:6},outline:'none'}}
       >
         <Routes>
           <Route path="/" element={<HomePage/>}/>
@@ -77,7 +77,6 @@ export default function App() {
           <Route path="/cart" element={<CartPage/>}/>
           <Route path="/checkout" element={<CheckoutPage/>}/>
           <Route path="/checkout/:orderNumber" element={<OrderProcessingPage/>}/>
-          <Route path="/foundation" element={<FoundationPage/>}/>
           <Route path="/login" element={<LoginPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
@@ -98,6 +97,7 @@ export default function App() {
             <Route path="orders" element={<AdminOrdersPage/>}/>
             <Route path="orders/:id" element={<AdminOrderDetailPage/>}/>
             <Route path="coupons" element={<AdminCouponsPage/>}/>
+            <Route path="system" element={<FoundationPage/>}/>
           </Route>
           <Route path="*" element={<Alert severity="info">{t('common.notFound')}</Alert>}/>
         </Routes>

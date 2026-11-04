@@ -24,6 +24,7 @@ import {createLoyaltyService} from './services/loyalty.service.js';
 import {createOrderStatusService} from './services/order-status.service.js';
 import {createAdminOrderService} from './services/admin-order.service.js';
 import {createAdminCouponService} from './services/admin-coupon.service.js';
+import {createPaymentService} from './services/payment.service.js';
 
 import {
   createOrderController
@@ -88,6 +89,14 @@ export function buildApp({
       identityClient
     });
 
+  const paymentService = createPaymentService({
+    connection,
+    Order: models.Order,
+    Coupon: models.Coupon,
+    Outbox: models.Outbox,
+    loyaltyService
+  });
+
   const customerOrderService = createCustomerOrderService({
     Order: models.Order
   });
@@ -112,6 +121,7 @@ export function buildApp({
     cartService,
     couponService,
     checkoutService,
+    paymentService,
     customerOrderService,
     loyaltyService
   });

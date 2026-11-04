@@ -11,6 +11,12 @@ import {
 import {formatAddress} from '../../features/address/addressFormat.js';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
+const paymentLabelKeys = {
+  COD: 'checkout.cod',
+  VNPAY: 'checkout.vnpay',
+  SIMULATED_ONLINE: 'checkout.online'
+};
+
 export default function OrderDetailPage() {
   const {locale, t} = useLanguage();
   const {orderNumber} = useParams();
@@ -71,7 +77,12 @@ export default function OrderDetailPage() {
         </Paper>
         <Paper variant="outlined" sx={{p: 3}}>
           <Typography component="h2" variant="h6" fontWeight={800} mb={1}>{t('checkout.payment')}</Typography>
-          <Typography>{t('orders.method')}: {order.payment.method === 'COD' ? t('checkout.cod') : t('checkout.online')}</Typography>
+          <Typography>
+            {t('orders.method')}: {t(paymentLabelKeys[order.payment.method] || 'checkout.online')}
+          </Typography>
+          <Typography color="text.secondary">
+            {t('orders.paymentStatus')}: {t(`payment.${order.payment.status}`)}
+          </Typography>
           <Divider sx={{my: 1.5}}/>
           <Stack spacing={0.75}>
             <Stack direction="row" justifyContent="space-between"><span>{t('cart.subtotal')}</span><span>{formatMoney(order.pricing.subtotal, locale)}</span></Stack>

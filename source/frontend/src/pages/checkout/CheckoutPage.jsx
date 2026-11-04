@@ -37,7 +37,7 @@ const emptyForm = {
 };
 
 export default function CheckoutPage() {
-  const {t} = useLanguage();
+  const {locale, t} = useLanguage();
   const navigate = useNavigate();
   const {user} = useAuth();
   const {cart, loading: cartLoading} = useCart();
@@ -173,6 +173,7 @@ export default function CheckoutPage() {
         checkoutId: checkoutId.current,
         couponCode: couponCode || null,
         paymentMethod: form.paymentMethod,
+        paymentLocale: locale,
         pointsToRedeem,
         customer: {
           fullName: form.fullName,
@@ -189,9 +190,12 @@ export default function CheckoutPage() {
         }
       });
 
-      navigate(`/checkout/${result.orderNumber}`, {
-        replace: true
-      });
+      if (result.payment?.paymentUrl) {
+        window.location.assign(result.payment.paymentUrl);
+        return;
+      }
+
+      navigate(`/checkout/${result.orderNumber}`, {replace: true});
     } catch (requestError) {
       setError(
         cartErrorMessage(
@@ -306,8 +310,11 @@ export default function CheckoutPage() {
                 onChange={change('paymentMethod')}
               >
                 <MenuItem value="COD">{t('checkout.cod')}</MenuItem>
-                <MenuItem value="SIMULATED_ONLINE">{t('checkout.online')}</MenuItem>
+                <MenuItem value="VNPAY">{t('checkout.vnpay')}</MenuItem>
               </TextField>
+              {form.paymentMethod !== 'COD' && (
+                <Alert severity="info">{t('checkout.sandboxNotice')}</Alert>
+              )}
             </Stack>
           </Paper>
         </Stack>

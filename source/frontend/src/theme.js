@@ -1,54 +1,95 @@
 import {createTheme} from '@mui/material/styles';
 
+const border = 'rgba(31, 41, 55, 0.12)';
+
 export const theme = createTheme({
-  palette:{
-    mode:'light',
-    primary:{main:'#124c3d',dark:'#082e26',light:'#dcebe5'},
-    secondary:{main:'#eea633',dark:'#bd7417',light:'#fff0d2'},
-    background:{default:'#f6f5f0',paper:'#ffffff'},
-    text:{primary:'#15211e',secondary:'#65716d'},
-    divider:'rgba(21,33,30,0.12)'
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#151515',
+      dark: '#000000',
+      light: '#f0f0ee',
+      contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#f6ad32',
+      dark: '#cf8100',
+      light: '#fff2d5',
+      contrastText: '#151515'
+    },
+    success: {main: '#16875b'},
+    warning: {main: '#e58a00'},
+    background: {default: '#f7f7f5', paper: '#ffffff'},
+    text: {primary: '#181818', secondary: '#6b6b68'},
+    divider: border
   },
-  typography:{
-    fontFamily:'"Aptos", "Inter", "Segoe UI", Arial, sans-serif',
-    h1:{fontWeight:900,letterSpacing:'-0.05em'},
-    h2:{fontWeight:900,letterSpacing:'-0.04em'},
-    h3:{fontWeight:900,letterSpacing:'-0.04em'},
-    h4:{fontWeight:850,letterSpacing:'-0.03em'},
-    button:{fontWeight:800}
+  typography: {
+    fontFamily: '"Inter", "Noto Sans", "Segoe UI", Arial, sans-serif',
+    h1: {fontWeight: 800, letterSpacing: '-0.035em'},
+    h2: {fontWeight: 800, letterSpacing: '-0.03em'},
+    h3: {fontWeight: 800, letterSpacing: '-0.025em'},
+    h4: {fontWeight: 800, letterSpacing: '-0.02em'},
+    h5: {fontWeight: 800, letterSpacing: '-0.015em'},
+    h6: {fontWeight: 750},
+    button: {fontWeight: 750, letterSpacing: 0}
   },
-  shape:{borderRadius:18},
-  components:{
-    MuiCssBaseline:{
-      styleOverrides:{
-        html:{scrollBehavior:'smooth'},
-        body:{
-          minWidth:320,
-          backgroundImage:'radial-gradient(circle at 10% 0%, rgba(238,166,51,0.09), transparent 30%), radial-gradient(circle at 92% 14%, rgba(18,76,61,0.08), transparent 26%)',
-          backgroundAttachment:'fixed'
-        },
-        '::selection':{background:'#eea633',color:'#082e26'},
-        '@media (prefers-reduced-motion: reduce)':{
-          '*, *::before, *::after':{
-            animationDuration:'0.01ms !important',
-            animationIterationCount:'1 !important',
-            scrollBehavior:'auto !important',
-            transitionDuration:'0.01ms !important'
+  shape: {borderRadius: 12},
+  shadows: [
+    'none',
+    '0 1px 3px rgba(31,41,55,.08)',
+    '0 4px 12px rgba(31,41,55,.08)',
+    '0 8px 24px rgba(31,41,55,.1)',
+    '0 12px 32px rgba(31,41,55,.12)',
+    ...Array(20).fill('0 16px 42px rgba(31,41,55,.14)')
+  ],
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {scrollBehavior: 'smooth'},
+        body: {minWidth: 320, backgroundColor: '#f7f7f5'},
+        '::selection': {background: '#f6ad32', color: '#111111'},
+        '@media (prefers-reduced-motion: reduce)': {
+          '*, *::before, *::after': {
+            animationDuration: '0.01ms !important',
+            animationIterationCount: '1 !important',
+            scrollBehavior: 'auto !important',
+            transitionDuration: '0.01ms !important'
           }
         }
       }
     },
-    MuiButton:{
-      defaultProps:{disableElevation:true},
-      styleOverrides:{
-        root:{borderRadius:999,fontWeight:800,textTransform:'none',paddingInline:18},
-        sizeLarge:{minHeight:48,paddingInline:24}
+    MuiButton: {
+      defaultProps: {disableElevation: true},
+      styleOverrides: {
+        root: {minHeight: 40, borderRadius: 10, textTransform: 'none', paddingInline: 16},
+        sizeLarge: {minHeight: 48, paddingInline: 22}
       }
     },
-    MuiCard:{styleOverrides:{root:{backgroundImage:'none',borderColor:'rgba(21,33,30,0.1)'}}},
-    MuiPaper:{styleOverrides:{root:{backgroundImage:'none'}}},
-    MuiTextField:{defaultProps:{variant:'outlined'}},
-    MuiOutlinedInput:{styleOverrides:{root:{borderRadius:14,backgroundColor:'rgba(255,255,255,0.72)'}}},
-    MuiChip:{styleOverrides:{root:{fontWeight:750}}}
+    MuiCard: {
+      styleOverrides: {root: {backgroundImage: 'none', borderColor: border, boxShadow: 'none'}}
+    },
+    MuiPaper: {
+      styleOverrides: {root: {backgroundImage: 'none', borderColor: border}}
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+          backgroundColor: '#ffffff',
+          '&:hover .MuiOutlinedInput-notchedOutline': {borderColor: '#a6adb7'},
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {borderWidth: 1.5}
+        }
+      }
+    },
+    MuiChip: {styleOverrides: {root: {fontWeight: 700, borderRadius: 8}}},
+    MuiTableHead: {styleOverrides: {root: {backgroundColor: '#f4f6f8'}}},
+    MuiTableCell: {
+      styleOverrides: {
+        head: {fontWeight: 800, color: '#4b5563'},
+        root: {borderColor: 'rgba(31, 41, 55, 0.09)'}
+      }
+    },
+    MuiAlert: {styleOverrides: {root: {borderRadius: 10}}},
+    MuiPaginationItem: {styleOverrides: {root: {borderRadius: 8, fontWeight: 700}}}
   }
 });

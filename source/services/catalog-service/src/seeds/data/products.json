@@ -254,17 +254,17 @@
     "description": "Laptop gaming phổ thông với màn hình tần số quét cao và GPU RTX. Đây là dữ liệu seed mẫu; hãy đối chiếu và cập nhật thông số, giá bán cùng nội dung mô tả theo nguồn sản phẩm thực tế.",
     "images": [
       {
-        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-front",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449701/bghvlved3ijwhjmhjvte.webp",
         "publicId": "seed/products/acer-nitro-v-15-front",
         "alt": "Acer Nitro V 15 mặt trước"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-side",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449701/mjbbb5fazgzn3670hark.webp",
         "publicId": "seed/products/acer-nitro-v-15-side",
         "alt": "Acer Nitro V 15 góc nghiêng"
       },
       {
-        "url": "https://placehold.co/1200x1200/png?text=acer-nitro-v-15-detail",
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1793449701/j4pvis3v8a4yyvcn35g8.webp",
         "publicId": "seed/products/acer-nitro-v-15-detail",
         "alt": "Acer Nitro V 15 ảnh chi tiết"
       }
