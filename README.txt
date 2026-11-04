@@ -1,54 +1,55 @@
-COMPUTER STORE - HUONG DAN CAI DAT VA CHAY HE THONG
-=================================================
+COMPUTER STORE - INSTALLATION AND OPERATIONS GUIDE
+==================================================
 
 Repository:
   https://github.com/GDy2005/computer_store_website.git
 
-He thong gom React frontend, Nginx, API Gateway, cac Node.js microservice,
-MongoDB replica set, Kafka, Redis va Elasticsearch. Tat ca thanh phan duoc
-khoi dong bang Docker Compose. Chi Nginx cong khai mot cong ra may host.
+Computer Store is a Docker-based e-commerce system built with a React
+frontend, Nginx, a Node.js API Gateway, Node.js microservices, MongoDB,
+Kafka, Redis, and Elasticsearch. Only Nginx publishes a host port; internal
+services communicate through the Docker network.
 
 
-1. YEU CAU TRUOC KHI CAI DAT
-----------------------------
+1. PREREQUISITES
+----------------
 
-Bat buoc:
+Required:
   - Git.
-  - Docker Desktop dang chay.
-  - Docker Compose v2 (lenh "docker compose", co dau cach).
-  - Cong 80 tren may chua bi ung dung khac su dung.
+  - Docker Desktop running locally.
+  - Docker Compose v2 (the command is "docker compose" with a space).
+  - Host port 80 must be available unless HTTP_PORT is changed.
 
-Khuyen nghi:
-  - Docker duoc cap it nhat 8 GB RAM vi he thong co Kafka, Elasticsearch,
-    MongoDB va nhieu backend service.
-  - Node.js >= 22.12 chi can khi muon chay lint/test/build ngoai Docker.
+Recommended:
+  - Allocate at least 8 GB of RAM to Docker because the stack includes Kafka,
+    Elasticsearch, MongoDB, and multiple backend services.
+  - Node.js 22.12 or newer is only needed for running lint, tests, and builds
+    outside Docker.
 
-Kiem tra cong cu:
+Verify the required tools:
 
   git --version
   docker --version
   docker compose version
 
 
-2. CLONE SOURCE CODE
---------------------
+2. CLONE THE REPOSITORY
+-----------------------
 
   git clone https://github.com/GDy2005/computer_store_website.git
   cd computer_store_website/source
 
-Tat ca lenh Docker va npm trong tai lieu nay duoc chay tu thu muc source/.
-Khong chay Docker Compose tu mot thu muc ngau nhien vi Compose can doc
-source/.env.
+Run the Docker and npm commands in this guide from the source/ directory.
+Docker Compose reads source/.env when it is started from this directory.
 
 
-3. TAO FILE .env
-----------------
+3. CREATE AND CONFIGURE source/.env
+-----------------------------------
 
 PowerShell:
 
   Copy-Item .env.example .env
 
-Windows CMD:
+Windows Command Prompt:
 
   copy .env.example .env
 
@@ -56,11 +57,11 @@ Linux/macOS:
 
   cp .env.example .env
 
-Mo source/.env va kiem tra cac nhom bien ben duoi. File .env da duoc Git
-ignore; khong commit mat khau, API key hoac secret len repository.
+Open source/.env and review the groups below. The .env file is ignored by
+Git. Never commit passwords, access keys, or provider secrets.
 
 
-3.1. Cau hinh bat buoc cho local
+3.1. Required local settings
 
   HTTP_PORT=80
   NODE_ENV=development
@@ -69,42 +70,41 @@ ignore; khong commit mat khau, API key hoac secret len repository.
   ADMIN_EMAIL=admin@example.com
   ADMIN_INITIAL_PASSWORD=change-me
 
-Doi INTERNAL_SERVICE_SECRET va SESSION_SECRET thanh hai chuoi bi mat khac
-nhau. Co the tao chuoi ngau nhien bang PowerShell:
+Replace INTERNAL_SERVICE_SECRET and SESSION_SECRET with two different random
+values. PowerShell can generate one with:
 
   [Convert]::ToHexString(
     [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
   )
 
-Neu may khong du RAM, co the dung:
+If the machine has limited memory, use:
 
   SERVICE_REPLICAS=1
 
-Tai khoan admin chi duoc seed trong lan khoi tao database dau tien. Neu volume
-MongoDB da ton tai, viec doi ADMIN_EMAIL/ADMIN_INITIAL_PASSWORD trong .env se
-khong tu dong doi tai khoan admin cu.
+The administrator is seeded only when the identity database is initialized.
+Changing ADMIN_EMAIL or ADMIN_INITIAL_PASSWORD later does not replace an
+administrator that already exists in the MongoDB volume.
 
 
-3.2. Neu cong 80 dang duoc su dung
+3.2. Use a different host port
 
-Vi du chuyen sang cong 8080:
+If port 80 is busy, for example use port 8080:
 
   HTTP_PORT=8080
   FRONTEND_URL=http://localhost:8080
   GOOGLE_CALLBACK_URL=http://localhost:8080/api/v1/auth/google/callback
   PAYMENT_PUBLIC_BASE_URL=http://localhost:8080
 
-Khi do website se nam tai http://localhost:8080.
+The website will then be available at http://localhost:8080.
 
 
-3.3. Email
+3.3. Email delivery
 
-Mac dinh:
+The default configuration does not send real email:
 
   EMAIL_TRANSPORT=json
 
-Che do nay giup he thong chay ma khong can tai khoan SMTP, nhung khong gui
-email that. De gui email that qua Gmail SMTP:
+To deliver real email through Gmail SMTP:
 
   EMAIL_TRANSPORT=smtp
   SMTP_HOST=smtp.gmail.com
@@ -113,28 +113,29 @@ email that. De gui email that qua Gmail SMTP:
   SMTP_PASS=your-google-app-password
   EMAIL_FROM=your-account@gmail.com
 
-SMTP_PASS phai la Google App Password, khong phai mat khau Gmail thong thuong.
-Sau khi thay cac bien email:
+SMTP_PASS must be a Google App Password, not the normal Google account
+password. Apply changed email settings with:
 
   docker compose up -d --force-recreate notification-service identity-service
 
-FRONTEND_URL la goc cua lien ket kich hoat tai khoan va dat lai mat khau trong
-email. Localhost chi mo dung tren may dang chay Docker. Neu nguoi nhan email
-can mo tu Internet, hay dung URL Cloudflare Tunnel o muc 8.
+FRONTEND_URL is used in account activation and password-reset emails. A
+localhost URL only works on the computer running Docker. Use the public
+Cloudflare URL from section 8 if recipients must open the link over the
+Internet.
 
 
-3.4. Dang nhap Google (tuy chon)
+3.4. Google sign-in (optional)
 
-Tao OAuth Client tai:
+Create an OAuth client at:
   https://console.cloud.google.com/apis/credentials
 
-Local setup:
+Local settings:
 
   GOOGLE_CLIENT_ID=your-client-id
   GOOGLE_CLIENT_SECRET=your-client-secret
   GOOGLE_CALLBACK_URL=http://localhost/api/v1/auth/google/callback
 
-Trong Google Cloud OAuth Client, them:
+Configure the OAuth client with:
 
   Authorized JavaScript origin:
     http://localhost
@@ -142,123 +143,129 @@ Trong Google Cloud OAuth Client, them:
   Authorized redirect URI:
     http://localhost/api/v1/auth/google/callback
 
-Sau khi thay cau hinh:
+Apply the settings with:
 
   docker compose up -d --force-recreate gateway
 
-Neu khong dung Google, de trong GOOGLE_CLIENT_ID va GOOGLE_CLIENT_SECRET.
+Leave GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET empty when Google sign-in is
+not required.
 
 
-3.5. Cloudinary (tuy chon)
+3.5. Cloudinary uploads (optional)
 
-Chi can khi admin muon upload anh san pham. Tao tai khoan tai:
+Cloudinary is only required for uploading product images from the admin UI.
+Create an account at:
   https://cloudinary.com/
 
-Sau do dien:
+Set:
 
   CLOUDINARY_CLOUD_NAME=
   CLOUDINARY_API_KEY=
   CLOUDINARY_API_SECRET=
 
-Ap dung lai cau hinh:
+Apply the settings with:
 
   docker compose up -d --force-recreate catalog-service
 
-Neu de trong, catalog va anh URL da seed van hoat dong; chi API upload anh bi
-vo hieu hoa.
+The seeded catalog and existing image URLs work without Cloudinary. Only the
+protected image-upload endpoint is disabled when these values are empty.
 
 
-3.6. AI chatbot (tuy chon)
+3.6. AI chatbot provider (optional)
 
-Che do mien phi, khong can API key:
+The free local fallback does not require an API key:
 
   AI_PROVIDER=fallback
   OPENAI_API_KEY=
   OPENAI_MODEL=
 
-Neu muon dung OpenAI:
+To enable OpenAI ranking:
 
   AI_PROVIDER=openai
   OPENAI_API_KEY=your-api-key
   OPENAI_MODEL=your-model-name
   OPENAI_BASE_URL=https://api.openai.com/v1
 
-Ap dung lai cau hinh:
+Apply the settings with:
 
   docker compose up -d --force-recreate ai-service
 
 
-4. KHOI DONG TOAN BO HE THONG
-----------------------------
+4. START THE FULL STACK
+-----------------------
 
-Dam bao Docker Desktop dang chay, sau do tu source/ chay:
+Make sure Docker Desktop is running, then run from source/:
 
   docker compose up -d
 
-Lan dau Docker phai tai image, build source, seed data va tao search index nen
-co the mat vai phut. Cac container nhu mongo-init, kafka-init, identity-seed,
-catalog-seed, order-seed va search-reindex chay mot lan roi hien Exited (0).
-Day la trang thai thanh cong, khong phai container bi hu.
+The first startup may take several minutes because Docker downloads images,
+builds the application, seeds data, creates Kafka topics, and builds the
+Elasticsearch product index.
 
-Kiem tra:
+The mongo-init, kafka-init, identity-seed, catalog-seed, order-seed, and
+search-reindex containers run once and then show Exited (0). This means they
+completed successfully; it is not a broken-container state.
+
+Inspect the stack:
 
   docker compose ps -a
   docker compose logs --tail=100 nginx gateway identity-service catalog-service order-service
 
-Kiem tra nhanh Gateway:
+Gateway readiness endpoint:
 
   http://localhost/health/ready
 
 
-5. CAC DIA CHI WEBSITE VA API
------------------------------
+5. WEBSITE AND API ADDRESSES
+----------------------------
 
-Neu HTTP_PORT=80:
+With HTTP_PORT=80:
 
-  Trang chu:                  http://localhost
-  Danh sach san pham:         http://localhost/products
-  Gio hang:                   http://localhost/cart
-  Thanh toan:                 http://localhost/checkout
-  Ho so:                      http://localhost/profile
-  Don hang cua khach:         http://localhost/orders
-  Dashboard admin:            http://localhost/admin
-  Health check:               http://localhost/health/ready
+  Home:                       http://localhost
+  Product catalog:            http://localhost/products
+  Shopping cart:              http://localhost/cart
+  Checkout:                   http://localhost/checkout
+  Customer profile:           http://localhost/profile
+  Customer orders:            http://localhost/orders
+  Admin dashboard:            http://localhost/admin
+  Gateway readiness:          http://localhost/health/ready
   Products API:               http://localhost/api/v1/products?page=1&limit=12
   Search API:                 http://localhost/api/v1/search?search=gaming&page=1&limit=12
 
-Dang nhap admin bang ADMIN_EMAIL va ADMIN_INITIAL_PASSWORD da dat truoc lan
-khoi tao database dau tien.
+Sign in to the admin dashboard with the ADMIN_EMAIL and
+ADMIN_INITIAL_PASSWORD configured before the first database initialization.
 
-MongoDB, Kafka, Redis va Elasticsearch chi nam trong Docker network, khong
-cong khai cong truc tiep ra host.
+MongoDB, Kafka, Redis, and Elasticsearch are internal Docker services and do
+not publish ports directly to the host.
 
 
-6. DUNG VA KHOI DONG LAI
-------------------------
+6. STOP, RESTART, AND REBUILD
+-----------------------------
 
-Dung container nhung giu lai du lieu:
+Stop containers while retaining all data:
 
   docker compose down
 
-Khoi dong lai:
+Start again:
 
   docker compose up -d
 
-Sau khi sua source code:
+Rebuild after changing source code:
 
   docker compose up -d --build
 
-CANH BAO: lenh sau xoa toan bo MongoDB, Kafka, Redis va Elasticsearch data:
+WARNING: The following command permanently deletes MongoDB, Kafka, Redis, and
+Elasticsearch volumes:
 
   docker compose down -v
 
-Chi dung down -v khi that su muon tao lai du lieu tu dau.
+Only use down -v when intentionally recreating all local data from scratch.
 
 
-7. KIEM TRA SOURCE CODE (TUY CHON)
----------------------------------
+7. RUN QUALITY CHECKS (OPTIONAL)
+--------------------------------
 
-Can Node.js >= 22.12:
+Node.js 22.12 or newer is required:
 
   npm ci --ignore-scripts
   npm run lint
@@ -267,90 +274,93 @@ Can Node.js >= 22.12:
   npm run smoke
 
 
-8. BAT VNPay SANDBOX QUA CLOUDFLARE TUNNEL (TUY CHON)
------------------------------------------------------
+8. ENABLE VNPay SANDBOX WITH CLOUDFLARE TUNNEL (OPTIONAL)
+---------------------------------------------------------
 
-Khong can buoc nay neu chi dung COD. VNPay can mot HTTPS URL cong khai de
-chuyen nguoi dung ve website va gui IPN tu server VNPay den order-service.
+Skip this section when only Cash on Delivery is needed. VNPay requires a
+public HTTPS URL to return the browser to the store and to send server-to-
+server payment notifications to the order service.
 
 
-8.1. Khoi dong website local truoc
+8.1. Start the local website
 
   docker compose up -d
 
-Kiem tra http://localhost truy cap duoc.
+Confirm that http://localhost is available before creating the tunnel.
 
 
-8.2. Cai cloudflared tren Windows
+8.2. Install cloudflared on Windows
 
   winget install --id Cloudflare.cloudflared --exact
 
-Dong va mo lai terminal, sau do kiem tra:
+Close and reopen the terminal, then verify:
 
   cloudflared --version
 
-Neu Windows da cai nhung PATH chua nhan, dung truc tiep:
+If Windows installed cloudflared but PATH has not updated, run:
 
   & "C:\Program Files (x86)\cloudflared\cloudflared.exe" --version
 
-Tai lieu/tai file chinh thuc:
+Official resources:
   https://developers.cloudflare.com/tunnel/downloads/
   https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/
   https://github.com/cloudflare/cloudflared/releases
 
 
-8.3. Tao Quick Tunnel
+8.3. Create a Quick Tunnel
 
-Neu HTTP_PORT=80:
+For HTTP_PORT=80:
 
   cloudflared tunnel --url http://localhost:80
 
-Hoac khi PATH chua nhan:
+Or call the executable directly:
 
   & "C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --url http://localhost:80
 
-Neu HTTP_PORT=8080 thi thay dia chi dich bang http://localhost:8080.
+Use http://localhost:8080 instead when HTTP_PORT=8080.
 
-Cloudflare se in ra URL dang:
+Cloudflare prints a URL similar to:
 
   https://random-name.trycloudflare.com
 
-Giu terminal cloudflared dang chay trong suot qua trinh test. Quick Tunnel
-khong can mua domain, nhung URL co the thay doi moi lan khoi dong lai.
+Keep the cloudflared terminal open throughout the test. Quick Tunnel does not
+require purchasing a domain, but its URL may change after it is restarted.
 
 
-8.4. Cap nhat source/.env
+8.4. Update source/.env
 
-Thay YOUR-TUNNEL bang hostname Cloudflare vua nhan, khong them dau / o cuoi:
+Replace YOUR-TUNNEL with the hostname Cloudflare generated. Do not append a
+trailing slash:
 
   FRONTEND_URL=https://YOUR-TUNNEL.trycloudflare.com
   PAYMENT_PUBLIC_BASE_URL=https://YOUR-TUNNEL.trycloudflare.com
   GOOGLE_CALLBACK_URL=https://YOUR-TUNNEL.trycloudflare.com/api/v1/auth/google/callback
 
-Neu khong dung Google thi GOOGLE_CALLBACK_URL co the de theo mau nhung
-GOOGLE_CLIENT_ID va GOOGLE_CLIENT_SECRET van de trong.
+If Google sign-in is disabled, GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET can
+remain empty.
 
-FRONTEND_URL cong khai dam bao email kich hoat/reset mat khau mo dung website.
-PAYMENT_PUBLIC_BASE_URL duoc backend dung de tao Return URL va IPN URL VNPay.
+FRONTEND_URL controls activation and password-reset email links.
+PAYMENT_PUBLIC_BASE_URL controls the VNPay Return and IPN callback URLs.
 
 
-8.5. Dang ky VNPay Sandbox
+8.5. Register a VNPay Sandbox merchant
 
-Dang ky merchant test tai:
+Register at:
   https://sandbox.vnpayment.vn/devreg
 
-Gia tri goi y:
+Suggested values:
 
-  Ten website: Computer Store Sandbox
-  Dia chi URL: https://YOUR-TUNNEL.trycloudflare.com
+  Website name: Computer Store Sandbox
+  Website URL:  https://YOUR-TUNNEL.trycloudflare.com
 
-VNPay gui thong tin ket noi ve email dang ky. Dien vao source/.env:
+VNPay sends the sandbox connection details to the registered email. Add them
+to source/.env:
 
-  VNPAY_TMN_CODE=terminal-code-do-vnpay-cap
-  VNPAY_HASH_SECRET=hash-secret-do-vnpay-cap
+  VNPAY_TMN_CODE=terminal-code-provided-by-vnpay
+  VNPAY_HASH_SECRET=hash-secret-provided-by-vnpay
   VNPAY_PAYMENT_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 
-Neu VNPay yeu cau khai bao Return URL va IPN URL:
+If VNPay asks for explicit callback addresses, use:
 
   Return URL:
     https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/return
@@ -358,36 +368,36 @@ Neu VNPay yeu cau khai bao Return URL va IPN URL:
   IPN URL:
     https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/ipn
 
-Khong chia se VNPAY_HASH_SECRET va khong commit no len Git.
+Never share or commit VNPAY_HASH_SECRET.
 
 
-8.6. Ap dung lai .env sau khi bat VNPay
+8.6. Apply the VNPay environment settings
 
-Neu chi them/sua TmnCode va HashSecret, URL tunnel khong doi:
+If only TmnCode and HashSecret changed and the tunnel URL stayed the same:
 
   docker compose up -d --force-recreate order-service
 
-Neu vua doi tu localhost sang URL tunnel, chay:
+If the application changed from localhost to the tunnel URL:
 
   docker compose up -d --force-recreate identity-service order-service gateway
 
-Sau do mo website bang URL tunnel ngay tu dau, dang nhap tren URL tunnel,
-them san pham vao gio va chon VNPay (sandbox) khi checkout. Khong nen bat dau
-phien dang nhap o localhost roi doi sang tunnel vi hai hostname co session
-trinh duyet rieng.
+Open the website through the tunnel URL from the beginning, sign in there,
+add a product to the cart, and select VNPay (sandbox) during checkout. Do not
+start the browser session on localhost and then switch to the tunnel hostname;
+the two hosts have separate browser sessions.
 
-The VNPay sandbox thanh cong:
+Successful VNPay sandbox card:
 
-  Ngan hang:       NCB
-  So the:          9704198526191432198
-  Ten chu the:     NGUYEN VAN A
-  Ngay phat hanh:  07/15
-  OTP:             123456
+  Bank:         NCB
+  Card number:  9704198526191432198
+  Cardholder:   NGUYEN VAN A
+  Issue date:   07/15
+  OTP:          123456
 
 
-8.7. Neu co dung Google OAuth tren URL tunnel
+8.7. Google OAuth through the tunnel
 
-Trong Google Cloud Console, them:
+When Google sign-in is enabled, add the following in Google Cloud Console:
 
   Authorized JavaScript origin:
     https://YOUR-TUNNEL.trycloudflare.com
@@ -395,69 +405,71 @@ Trong Google Cloud Console, them:
   Authorized redirect URI:
     https://YOUR-TUNNEL.trycloudflare.com/api/v1/auth/google/callback
 
-Sau do recreate Gateway:
+Then recreate the Gateway:
 
   docker compose up -d --force-recreate gateway
 
 
-8.8. LUU Y KHI QUICK TUNNEL DOI URL
+8.8. IMPORTANT: when the Quick Tunnel URL changes
 
-Moi khi tat va chay lai Quick Tunnel, URL co the thay doi. Khi URL thay doi,
-phai thuc hien lai TAT CA cac viec sau:
+Every time Quick Tunnel generates a new URL, repeat all applicable steps:
 
-  1. Sua FRONTEND_URL trong source/.env.
-  2. Sua PAYMENT_PUBLIC_BASE_URL trong source/.env.
-  3. Sua GOOGLE_CALLBACK_URL neu Google OAuth duoc bat.
-  4. Cap nhat website URL/Return URL/IPN URL ben VNPay neu portal yeu cau.
-  5. Cap nhat origin va redirect URI trong Google Cloud neu dung Google.
-  6. Chay lai:
+  1. Update FRONTEND_URL in source/.env.
+  2. Update PAYMENT_PUBLIC_BASE_URL in source/.env.
+  3. Update GOOGLE_CALLBACK_URL when Google OAuth is enabled.
+  4. Update the website/Return/IPN addresses in VNPay when required.
+  5. Update the Google origin and redirect URI when Google OAuth is enabled.
+  6. Apply the environment again:
 
        docker compose up -d --force-recreate identity-service order-service gateway
 
-  7. Mo website bang URL tunnel moi va dang nhap lai.
-  8. Luon giu terminal cloudflared mo trong khi test.
+  7. Open the new tunnel URL and sign in again.
+  8. Keep the cloudflared terminal running throughout the test.
 
-Email da gui truoc khi doi URL van chua lien ket cu; hay yeu cau gui email kich
-hoat/dat lai mat khau moi sau khi identity-service da duoc recreate.
+Emails sent before the URL changed still contain the old link. Request a new
+activation or password-reset email after identity-service has been recreated.
 
-Neu can URL on dinh lau dai, hay dung Cloudflare Named Tunnel voi domain rieng
-hoac mot dich vu tunnel co hostname co dinh. Quick Tunnel chi phu hop test.
+For a stable long-term URL, use a named Cloudflare Tunnel with a custom domain
+or another tunnel provider with a reserved hostname. Quick Tunnel is intended
+for development and testing.
 
 
-9. XU LY LOI THUONG GAP
------------------------
+9. COMMON TROUBLESHOOTING
+-------------------------
 
-Giao dien van la ban cu:
+The browser still displays an old frontend build:
 
   docker compose up -d --build --force-recreate frontend gateway order-service nginx
 
-Sau do nhan Ctrl+Shift+R hoac mo cua so an danh.
+Then press Ctrl+Shift+R or open a private browser window.
 
-Xem log service:
+View service logs:
 
   docker compose logs --tail=200 SERVICE_NAME
 
-Vi du:
+Example:
 
   docker compose logs --tail=200 order-service gateway nginx
 
-Kiem tra VNPay variables da vao container ma khong in secret:
+Check that the order container received VNPay variables without printing the
+secret values:
 
   docker compose exec -T order-service node -e "for (const k of ['PAYMENT_PUBLIC_BASE_URL','VNPAY_TMN_CODE','VNPAY_HASH_SECRET']) console.log(k, process.env[k] ? 'SET' : 'MISSING')"
 
-Neu search-reindex that bai:
+Investigate a failed Elasticsearch reindex:
 
   docker compose logs --tail=200 search-reindex elasticsearch catalog-service
 
-Neu mot init/seed/reindex container hien Exited (0), do la ket qua binh thuong.
+An initialization, seed, or reindex container with Exited (0) completed
+normally.
 
 
-10. BAO MAT
------------
+10. SECURITY NOTES
+------------------
 
-  - Khong commit source/.env.
-  - Khong dua Google Secret, SMTP App Password, Cloudinary API Secret,
-    OpenAI API Key hoac VNPAY_HASH_SECRET vao README hay anh chup man hinh.
-  - Quick Tunnel va tai khoan sandbox chi dung de phat trien/kiem thu.
-  - Truoc khi production can domain on dinh, HTTPS, secret moi, monitoring,
-    backup va credential production duoc nha cung cap phe duyet.
+  - Never commit source/.env.
+  - Do not place Google secrets, SMTP App Passwords, Cloudinary API secrets,
+    OpenAI API keys, or VNPAY_HASH_SECRET in documentation or screenshots.
+  - Quick Tunnel and sandbox provider credentials are for testing only.
+  - A production deployment requires a stable domain, HTTPS, rotated secrets,
+    monitoring, backups, and provider-approved production credentials.
