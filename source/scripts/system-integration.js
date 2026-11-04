@@ -8,6 +8,7 @@ import {kafkaClient} from '@store/kafka-client';
 import {createClient} from 'redis';
 import {Server as SocketServer} from 'socket.io';
 import {io as createSocketClient} from 'socket.io-client';
+import {loginAsAdmin} from './support/admin-session.js';
 
 const baseUrl = process.env.APP_BASE_URL || 'http://nginx';
 const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
@@ -182,7 +183,12 @@ assert.equal(gatewayInstances.size, 2);
 assert.ok([...gatewayInstances].every(Boolean));
 console.log(`PASS Nginx distributed traffic across Gateway replicas: ${[...gatewayInstances].join(', ')}`);
 
-const foundation = (await request('/api/v1/foundation/status')).body.data;
+const adminCookie = await loginAsAdmin(baseUrl);
+const foundation = (
+  await request('/api/v1/foundation/status', {
+    headers: {cookie: adminCookie}
+  })
+).body.data;
 assert.equal(foundation.length, 7);
 assert.ok(foundation.some(service => service.service === 'ai-service'));
 console.log('PASS seven independently addressable backend services are healthy');

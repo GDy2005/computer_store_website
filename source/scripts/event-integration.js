@@ -6,6 +6,7 @@ import {kafkaClient} from '@store/kafka-client';
 import {createEvent} from '@store/event-contracts';
 import {eventually} from '@store/test-utils';
 import {processOnce} from '@store/service-runtime';
+import {loginAsAdmin} from './support/admin-session.js';
 const connection=await mongoose.createConnection(process.env.MONGODB_URI,{dbName:'identity_db'}).asPromise();
 const schema=new mongoose.Schema({probeId:{type:String,unique:true},effects:Number});
 const Probe=connection.model('IntegrationProbe',schema,'foundation_probes');
@@ -15,6 +16,7 @@ const id=randomUUID();
 const consumerNames=['identity','catalog','order','notification','analytics','search'];
 const producer=kafkaClient('foundation-integration-test').producer();await producer.connect();
 try {
+ const adminCookie=await loginAsAdmin('http://nginx');
  await assert.rejects(connection.transaction(async session=>{await Probe.create([{probeId:id,effects:0}],{session});await Outbox.create([{eventId:id,payload:{}}],{session});throw new Error('rollback test');}));
  assert.equal(await Probe.countDocuments({probeId:id}),0);assert.equal(await Outbox.countDocuments({eventId:id}),0);
  console.log('PASS real MongoDB transaction rollback (effect + outbox)');
@@ -23,7 +25,7 @@ try {
  const effects=await eventually(async()=>{
   try {
    const states=await Promise.all(consumerNames.map(async name=>{
-    const response=await fetch(`http://nginx/api/v1/foundation/${name}/probes/${id}`);
+    const response=await fetch(`http://nginx/api/v1/foundation/${name}/probes/${id}`,{headers:{cookie:adminCookie}});
     if(!response.ok)return undefined;
     return (await response.json()).data.effects;
    }));

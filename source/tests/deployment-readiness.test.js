@@ -61,7 +61,7 @@ test('demo catalog satisfies the submission product baseline', () => {
 
 test('CI and bonus evidence cover the final system checks', () => {
   const workflow = read('../../.github/workflows/ci.yml');
-  const bonus = read('../Bonus/README.md');
+  const bonus = read('../../Bonus/README.md');
   const packageJson = JSON.parse(read('../package.json'));
 
   assert.match(workflow, /^  lint:/m);
@@ -72,6 +72,8 @@ test('CI and bonus evidence cover the final system checks', () => {
   assert.match(workflow, /Run system integration test/);
   assert.match(workflow, /name: ci-evidence/);
   assert.match(workflow, /upload-artifact@v4/);
+  assert.match(workflow, /path: Bonus\/evidence\/ci/);
+  assert.doesNotMatch(workflow, /source\/Bonus/);
   assert.match(bonus, /Kafka consumer groups/);
   assert.equal(
     packageJson.scripts['system:integration'],

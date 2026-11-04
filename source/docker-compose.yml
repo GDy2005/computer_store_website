@@ -541,6 +541,8 @@ services:
       KAFKA_BROKERS: kafka:9092
       ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_PRODUCT_INDEX: products_v1
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
     depends_on:
       nginx: {condition: service_healthy}
       notification-service: {condition: service_healthy}

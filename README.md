@@ -380,4 +380,4 @@ docker compose exec -T order-service node -e "for (const k of ['PAYMENT_PUBLIC_B
 
 For the complete plain-text operations guide, see [README.txt](README.txt).
 Additional project evidence and submission notes are under
-[`source/Bonus`](source/Bonus/README.md).
+[`Bonus`](Bonus/README.md).
