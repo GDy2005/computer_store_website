@@ -93,7 +93,6 @@ If port 80 is busy, for example use port 8080:
   HTTP_PORT=8080
   FRONTEND_URL=http://localhost:8080
   GOOGLE_CALLBACK_URL=http://localhost:8080/api/v1/auth/google/callback
-  PAYMENT_PUBLIC_BASE_URL=http://localhost:8080
 
 The website will then be available at http://localhost:8080.
 
@@ -119,9 +118,8 @@ password. Apply changed email settings with:
   docker compose up -d --force-recreate notification-service identity-service
 
 FRONTEND_URL is used in account activation and password-reset emails. A
-localhost URL only works on the computer running Docker. Use the public
-Cloudflare URL from section 8 if recipients must open the link over the
-Internet.
+localhost URL only works on the computer running Docker, which is sufficient
+for this local project.
 
 
 3.4. Google sign-in (optional)
@@ -204,7 +202,10 @@ Elasticsearch product index.
 
 The mongo-init, kafka-init, identity-seed, catalog-seed, order-seed, and
 search-reindex containers run once and then show Exited (0). This means they
-completed successfully; it is not a broken-container state.
+completed successfully; it is not a broken-container state. order-seed creates
+coupons and adds 45 demo orders if they do not already exist. Their Outbox
+events are published through Kafka and automatically populate Analytics, so
+later restarts neither duplicate orders nor overwrite existing statistics.
 
 Inspect the stack:
 
@@ -274,164 +275,31 @@ Node.js 22.12 or newer is required:
   npm run smoke
 
 
-8. ENABLE VNPay SANDBOX WITH CLOUDFLARE TUNNEL (OPTIONAL)
----------------------------------------------------------
+8. TEST THE SIMULATED CARD PAYMENT
+----------------------------------
 
-Skip this section when only Cash on Delivery is needed. VNPay requires a
-public HTTPS URL to return the browser to the store and to send server-to-
-server payment notifications to the order service.
-
-
-8.1. Start the local website
+No public domain, tunnel, provider account, or extra environment variable is
+required. Start the website normally:
 
   docker compose up -d
 
-Confirm that http://localhost is available before creating the tunnel.
+Open http://localhost, add a product to the cart, proceed to checkout, and
+select "Simulated card payment".
 
+Use this exact test card:
 
-8.2. Install cloudflared on Windows
+  Cardholder name:  NGUYEN VAN A
+  Card number:      4242 4242 4242 4242
+  Expiry date:      12/30
+  CVV:              123
 
-  winget install --id Cloudflare.cloudflared --exact
+After submission, the interface shows a short loading state while the backend
+validates the fixed card. Correct values produce a simulated paid transaction.
+Any different value is declined. The order stores only the payment status and
+a generated transaction reference; the card number and CVV are never stored.
 
-Close and reopen the terminal, then verify:
-
-  cloudflared --version
-
-If Windows installed cloudflared but PATH has not updated, run:
-
-  & "C:\Program Files (x86)\cloudflared\cloudflared.exe" --version
-
-Official resources:
-  https://developers.cloudflare.com/tunnel/downloads/
-  https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/
-  https://github.com/cloudflare/cloudflared/releases
-
-
-8.3. Create a Quick Tunnel
-
-For HTTP_PORT=80:
-
-  cloudflared tunnel --url http://localhost:80
-
-Or call the executable directly:
-
-  & "C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --url http://localhost:80
-
-Use http://localhost:8080 instead when HTTP_PORT=8080.
-
-Cloudflare prints a URL similar to:
-
-  https://random-name.trycloudflare.com
-
-Keep the cloudflared terminal open throughout the test. Quick Tunnel does not
-require purchasing a domain, but its URL may change after it is restarted.
-
-
-8.4. Update source/.env
-
-Replace YOUR-TUNNEL with the hostname Cloudflare generated. Do not append a
-trailing slash:
-
-  FRONTEND_URL=https://YOUR-TUNNEL.trycloudflare.com
-  PAYMENT_PUBLIC_BASE_URL=https://YOUR-TUNNEL.trycloudflare.com
-  GOOGLE_CALLBACK_URL=https://YOUR-TUNNEL.trycloudflare.com/api/v1/auth/google/callback
-
-If Google sign-in is disabled, GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET can
-remain empty.
-
-FRONTEND_URL controls activation and password-reset email links.
-PAYMENT_PUBLIC_BASE_URL controls the VNPay Return and IPN callback URLs.
-
-
-8.5. Register a VNPay Sandbox merchant
-
-Register at:
-  https://sandbox.vnpayment.vn/devreg
-
-Suggested values:
-
-  Website name: Computer Store Sandbox
-  Website URL:  https://YOUR-TUNNEL.trycloudflare.com
-
-VNPay sends the sandbox connection details to the registered email. Add them
-to source/.env:
-
-  VNPAY_TMN_CODE=terminal-code-provided-by-vnpay
-  VNPAY_HASH_SECRET=hash-secret-provided-by-vnpay
-  VNPAY_PAYMENT_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-
-If VNPay asks for explicit callback addresses, use:
-
-  Return URL:
-    https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/return
-
-  IPN URL:
-    https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/ipn
-
-Never share or commit VNPAY_HASH_SECRET.
-
-
-8.6. Apply the VNPay environment settings
-
-If only TmnCode and HashSecret changed and the tunnel URL stayed the same:
-
-  docker compose up -d --force-recreate order-service
-
-If the application changed from localhost to the tunnel URL:
-
-  docker compose up -d --force-recreate identity-service order-service gateway
-
-Open the website through the tunnel URL from the beginning, sign in there,
-add a product to the cart, and select VNPay (sandbox) during checkout. Do not
-start the browser session on localhost and then switch to the tunnel hostname;
-the two hosts have separate browser sessions.
-
-Successful VNPay sandbox card:
-
-  Bank:         NCB
-  Card number:  9704198526191432198
-  Cardholder:   NGUYEN VAN A
-  Issue date:   07/15
-  OTP:          123456
-
-
-8.7. Google OAuth through the tunnel
-
-When Google sign-in is enabled, add the following in Google Cloud Console:
-
-  Authorized JavaScript origin:
-    https://YOUR-TUNNEL.trycloudflare.com
-
-  Authorized redirect URI:
-    https://YOUR-TUNNEL.trycloudflare.com/api/v1/auth/google/callback
-
-Then recreate the Gateway:
-
-  docker compose up -d --force-recreate gateway
-
-
-8.8. IMPORTANT: when the Quick Tunnel URL changes
-
-Every time Quick Tunnel generates a new URL, repeat all applicable steps:
-
-  1. Update FRONTEND_URL in source/.env.
-  2. Update PAYMENT_PUBLIC_BASE_URL in source/.env.
-  3. Update GOOGLE_CALLBACK_URL when Google OAuth is enabled.
-  4. Update the website/Return/IPN addresses in VNPay when required.
-  5. Update the Google origin and redirect URI when Google OAuth is enabled.
-  6. Apply the environment again:
-
-       docker compose up -d --force-recreate identity-service order-service gateway
-
-  7. Open the new tunnel URL and sign in again.
-  8. Keep the cloudflared terminal running throughout the test.
-
-Emails sent before the URL changed still contain the old link. Request a new
-activation or password-reset email after identity-service has been recreated.
-
-For a stable long-term URL, use a named Cloudflare Tunnel with a custom domain
-or another tunnel provider with a reserved hostname. Quick Tunnel is intended
-for development and testing.
+This is a local demonstration only. Never enter real card information. Cash
+on Delivery remains available.
 
 
 9. COMMON TROUBLESHOOTING
@@ -451,11 +319,6 @@ Example:
 
   docker compose logs --tail=200 order-service gateway nginx
 
-Check that the order container received VNPay variables without printing the
-secret values:
-
-  docker compose exec -T order-service node -e "for (const k of ['PAYMENT_PUBLIC_BASE_URL','VNPAY_TMN_CODE','VNPAY_HASH_SECRET']) console.log(k, process.env[k] ? 'SET' : 'MISSING')"
-
 Investigate a failed Elasticsearch reindex:
 
   docker compose logs --tail=200 search-reindex elasticsearch catalog-service
@@ -469,7 +332,7 @@ normally.
 
   - Never commit source/.env.
   - Do not place Google secrets, SMTP App Passwords, Cloudinary API secrets,
-    OpenAI API keys, or VNPAY_HASH_SECRET in documentation or screenshots.
-  - Quick Tunnel and sandbox provider credentials are for testing only.
+    or OpenAI API keys in documentation or screenshots.
+  - The fixed simulated card is test data only. Never enter a real card.
   - A production deployment requires a stable domain, HTTPS, rotated secrets,
     monitoring, backups, and provider-approved production credentials.

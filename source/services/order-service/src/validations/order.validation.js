@@ -145,7 +145,7 @@ export const validatePlaceOrder = middleware(body => {
     'checkoutId',
     'couponCode',
     'paymentMethod',
-    'paymentLocale',
+    'paymentCard',
     'pointsToRedeem',
     'customer',
     'shippingAddress'
@@ -174,12 +174,44 @@ export const validatePlaceOrder = middleware(body => {
   const paymentMethod = body.paymentMethod || 'COD';
   const pointsToRedeem = body.pointsToRedeem ?? 0;
 
-  if (!['COD', 'VNPAY'].includes(paymentMethod)) {
+  if (!['COD', 'SIMULATED_CARD'].includes(paymentMethod)) {
     fail('Invalid paymentMethod');
   }
-  const paymentLocale = body.paymentLocale || 'vi';
-  if (!['vi', 'en'].includes(paymentLocale)) {
-    fail('Invalid paymentLocale');
+
+  let paymentCard = null;
+  if (paymentMethod === 'SIMULATED_CARD') {
+    object(body.paymentCard, 'paymentCard');
+    allowOnly(body.paymentCard, [
+      'holderName',
+      'cardNumber',
+      'expiry',
+      'cvv'
+    ]);
+
+    const cardNumber = text(
+      body.paymentCard.cardNumber,
+      'cardNumber',
+      23
+    ).replace(/[\s-]/g, '');
+    const expiry = text(body.paymentCard.expiry, 'expiry', 5);
+    const cvv = text(body.paymentCard.cvv, 'cvv', 4);
+
+    if (!/^\d{13,19}$/.test(cardNumber)) fail('Invalid cardNumber');
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) fail('Invalid expiry');
+    if (!/^\d{3,4}$/.test(cvv)) fail('Invalid cvv');
+
+    paymentCard = {
+      holderName: text(
+        body.paymentCard.holderName,
+        'holderName',
+        100
+      ),
+      cardNumber,
+      expiry,
+      cvv
+    };
+  } else if (body.paymentCard !== undefined) {
+    fail('paymentCard is only allowed for simulated card payment');
   }
   if (
     !Number.isInteger(pointsToRedeem) ||
@@ -195,7 +227,7 @@ export const validatePlaceOrder = middleware(body => {
       ? couponCode(body.couponCode)
       : null,
     paymentMethod,
-    paymentLocale,
+    paymentCard,
     pointsToRedeem,
     customer: {
       fullName: text(body.customer.fullName, 'fullName', 100),

@@ -58,8 +58,6 @@ export function createCheckoutService({
   loyaltyService,
   identityClient
 }) {
-  const onlinePaymentMethods = new Set(['VNPAY']);
-
   async function preview({
     owner,
     couponCode,
@@ -252,24 +250,17 @@ export function createCheckoutService({
             },
             payment: {
               method: input.paymentMethod,
-              status:
-                input.paymentMethod ===
-                'SIMULATED_ONLINE'
-                  ? 'PAID'
-                  : 'PENDING',
-              gatewayRequestId: onlinePaymentMethods.has(input.paymentMethod)
-                ? newOrderNumber.replaceAll('-', '')
-                : null
+              status: input.payment.status,
+              transactionId: input.payment.transactionId,
+              responseCode: input.payment.responseCode,
+              paidAt: input.payment.paidAt
             },
-            workflowStatus:
-              onlinePaymentMethods.has(input.paymentMethod)
-                ? 'AWAITING_PAYMENT'
-                : 'AWAITING_INVENTORY',
+            workflowStatus: 'AWAITING_INVENTORY',
             status: 'PENDING',
             statusHistory: [{
               status: 'PENDING',
-              note: onlinePaymentMethods.has(input.paymentMethod)
-                ? 'Waiting for online payment'
+              note: input.payment.status === 'PAID'
+                ? 'Demo card payment approved; waiting for inventory'
                 : 'Waiting for inventory'
             }]
           }],
@@ -284,14 +275,12 @@ export function createCheckoutService({
           session
         });
 
-        if (!onlinePaymentMethods.has(input.paymentMethod)) {
-          await enqueueOrderCreated({
-            Outbox,
-            order,
-            correlationId: requestId,
-            session
-          });
-        }
+        await enqueueOrderCreated({
+          Outbox,
+          order,
+          correlationId: requestId,
+          session
+        });
 
         return order;
       });

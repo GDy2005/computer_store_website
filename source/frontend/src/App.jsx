@@ -1,5 +1,6 @@
+import {useEffect} from 'react';
 import {Alert,Box,Container} from '@mui/material';
-import {Route,Routes,useLocation} from 'react-router-dom';
+import {Route,Routes,useLocation,useNavigate} from 'react-router-dom';
 import SiteFooter from './components/SiteFooter.jsx';
 import SiteHeader from './components/SiteHeader.jsx';
 import FoundationPage from './pages/FoundationPage.jsx';
@@ -13,7 +14,6 @@ import AddressesPage from './pages/profile/AddressesPage.jsx';
 import ProtectedRoute from './features/auth/ProtectedRoute.jsx';
 import ProductsPage from './pages/products/ProductsPage.jsx';
 import ProductDetailPage from './pages/products/ProductDetailPage.jsx';
-import CartPage from './pages/cart/CartPage.jsx';
 import CheckoutPage from './pages/checkout/CheckoutPage.jsx';
 import OrderProcessingPage from './pages/checkout/OrderProcessingPage.jsx';
 import OrdersPage from './pages/orders/OrdersPage.jsx';
@@ -31,6 +31,20 @@ import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage.jsx';
 import AdminCouponsPage from './pages/admin/AdminCouponsPage.jsx';
 import ChatWidget from './features/chatbot/ChatWidget.jsx';
 import {useLanguage} from './features/i18n/LanguageContext.jsx';
+import CartDrawer from './features/cart/CartDrawer.jsx';
+import {useCart} from './features/cart/CartContext.jsx';
+
+function LegacyCartRoute() {
+  const navigate = useNavigate();
+  const {openCart} = useCart();
+
+  useEffect(() => {
+    openCart();
+    navigate('/products', {replace: true});
+  }, [navigate, openCart]);
+
+  return null;
+}
 
 export default function App() {
   const {pathname} = useLocation();
@@ -74,7 +88,7 @@ export default function App() {
           <Route path="/" element={<HomePage/>}/>
           <Route path="/products" element={<ProductsPage/>}/>
           <Route path="/products/:slug" element={<ProductDetailPage/>}/>
-          <Route path="/cart" element={<CartPage/>}/>
+          <Route path="/cart" element={<LegacyCartRoute/>}/>
           <Route path="/checkout" element={<CheckoutPage/>}/>
           <Route path="/checkout/:orderNumber" element={<OrderProcessingPage/>}/>
           <Route path="/login" element={<LoginPage/>}/>
@@ -103,6 +117,7 @@ export default function App() {
         </Routes>
       </Container>
       <SiteFooter/>
+      {!adminPage && <CartDrawer/>}
       {!adminPage && <ChatWidget/>}
     </Box>
   );

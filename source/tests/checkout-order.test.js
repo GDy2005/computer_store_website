@@ -87,6 +87,81 @@ test('place-order validation normalizes checkout input', async () => {
   assert.equal(body.couponCode, 'HELLO');
   assert.equal(body.customer.email, 'user@example.com');
   assert.equal(body.customer.fullName, 'Nguyen Van A');
+  assert.equal(body.paymentCard, null);
+});
+
+test('place-order validation normalizes a simulated card', async () => {
+  const body = await runMiddleware(validatePlaceOrder, {
+    checkoutId: randomUUID(),
+    paymentMethod: 'SIMULATED_CARD',
+    paymentCard: {
+      holderName: ' Nguyen Van A ',
+      cardNumber: '4242 4242-4242 4242',
+      expiry: '12/30',
+      cvv: '123'
+    },
+    customer: {
+      fullName: 'Nguyen Van A',
+      email: 'user@example.com',
+      phone: '0900000000'
+    },
+    shippingAddress: {
+      recipientName: 'Nguyen Van A',
+      phone: '0900000000',
+      addressLine: '1 Nguyen Hue',
+      ward: 'Ben Nghe',
+      district: 'Quan 1',
+      province: 'TP HCM'
+    }
+  });
+
+  assert.deepEqual(body.paymentCard, {
+    holderName: 'Nguyen Van A',
+    cardNumber: '4242424242424242',
+    expiry: '12/30',
+    cvv: '123'
+  });
+});
+
+test('place-order validation requires card fields only for simulated payment', async () => {
+  const base = {
+    checkoutId: randomUUID(),
+    customer: {
+      fullName: 'User',
+      email: 'user@example.com',
+      phone: '0900000000'
+    },
+    shippingAddress: {
+      recipientName: 'User',
+      phone: '0900000000',
+      addressLine: '1 Main Street',
+      ward: 'Ward 1',
+      district: 'District 1',
+      province: 'HCM'
+    }
+  };
+
+  await assert.rejects(
+    runMiddleware(validatePlaceOrder, {
+      ...base,
+      paymentMethod: 'SIMULATED_CARD'
+    }),
+    /Invalid paymentCard/
+  );
+
+  await assert.rejects(
+    runMiddleware(validatePlaceOrder, {
+      ...base,
+      paymentMethod: 'COD',
+      paymentCard: {
+        holderName: 'Nguyen Van A',
+        cardNumber: '4242424242424242',
+        expiry: '12\/30',
+        cvv: '123'
+      }
+    }),
+    /paymentCard is only allowed/
+  );
 });
 
 test('place-order validation rejects unknown fields and malformed UUIDs', async () => {

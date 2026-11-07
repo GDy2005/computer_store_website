@@ -118,7 +118,7 @@ test('cancelling a confirmed order compensates coupon, points and inventory', as
   order.loyalty = {
     pointsUsed: 30, pointsEarned: 0, redeemStatus: 'COMMITTED'
   };
-  order.payment = {method: 'SIMULATED_ONLINE', status: 'PENDING'};
+  order.payment = {method: 'SIMULATED_CARD', status: 'PAID'};
 
   const outbox = [];
   let couponUpdate;

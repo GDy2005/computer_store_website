@@ -132,14 +132,19 @@ export function createOrderController({
 
     async place(req, res, next) {
       try {
+        const {paymentCard, ...checkoutInput} = req.body;
+        const payment = paymentService.authorize({
+          method: checkoutInput.paymentMethod,
+          card: paymentCard
+        });
+
         const order = await checkoutService.place({
           owner: req.cartOwner,
-          input: req.body,
+          input: {
+            ...checkoutInput,
+            payment
+          },
           requestId: req.context.requestId
-        });
-        const paymentUrl = await paymentService.create(order, {
-          ipAddress: req.get('x-forwarded-for') || req.socket.remoteAddress,
-          locale: req.body.paymentLocale
         });
 
         res.status(202).json({
@@ -151,46 +156,12 @@ export function createOrderController({
               order.workflowStatus,
             payment: {
               method: order.payment.method,
-              status: order.payment.status,
-              paymentUrl
+              status: order.payment.status
             }
           }
         });
       } catch (error) {
         next(error);
-      }
-    },
-
-    async vnpayReturn(req, res, next) {
-      try {
-        const result = await paymentService.handleVnpay(
-          req.query,
-          req.context.requestId
-        );
-        res.redirect(302, paymentService.resultUrl({
-          orderNumber: result.order.orderNumber,
-          provider: 'VNPAY',
-          outcome: result.outcome
-        }));
-      } catch (error) {
-        next(error);
-      }
-    },
-
-    async vnpayIpn(req, res) {
-      try {
-        await paymentService.handleVnpay(
-          req.query,
-          req.context.requestId
-        );
-        res.json({RspCode: '00', Message: 'Confirm Success'});
-      } catch (error) {
-        const code = error.code === 'PAYMENT_ORDER_NOT_FOUND'
-          ? '01'
-          : error.code === 'PAYMENT_AMOUNT_MISMATCH'
-            ? '04'
-            : '97';
-        res.json({RspCode: code, Message: error.message});
       }
     },
 

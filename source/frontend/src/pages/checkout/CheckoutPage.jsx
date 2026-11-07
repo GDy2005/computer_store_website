@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {
   Alert,
+  Backdrop,
   Box,
   Button,
   CircularProgress,
@@ -33,11 +34,19 @@ const emptyForm = {
   ward: '',
   district: '',
   province: '',
-  paymentMethod: 'COD'
+  paymentMethod: 'COD',
+  cardHolderName: '',
+  cardNumber: '',
+  cardExpiry: '',
+  cardCvv: ''
 };
 
+function wait(milliseconds) {
+  return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+}
+
 export default function CheckoutPage() {
-  const {locale, t} = useLanguage();
+  const {t} = useLanguage();
   const navigate = useNavigate();
   const {user} = useAuth();
   const {cart, loading: cartLoading} = useCart();
@@ -134,6 +143,13 @@ export default function CheckoutPage() {
     };
   }
 
+  function changeCardNumber(event) {
+    const digits = event.target.value.replace(/\D/g, '').slice(0, 19);
+    const formatted = digits.match(/.{1,4}/g)?.join(' ') || '';
+
+    setForm(current => ({...current, cardNumber: formatted}));
+  }
+
   async function applyCoupon() {
     const code = couponInput.trim().toUpperCase();
 
@@ -169,11 +185,18 @@ export default function CheckoutPage() {
       setError('');
       setPlacing(true);
 
-      const result = await placeOrder({
+      const orderRequest = placeOrder({
         checkoutId: checkoutId.current,
         couponCode: couponCode || null,
         paymentMethod: form.paymentMethod,
-        paymentLocale: locale,
+        paymentCard: form.paymentMethod === 'SIMULATED_CARD'
+          ? {
+              holderName: form.cardHolderName,
+              cardNumber: form.cardNumber,
+              expiry: form.cardExpiry,
+              cvv: form.cardCvv
+            }
+          : undefined,
         pointsToRedeem,
         customer: {
           fullName: form.fullName,
@@ -190,10 +213,12 @@ export default function CheckoutPage() {
         }
       });
 
-      if (result.payment?.paymentUrl) {
-        window.location.assign(result.payment.paymentUrl);
-        return;
-      }
+      const [result] = await Promise.all([
+        orderRequest,
+        form.paymentMethod === 'SIMULATED_CARD'
+          ? wait(1200)
+          : Promise.resolve()
+      ]);
 
       navigate(`/checkout/${result.orderNumber}`, {replace: true});
     } catch (requestError) {
@@ -229,6 +254,24 @@ export default function CheckoutPage() {
 
   return (
     <Stack component="form" spacing={3} onSubmit={submit}>
+      <Backdrop
+        open={placing}
+        sx={{
+          zIndex: theme => theme.zIndex.modal + 1,
+          color: 'common.white',
+          bgcolor: 'rgba(5, 24, 20, 0.78)',
+          backdropFilter: 'blur(5px)'
+        }}
+      >
+        <Stack spacing={2} alignItems="center">
+          <CircularProgress color="inherit"/>
+          <Typography fontWeight={850}>
+            {form.paymentMethod === 'SIMULATED_CARD'
+              ? t('checkout.processingCard')
+              : t('checkout.placing')}
+          </Typography>
+        </Stack>
+      </Backdrop>
       <Box>
         <Typography component="h1" variant="h4" fontWeight={850}>
           {t('checkout.title')}
@@ -310,10 +353,50 @@ export default function CheckoutPage() {
                 onChange={change('paymentMethod')}
               >
                 <MenuItem value="COD">{t('checkout.cod')}</MenuItem>
-                <MenuItem value="VNPAY">{t('checkout.vnpay')}</MenuItem>
+                <MenuItem value="SIMULATED_CARD">{t('checkout.demoCard')}</MenuItem>
               </TextField>
-              {form.paymentMethod !== 'COD' && (
-                <Alert severity="info">{t('checkout.sandboxNotice')}</Alert>
+              {form.paymentMethod === 'SIMULATED_CARD' && (
+                <Stack spacing={2}>
+                  <Alert severity="info">
+                    {t('checkout.demoCardNotice')}
+                  </Alert>
+                  <TextField
+                    label={t('checkout.cardHolder')}
+                    required
+                    autoComplete="off"
+                    value={form.cardHolderName}
+                    onChange={change('cardHolderName')}
+                    inputProps={{maxLength: 100}}
+                  />
+                  <TextField
+                    label={t('checkout.cardNumber')}
+                    required
+                    autoComplete="off"
+                    value={form.cardNumber}
+                    onChange={changeCardNumber}
+                    inputProps={{inputMode: 'numeric', maxLength: 23}}
+                  />
+                  <Box sx={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2}}>
+                    <TextField
+                      label={t('checkout.cardExpiry')}
+                      placeholder="MM/YY"
+                      required
+                      autoComplete="off"
+                      value={form.cardExpiry}
+                      onChange={change('cardExpiry')}
+                      inputProps={{maxLength: 5}}
+                    />
+                    <TextField
+                      label={t('checkout.cardCvv')}
+                      type="password"
+                      required
+                      autoComplete="off"
+                      value={form.cardCvv}
+                      onChange={change('cardCvv')}
+                      inputProps={{inputMode: 'numeric', maxLength: 4}}
+                    />
+                  </Box>
+                </Stack>
               )}
             </Stack>
           </Paper>

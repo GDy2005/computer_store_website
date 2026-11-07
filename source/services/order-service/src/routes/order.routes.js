@@ -129,16 +129,6 @@ export function createOrderRouter(controller) {
   );
 
   router.get(
-    '/api/v1/payments/vnpay/return',
-    controller.vnpayReturn
-  );
-
-  router.get(
-    '/api/v1/payments/vnpay/ipn',
-    controller.vnpayIpn
-  );
-
-  router.get(
     '/api/v1/loyalty/me',
     requireUser,
     validateOrderListQuery,

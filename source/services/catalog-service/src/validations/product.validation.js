@@ -257,6 +257,7 @@ const publicQueryFields = [
   'minPrice',
   'maxPrice',
   'minRating',
+  'inStock',
   'sort'
 ];
 
@@ -296,6 +297,13 @@ export function validateProductList(req, res, next) {
 
     if (!acceptedSorts.includes(sort)) {
       throw validationError('Invalid sort');
+    }
+
+    if (
+      req.query.inStock !== undefined &&
+      !['true', 'false'].includes(req.query.inStock)
+    ) {
+      throw validationError('Invalid inStock');
     }
 
     req.validatedQuery = {
@@ -340,6 +348,9 @@ export function validateProductList(req, res, next) {
         'minRating',
         {minimum: 0, maximum: 5}
       ),
+      inStock: req.query.inStock === undefined
+        ? undefined
+        : req.query.inStock === 'true',
       sort
     };
 

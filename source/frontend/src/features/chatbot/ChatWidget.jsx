@@ -4,13 +4,12 @@ import {
   Button,
   Chip,
   Divider,
-  Grow,
+  Fade,
   IconButton,
   Paper,
   Stack,
   TextField,
-  Typography,
-  Zoom
+  Typography
 } from '@mui/material';
 import {useEffect, useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
@@ -20,6 +19,7 @@ import {formatProductPrice} from '../products/productFormat.js';
 import {useLanguage} from '../i18n/LanguageContext.jsx';
 import {chatErrorMessage, sendChatMessage} from './chatApi.js';
 import UiIcon from '../../components/UiIcon.jsx';
+import {useCart} from '../cart/CartContext.jsx';
 
 function createWelcome(t) {
   return {id: 'welcome', role: 'assistant', text: t('chat.welcome')};
@@ -139,6 +139,7 @@ function TypingIndicator({label}) {
 
 export default function ChatWidget() {
   const theme = useTheme();
+  const {drawerOpen} = useCart();
   const {locale, t} = useLanguage();
   const controller = useRef(null);
   const messagesEndRef = useRef(null);
@@ -206,13 +207,17 @@ export default function ChatWidget() {
     <Box
       sx={{
         position: 'fixed',
-        right: {xs: 12, sm: 20, md: 28},
+        right: drawerOpen
+          ? {xs: 12, sm: 20, md: 530}
+          : {xs: 12, sm: 20, md: 28},
         bottom: {xs: 12, sm: 20, md: 28},
-        zIndex: theme.zIndex.snackbar,
-        pointerEvents: 'none'
+        zIndex: {xs: theme.zIndex.modal - 1, md: theme.zIndex.modal + 1},
+        pointerEvents: 'none',
+        transition: 'right 280ms cubic-bezier(.2,.8,.2,1)',
+        '@media (prefers-reduced-motion: reduce)': {transition: 'none'}
       }}
     >
-      <Zoom in={!open} timeout={{enter: 360, exit: 180}} mountOnEnter unmountOnExit>
+      <Fade in={!open} timeout={{enter: 180, exit: 120}} mountOnEnter unmountOnExit>
         <Box sx={{pointerEvents: 'auto'}}>
           <IconButton
             onClick={() => setOpen(true)}
@@ -242,12 +247,11 @@ export default function ChatWidget() {
             <UiIcon name="chat" sx={{fontSize: 29}}/>
           </IconButton>
         </Box>
-      </Zoom>
+      </Fade>
 
-      <Grow
+      <Fade
         in={open}
-        timeout={{enter: 420, exit: 220}}
-        style={{transformOrigin: '100% 100%'}}
+        timeout={{enter: 220, exit: 160}}
         mountOnEnter
         unmountOnExit
       >
@@ -436,7 +440,7 @@ export default function ChatWidget() {
             </Stack>
           </Box>
         </Paper>
-      </Grow>
+      </Fade>
     </Box>
   );
 }

@@ -127,12 +127,7 @@ export function createOrderWorkflowService({
 
     order.workflowStatus = 'REJECTED';
     order.status = 'CANCELLED';
-    if (
-      order.payment?.method === 'VNPAY' &&
-      order.payment.status === 'PAID'
-    ) {
-      order.payment.status = 'REFUND_REQUIRED';
-    } else if (order.payment?.method !== 'COD') {
+    if (order.payment?.method !== 'COD') {
       order.payment.status = 'FAILED';
     }
     order.cancellationReason =

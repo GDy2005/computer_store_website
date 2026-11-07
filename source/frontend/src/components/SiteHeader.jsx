@@ -164,7 +164,7 @@ export default function SiteHeader() {
   const {pathname, search} = useLocation();
   const navigate = useNavigate();
   const {user, loading, logout} = useAuth();
-  const {cart} = useCart();
+  const {cart, openCart} = useCart();
   const {t} = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountAnchor, setAccountAnchor] = useState(null);
@@ -332,7 +332,7 @@ export default function SiteHeader() {
               </Tooltip>
             )}
             <Tooltip title={t('nav.cart')}>
-              <IconButton component={Link} to="/cart" aria-label={t('nav.cart')}>
+              <IconButton onClick={openCart} aria-label={t('nav.cart')}>
                 <Badge badgeContent={cart.totalItems} color="secondary" max={99}>
                   <UiIcon name="cart"/>
                 </Badge>

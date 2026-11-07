@@ -697,7 +697,7 @@ Quy tắc:
     pointsEarned: 259
   },
   payment: {
-    method: "COD",                  // COD | SIMULATED_ONLINE
+    method: "COD",                  // COD | SIMULATED_CARD
     status: "PAID",                 // PENDING | PAID | FAILED
     transactionId: null,
     paidAt: Date

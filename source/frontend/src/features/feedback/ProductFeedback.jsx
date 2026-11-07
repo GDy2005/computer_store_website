@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Divider,
   LinearProgress,
@@ -90,7 +89,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
     return () => controller.abort();
   }, [productId, page, user?._id, t]);
 
-  const realtimeConnected = useProductRealtime(productId, {
+  useProductRealtime(productId, {
     onComment(event) {
       setComments(current => {
         if (current.items.some(item => commentId(item) === event.commentId)) {
@@ -208,13 +207,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
 
   return (
     <Box component="section" aria-labelledby="feedback-title">
-      <Stack
-        direction={{xs: 'column', sm: 'row'}}
-        justifyContent="space-between"
-        alignItems={{sm: 'center'}}
-        gap={1}
-        sx={{mb: 2.5}}
-      >
+      <Stack sx={{mb: 2.5}}>
         <Box>
           <Typography id="feedback-title" component="h2" variant="h5" fontWeight={850}>
             {t('feedback.title')}
@@ -223,12 +216,6 @@ export default function ProductFeedback({productId, onRatingChange}) {
             {t('feedback.description')}
           </Typography>
         </Box>
-        <Chip
-          size="small"
-          color={realtimeConnected ? 'success' : 'default'}
-          label={realtimeConnected ? t('feedback.connected') : t('feedback.connecting')}
-          variant={realtimeConnected ? 'filled' : 'outlined'}
-        />
       </Stack>
 
       {error && <Alert severity="error" sx={{mb: 2}}>{error}</Alert>}
@@ -285,44 +272,6 @@ export default function ProductFeedback({productId, onRatingChange}) {
               )}
             </Stack>
           </Paper>
-
-          <Paper component="form" variant="outlined" sx={{p: 3}} onSubmit={submitComment}>
-            <Stack spacing={2}>
-              <Typography component="h3" variant="h6" fontWeight={800}>{t('feedback.write')}</Typography>
-              {!user && (
-                <>
-                  <TextField
-                    required
-                    label={t('feedback.displayName')}
-                    value={form.guestName}
-                    onChange={change('guestName')}
-                    inputProps={{maxLength: 100}}
-                  />
-                  <TextField
-                    required
-                    type="email"
-                    label={t('feedback.hiddenEmail')}
-                    value={form.guestEmail}
-                    onChange={change('guestEmail')}
-                    inputProps={{maxLength: 254}}
-                  />
-                </>
-              )}
-              <TextField
-                required
-                multiline
-                minRows={4}
-                label={t('feedback.content')}
-                value={form.content}
-                onChange={change('content')}
-                inputProps={{maxLength: 1000}}
-                helperText={`${form.content.length}/1000`}
-              />
-              <Button type="submit" variant="contained" disabled={submittingComment}>
-                {submittingComment ? t('feedback.sending') : t('feedback.submit')}
-              </Button>
-            </Stack>
-          </Paper>
         </Stack>
 
         <Stack spacing={2}>
@@ -332,6 +281,47 @@ export default function ProductFeedback({productId, onRatingChange}) {
             </Typography>
             <Typography color="text.secondary">{t('feedback.comments',{count:comments.meta.totalItems})}</Typography>
           </Stack>
+          <Paper component="form" variant="outlined" sx={{p: {xs: 2.25, sm: 3}}} onSubmit={submitComment}>
+            <Stack spacing={2}>
+              <Typography component="h4" variant="h6" fontWeight={800}>{t('feedback.write')}</Typography>
+              {!user && (
+                <Stack direction={{xs: 'column', sm: 'row'}} spacing={1.5}>
+                  <TextField
+                    required
+                    fullWidth
+                    size="small"
+                    label={t('feedback.displayName')}
+                    value={form.guestName}
+                    onChange={change('guestName')}
+                    inputProps={{maxLength: 100}}
+                  />
+                  <TextField
+                    required
+                    fullWidth
+                    size="small"
+                    type="email"
+                    label={t('feedback.hiddenEmail')}
+                    value={form.guestEmail}
+                    onChange={change('guestEmail')}
+                    inputProps={{maxLength: 254}}
+                  />
+                </Stack>
+              )}
+              <TextField
+                required
+                multiline
+                minRows={3}
+                label={t('feedback.content')}
+                value={form.content}
+                onChange={change('content')}
+                inputProps={{maxLength: 1000}}
+                helperText={`${form.content.length}/1000`}
+              />
+              <Button type="submit" variant="contained" disabled={submittingComment} sx={{alignSelf: {sm: 'flex-end'}, minWidth: 180}}>
+                {submittingComment ? t('feedback.sending') : t('feedback.submit')}
+              </Button>
+            </Stack>
+          </Paper>
           {loading && <Box sx={{display: 'grid', placeItems: 'center', minHeight: 180}}><CircularProgress/></Box>}
           {!loading && comments.items.length === 0 && (
             <Alert severity="info">{t('feedback.empty')}</Alert>

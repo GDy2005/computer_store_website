@@ -1,5 +1,9 @@
 export function createOrderConfirmedHandler({EmailJob}) {
   return async function handleOrderConfirmed(event, session) {
+    if (event.payload.orderNumber.startsWith('ORD-DEMO-')) {
+      return;
+    }
+
     await EmailJob.updateOne(
       {eventId: event.eventId},
       {

@@ -13,8 +13,7 @@ import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 const paymentLabelKeys = {
   COD: 'checkout.cod',
-  VNPAY: 'checkout.vnpay',
-  SIMULATED_ONLINE: 'checkout.online'
+  SIMULATED_CARD: 'checkout.demoCard'
 };
 
 export default function OrderDetailPage() {
@@ -78,7 +77,7 @@ export default function OrderDetailPage() {
         <Paper variant="outlined" sx={{p: 3}}>
           <Typography component="h2" variant="h6" fontWeight={800} mb={1}>{t('checkout.payment')}</Typography>
           <Typography>
-            {t('orders.method')}: {t(paymentLabelKeys[order.payment.method] || 'checkout.online')}
+            {t('orders.method')}: {t(paymentLabelKeys[order.payment.method] || 'checkout.demoCard')}
           </Typography>
           <Typography color="text.secondary">
             {t('orders.paymentStatus')}: {t(`payment.${order.payment.status}`)}

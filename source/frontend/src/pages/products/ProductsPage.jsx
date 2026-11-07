@@ -3,9 +3,12 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Divider,
   FormControl,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Pagination,
@@ -24,6 +27,7 @@ import {
   fetchProducts
 } from '../../features/products/catalogApi.js';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
+import UiIcon from '../../components/UiIcon.jsx';
 
 const sortOptions = [
   ['newest', 'products.newest'],
@@ -33,6 +37,72 @@ const sortOptions = [
   ['name_asc', 'products.nameAsc'],
   ['name_desc', 'products.nameDesc']
 ];
+
+function FilterGroup({title, options, selected, onSelect, onClear, clearLabel, visibleLimit = 0, moreLabel, lessLabel}) {
+  const [expanded, setExpanded] = useState(false);
+  const hasMore = visibleLimit > 0 && options.length > visibleLimit;
+  const visibleOptions = hasMore && !expanded
+    ? options.filter((option, index) => index < visibleLimit || option.value === selected)
+    : options;
+
+  return (
+    <Box component="section" aria-label={title}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{mb: 1.1}}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box sx={{width: 3, height: 17, bgcolor: 'secondary.main', borderRadius: 1}}/>
+          <Typography component="h3" fontSize="0.96rem" fontWeight={800}>{title}</Typography>
+        </Stack>
+        <IconButton
+          size="small"
+          onClick={onClear}
+          disabled={!selected}
+          aria-label={`${clearLabel}: ${title}`}
+          sx={{width: 28, height: 28, color: 'text.secondary', opacity: selected ? 1 : 0, '&:hover': {color: 'error.main', bgcolor: '#fff2ee'}}}
+        >
+          <UiIcon name="close" sx={{fontSize: 15}}/>
+        </IconButton>
+      </Stack>
+      <Stack spacing={0.35}>
+        {visibleOptions.map(option => (
+          <Box
+            component="label"
+            key={option.value}
+            sx={{
+              display: 'flex', alignItems: 'center', gap: 1.15, minHeight: 40,
+              px: 1.1, mx: -1.1, borderRadius: 1,
+              cursor: option.count === 0 && selected !== option.value ? 'default' : 'pointer',
+              color: option.count === 0 && selected !== option.value ? 'text.disabled' : 'text.primary',
+              bgcolor: selected === option.value ? '#fff6e5' : 'transparent',
+              transition: 'background-color 160ms ease',
+              '&:hover': {bgcolor: option.count === 0 && selected !== option.value ? 'transparent' : selected === option.value ? '#fff1d5' : '#f7f7f5'}
+            }}
+          >
+            <Checkbox
+              size="small"
+              checked={selected === option.value}
+              disabled={option.count === 0 && selected !== option.value}
+              onChange={() => onSelect(option.value)}
+              inputProps={{'aria-label': option.label}}
+              sx={{p: 0, borderRadius: 0, color: '#a4a4a0', '&.Mui-checked': {color: 'secondary.dark'}, '& .MuiSvgIcon-root': {fontSize: 21}}}
+            />
+            <Typography component="span" fontSize="0.88rem" fontWeight={selected === option.value ? 750 : 450} sx={{flex: 1, lineHeight: 1.3}}>{option.label}</Typography>
+            <Typography component="span" fontSize="0.76rem" fontWeight={700} sx={{minWidth: 25, px: 0.65, py: 0.25, textAlign: 'center', borderRadius: 1, bgcolor: selected === option.value ? '#f6ad32' : '#f3f3f1', color: selected === option.value ? '#161616' : 'text.secondary'}}>{option.count}</Typography>
+          </Box>
+        ))}
+      </Stack>
+      {hasMore && (
+        <Button
+          type="button"
+          size="small"
+          onClick={() => setExpanded(value => !value)}
+          sx={{mt: 1, px: 0, minHeight: 28, color: 'text.primary', fontSize: 12.5, fontWeight: 750, '&:hover': {bgcolor: 'transparent', color: 'secondary.dark'}}}
+        >
+          {expanded ? lessLabel : moreLabel}
+        </Button>
+      )}
+    </Box>
+  );
+}
 
 function queryFromParams(params) {
   const rawPage = params.get('page') || '';
@@ -44,6 +114,7 @@ function queryFromParams(params) {
     search: params.get('search') || '',
     category: params.get('category') || '',
     brand: params.get('brand') || '',
+    inStock: params.get('inStock') || '',
     minPrice: params.get('minPrice') || '',
     maxPrice: params.get('maxPrice') || '',
     minRating: params.get('minRating') || '',
@@ -62,7 +133,7 @@ export default function ProductsPage() {
   const [draft, setDraft] = useState(query);
   const [products, setProducts] = useState([]);
   const [meta, setMeta] = useState({page: 1, limit: 12, totalItems: 0, totalPages: 1});
-  const [filterOptions, setFilterOptions] = useState({categories: [], brands: [], priceRange: {min: 0, max: 0}});
+  const [filterOptions, setFilterOptions] = useState({categories: [], brands: [], availability: {inStock: 0, outOfStock: 0}, priceRange: {min: 0, max: 0}});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -108,11 +179,19 @@ export default function ProductsPage() {
     setDraft(current => ({...current, [field]: value}));
   }
 
+  function changeFacet(field, value = '') {
+    const next = new URLSearchParams(searchParams);
+    if (!value || next.get(field) === value) next.delete(field);
+    else next.set(field, value);
+    next.delete('page');
+    setSearchParams(next);
+  }
+
   function applyFilters(event) {
     event.preventDefault();
     const next = new URLSearchParams();
 
-    for (const field of ['search', 'category', 'brand', 'minPrice', 'maxPrice', 'minRating']) {
+    for (const field of ['search', 'category', 'brand', 'inStock', 'minPrice', 'maxPrice', 'minRating']) {
       if (draft[field] !== '') next.set(field, draft[field]);
     }
 
@@ -148,47 +227,66 @@ export default function ProductsPage() {
         </Typography>
       </Box>
 
-      <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '280px minmax(0, 1fr)'}, gap: 3, alignItems: 'start'}}>
-        <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{p: 2.5, position: {md: 'sticky'}, top: {md: 142}, boxShadow: '0 8px 24px rgba(31,41,55,.05)'}}>
-          <Stack spacing={2.25}>
-            <Typography component="h2" variant="h6" fontWeight={800}>{t('products.filters')}</Typography>
+      <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '290px minmax(0, 1fr)'}, gap: {xs: 2, md: 3}, alignItems: 'start'}}>
+        <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{overflow: 'hidden', borderRadius: 1.5, borderColor: 'rgba(21,21,21,.1)', boxShadow: '0 12px 34px rgba(22,22,22,.045)'}}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{px: 2.5, py: 2.1, bgcolor: '#1b1b1b', color: '#fff', borderBottom: '3px solid #f6ad32'}}>
+            <Typography component="h2" variant="h6" fontWeight={850}>{t('products.filters')}</Typography>
+            <Button type="button" size="small" onClick={() => setSearchParams({})} sx={{color: '#f6ad32', fontSize: 12, minHeight: 30, px: 0.6, '&:hover': {bgcolor: 'rgba(255,255,255,.1)'}}}>{t('products.clear')}</Button>
+          </Stack>
+          <Stack spacing={2.5} sx={{p: 2.5}}>
             <TextField
               label={t('products.keyword')}
               value={draft.search}
               onChange={event => updateDraft('search', event.target.value)}
               inputProps={{maxLength: 100}}
+              size="small"
+              InputProps={{startAdornment: <InputAdornment position="start"><UiIcon name="search" sx={{fontSize: 19, color: 'text.secondary'}}/></InputAdornment>}}
+              sx={{'& .MuiOutlinedInput-root': {bgcolor: '#fafaf9'}}}
               fullWidth
             />
-            <FormControl fullWidth>
-              <InputLabel id="category-filter-label">{t('products.category')}</InputLabel>
-              <Select
-                labelId="category-filter-label"
-                label={t('products.category')}
-                value={draft.category}
-                onChange={event => updateDraft('category', event.target.value)}
-              >
-                <MenuItem value="">{t('products.allCategories')}</MenuItem>
-                {filterOptions.categories.map(category => (
-                  <MenuItem key={category.slug} value={category.slug}>{category.name}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel id="brand-filter-label">{t('products.brand')}</InputLabel>
-              <Select
-                labelId="brand-filter-label"
-                label={t('products.brand')}
-                value={draft.brand}
-                onChange={event => updateDraft('brand', event.target.value)}
-              >
-                <MenuItem value="">{t('products.allBrands')}</MenuItem>
-                {filterOptions.brands.map(brand => <MenuItem key={brand} value={brand}>{brand}</MenuItem>)}
-              </Select>
-            </FormControl>
+            <Divider/>
+            <FilterGroup
+              title={t('products.category')}
+              options={filterOptions.categories.map(category => ({value: category.slug, label: category.name, count: category.count || 0}))}
+              selected={query.category}
+              onSelect={value => changeFacet('category', value)}
+              onClear={() => changeFacet('category')}
+              clearLabel={t('products.clear')}
+            />
+            <Divider/>
+            <FilterGroup
+              title={t('products.brand')}
+              options={filterOptions.brands.map(brand => ({value: brand.name, label: brand.name, count: brand.count || 0}))}
+              selected={query.brand}
+              onSelect={value => changeFacet('brand', value)}
+              onClear={() => changeFacet('brand')}
+              clearLabel={t('products.clear')}
+              visibleLimit={6}
+              moreLabel={t('products.showMore')}
+              lessLabel={t('products.showLess')}
+            />
+            <Divider/>
+            <FilterGroup
+              title={t('products.availability')}
+              options={[
+                {value: 'true', label: t('products.inStock'), count: filterOptions.availability?.inStock || 0},
+                {value: 'false', label: t('products.outOfStock'), count: filterOptions.availability?.outOfStock || 0}
+              ]}
+              selected={query.inStock}
+              onSelect={value => changeFacet('inStock', value)}
+              onClear={() => changeFacet('inStock')}
+              clearLabel={t('products.clear')}
+            />
+            <Divider/>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Box sx={{width: 3, height: 17, bgcolor: 'secondary.main', borderRadius: 1}}/>
+              <Typography component="h3" fontSize="0.96rem" fontWeight={800}>{t('products.priceRange')}</Typography>
+            </Stack>
             <Stack direction={{xs: 'column', sm: 'row'}} spacing={1.5}>
               <TextField
                 label={t('products.priceFrom')}
                 type="number"
+                size="small"
                 value={draft.minPrice}
                 onChange={event => updateDraft('minPrice', event.target.value)}
                 inputProps={{min: 0, step: 100000}}
@@ -196,12 +294,14 @@ export default function ProductsPage() {
               <TextField
                 label={t('products.priceTo')}
                 type="number"
+                size="small"
                 value={draft.maxPrice}
                 onChange={event => updateDraft('maxPrice', event.target.value)}
                 inputProps={{min: 0, step: 100000}}
               />
             </Stack>
-            <FormControl fullWidth>
+            <Divider/>
+            <FormControl fullWidth size="small">
               <InputLabel id="rating-filter-label">{t('products.minRating')}</InputLabel>
               <Select
                 labelId="rating-filter-label"
@@ -213,8 +313,7 @@ export default function ProductsPage() {
                 {[4, 3, 2, 1].map(value => <MenuItem key={value} value={String(value)}>{t('products.starsUp',{count:value})}</MenuItem>)}
               </Select>
             </FormControl>
-            <Button type="submit" variant="contained" size="large">{t('products.apply')}</Button>
-            <Button type="button" color="inherit" onClick={() => setSearchParams({})}>{t('products.clear')}</Button>
+            <Button type="submit" variant="contained" size="large" sx={{borderRadius: 1, '&:hover': {bgcolor: '#333'}}}>{t('products.apply')}</Button>
             {filterOptions.priceRange.max > 0 && (
               <Typography variant="caption" color="text.secondary">
                 {t('products.dataRange')}: {filterOptions.priceRange.min.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')}–{filterOptions.priceRange.max.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')} ₫

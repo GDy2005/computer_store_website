@@ -243,15 +243,18 @@ services:
       context: .
       dockerfile: services/order-service/Dockerfile
       args: {SERVICE_PATH: services/order-service}
-    command: [node, services/order-service/src/seeds/seed-coupons.js]
+    command: [node, services/order-service/src/seeds/seed-order-data.js]
     init: true
     restart: "no"
     networks: [private]
     environment:
       MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
       DB_NAME: order_db
+      CATALOG_SERVICE_URL: http://catalog-service:5002
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
+      catalog-service: {condition: service_healthy}
 
   order-service:
     <<: *scaled-app
@@ -265,10 +268,6 @@ services:
       DB_NAME: order_db
       CATALOG_SERVICE_URL: http://catalog-service:5002
       IDENTITY_SERVICE_URL: http://identity-service:5001
-      PAYMENT_PUBLIC_BASE_URL: ${PAYMENT_PUBLIC_BASE_URL:-http://localhost}
-      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE:-}
-      VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET:-}
-      VNPAY_PAYMENT_URL: ${VNPAY_PAYMENT_URL:-https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
       kafka-init: {condition: service_completed_successfully}

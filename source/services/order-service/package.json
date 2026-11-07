@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
+    "seed": "node src/seeds/seed-order-data.js",
     "seed:coupons": "node src/seeds/seed-coupons.js"
   },
   "dependencies": {

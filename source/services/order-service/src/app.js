@@ -89,13 +89,7 @@ export function buildApp({
       identityClient
     });
 
-  const paymentService = createPaymentService({
-    connection,
-    Order: models.Order,
-    Coupon: models.Coupon,
-    Outbox: models.Outbox,
-    loyaltyService
-  });
+  const paymentService = createPaymentService();
 
   const customerOrderService = createCustomerOrderService({
     Order: models.Order

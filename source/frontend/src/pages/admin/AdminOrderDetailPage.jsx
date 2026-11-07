@@ -39,15 +39,13 @@ const nextStatuses = {
 
 const paymentMethodLabels = {
   COD: 'Thanh toán khi nhận hàng',
-  SIMULATED_ONLINE: 'Thanh toán online mô phỏng',
-  VNPAY: 'VNPay (sandbox)'
+  SIMULATED_CARD: 'Thẻ thanh toán mô phỏng'
 };
 
 const paymentStatusLabels = {
   PENDING: 'Chờ thanh toán',
   PAID: 'Đã thanh toán',
-  FAILED: 'Thất bại',
-  REFUND_REQUIRED: 'Cần hoàn tiền thủ công'
+  FAILED: 'Thất bại'
 };
 
 function MoneyRow({label, value, strong = false, negative = false}) {

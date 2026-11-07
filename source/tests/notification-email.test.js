@@ -57,6 +57,27 @@ test('confirmed order creates an idempotent confirmation email job', async () =>
   assert.equal(operation[2].upsert, true);
 });
 
+test('demo historical orders do not create email jobs', async () => {
+  const handler = createOrderConfirmedHandler({
+    EmailJob: {
+      async updateOne() {
+        throw new Error('Demo orders must not send email');
+      }
+    }
+  });
+
+  await handler({
+    eventId: 'demo-event',
+    payload: {
+      orderNumber: 'ORD-DEMO-000001',
+      customer: {
+        fullName: 'Demo Customer',
+        email: 'demo-customer@example.com'
+      }
+    }
+  }, {});
+});
+
 test('email service renders activation email without logging credentials', async () => {
   let message;
   const service = createEmailService({

@@ -34,6 +34,10 @@ export function CartProvider({children}) {
   const [cart, setCart] = useState(emptyCart);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const openCart = useCallback(() => setDrawerOpen(true), []);
+  const closeCart = useCallback(() => setDrawerOpen(false), []);
 
   const refresh = useCallback(async () => {
     const data = await fetchCart();
@@ -106,13 +110,28 @@ export function CartProvider({children}) {
       cart,
       loading,
       error,
+      drawerOpen,
+      openCart,
+      closeCart,
       refresh,
       add,
       update,
       remove,
       clear
     }),
-    [cart, loading, error, refresh, add, update, remove, clear]
+    [
+      cart,
+      loading,
+      error,
+      drawerOpen,
+      openCart,
+      closeCart,
+      refresh,
+      add,
+      update,
+      remove,
+      clear
+    ]
   );
 
   return (

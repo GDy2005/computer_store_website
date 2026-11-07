@@ -71,12 +71,7 @@ export function createOrderStatusService({
         );
         order.workflowStatus = 'REJECTED';
         order.cancellationReason = note || 'Cancelled by administrator';
-        if (
-          order.payment?.method === 'VNPAY' &&
-          order.payment.status === 'PAID'
-        ) {
-          order.payment.status = 'REFUND_REQUIRED';
-        } else if (order.payment?.method !== 'COD') {
+        if (order.payment?.method !== 'COD') {
           order.payment.status = 'FAILED';
         }
       }

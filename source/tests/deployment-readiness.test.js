@@ -59,6 +59,27 @@ test('demo catalog satisfies the submission product baseline', () => {
   assert.ok(products.every(product => product.variants.length >= 2));
 });
 
+test('fresh Docker stack seeds orders and projects them through Kafka', () => {
+  const compose = read('../docker-compose.yml');
+  const seedScript = read(
+    '../services/order-service/src/seeds/seed-order-data.js'
+  );
+
+  assert.match(compose, /^  order-seed:/m);
+  assert.match(
+    compose,
+    /command: \[node, services\/order-service\/src\/seeds\/seed-order-data\.js\]/
+  );
+  assert.match(
+    compose,
+    /catalog-service: \{condition: service_healthy\}/
+  );
+  assert.match(seedScript, /Order\.exists\(\{/);
+  assert.match(seedScript, /orders\.confirmed\.v1/);
+  assert.match(seedScript, /Outbox\.create\(outboxRows/);
+  assert.doesNotMatch(compose, /^  analytics-seed:/m);
+});
+
 test('CI and bonus evidence cover the final system checks', () => {
   const workflow = read('../../.github/workflows/ci.yml');
   const bonus = read('../../Bonus/README.md');

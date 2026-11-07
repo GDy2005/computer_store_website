@@ -19,6 +19,19 @@ function pointsFor(series, key, maxValue) {
   }).join(' ');
 }
 
+function coordinatesFor(series, key, maxValue) {
+  const usableWidth = WIDTH - LEFT - RIGHT;
+  const usableHeight = HEIGHT - TOP - BOTTOM;
+  const divisor = Math.max(1, series.length - 1);
+
+  return series.map((item, index) => ({
+    x: LEFT + usableWidth * index / divisor,
+    y: TOP + usableHeight * (1 - Number(item[key] || 0) / maxValue),
+    value: Number(item[key] || 0),
+    label: item.label || item.date
+  }));
+}
+
 export default function AnalyticsChart({series, lines, title, valueFormatter, emptyLabel = 'Chưa có dữ liệu trong khoảng thời gian này.'}) {
   if (!series?.length) {
     return <Typography color="text.secondary">{emptyLabel}</Typography>;
@@ -61,15 +74,32 @@ export default function AnalyticsChart({series, lines, title, valueFormatter, em
             );
           })}
           {lines.map(line => (
-            <polyline
-              key={line.key}
-              points={pointsFor(series, line.key, maxValue)}
-              fill="none"
-              stroke={line.color}
-              strokeWidth="3"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
+            <g key={line.key}>
+              <polyline
+                points={pointsFor(series, line.key, maxValue)}
+                fill="none"
+                stroke={line.color}
+                strokeWidth="3"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+              {coordinatesFor(series, line.key, maxValue)
+                .filter(point => point.value > 0)
+                .map((point, index) => (
+                  <circle
+                    key={`${line.key}-${point.label}-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r="3.5"
+                    fill={line.color}
+                    stroke="#fff"
+                    strokeWidth="1.5"
+                    style={{transition: 'r 150ms ease'}}
+                  >
+                    <title>{`${point.label} · ${line.label}: ${valueFormatter(point.value)}`}</title>
+                  </circle>
+                ))}
+            </g>
           ))}
           {series.map((item, index) => {
             if (index % labelStep !== 0 && index !== series.length - 1) return null;

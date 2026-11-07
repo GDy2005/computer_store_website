@@ -14,7 +14,7 @@ function daysAgo(now, days) {
   return new Date(now.getTime() - days * 86400000);
 }
 
-function productPayload(productId, name, categoryId) {
+function productPayload({productId, name, categoryId, unitPrice}) {
   return {
     productId,
     slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -23,8 +23,8 @@ function productPayload(productId, name, categoryId) {
     brand: 'Demo Brand',
     categoryId,
     tags: ['demo'],
-    minPrice: 10000000,
-    maxPrice: 12000000,
+    minPrice: unitPrice,
+    maxPrice: Math.round(unitPrice * 1.15),
     averageRating: 4.5,
     isActive: true
   };
@@ -60,115 +60,112 @@ function confirmedPayload({orderId, orderNumber, userId, product}) {
 
 export function buildDefaultAnalyticsFixtures(now = new Date()) {
   const userId = '507f1f77bcf86cd799439101';
-  const laptopId = '507f1f77bcf86cd799439201';
-  const keyboardId = '507f1f77bcf86cd799439202';
-  const laptop = productPayload(
-    laptopId,
-    'Demo Laptop Pro',
-    '507f1f77bcf86cd799439301'
-  );
-  const keyboard = productPayload(
-    keyboardId,
-    'Demo Mechanical Keyboard',
-    '507f1f77bcf86cd799439302'
-  );
-  const base = {
-    producer: 'identity-service',
-    key: userId,
-    correlationId: 'analytics-fixture'
-  };
-
-  const events = [
-    occurredAt('users.created.v1', {
-      ...base,
-      payload: {
-        userId,
-        email: 'analytics-demo@example.com',
-        fullName: 'Demo Customer',
-        role: 'CUSTOMER',
-        accountStatus: 'ACTIVE'
-      }
-    }, daysAgo(now, 35)),
-    occurredAt('products.created.v1', {
-      producer: 'catalog-service',
-      key: laptopId,
-      correlationId: 'analytics-fixture',
-      payload: laptop
-    }, daysAgo(now, 60)),
-    occurredAt('users.created.v1', {
-      producer: 'identity-service',
-      key: '507f1f77bcf86cd799439102',
-      correlationId: 'analytics-fixture',
-      payload: {
-        userId: '507f1f77bcf86cd799439102',
-        email: 'analytics-new@example.com',
-        fullName: 'New Demo Customer',
-        role: 'CUSTOMER',
-        accountStatus: 'ACTIVE'
-      }
-    }, daysAgo(now, 3)),
-    occurredAt('products.created.v1', {
-      producer: 'catalog-service',
-      key: keyboardId,
-      correlationId: 'analytics-fixture',
-      payload: keyboard
-    }, daysAgo(now, 60)),
-    occurredAt('ratings.updated.v1', {
-      producer: 'catalog-service',
-      key: laptopId,
-      correlationId: 'analytics-fixture',
-      payload: {
-        productId: laptopId,
-        averageRating: 4.5,
-        ratingCount: 12
-      }
-    }, daysAgo(now, 10))
-  ];
-
-  const orders = [
+  const products = [
     {
-      orderId: '507f1f77bcf86cd799439401',
-      orderNumber: 'ORD-20261001-AA0001',
-      days: 18,
-      product: {
-        productId: laptopId,
-        productName: laptop.name,
-        categoryName: 'Laptop',
-        quantity: 1,
-        unitPrice: 12000000,
-        unitCost: 9000000,
-        total: 12030000
-      }
+      productId: '507f1f77bcf86cd799439201',
+      categoryId: '507f1f77bcf86cd799439301',
+      name: 'Demo Laptop Pro',
+      categoryName: 'Laptop',
+      unitPrice: 24500000,
+      unitCost: 19800000
     },
     {
-      orderId: '507f1f77bcf86cd799439402',
-      orderNumber: 'ORD-20261002-AA0002',
-      days: 5,
-      product: {
-        productId: keyboardId,
-        productName: keyboard.name,
-        categoryName: 'Keyboard',
-        quantity: 2,
-        unitPrice: 1800000,
-        unitCost: 1200000,
-        total: 3630000
-      }
+      productId: '507f1f77bcf86cd799439202',
+      categoryId: '507f1f77bcf86cd799439302',
+      name: 'Demo Mechanical Keyboard',
+      categoryName: 'Keyboard',
+      unitPrice: 2850000,
+      unitCost: 1920000
     },
     {
-      orderId: '507f1f77bcf86cd799439403',
-      orderNumber: 'ORD-20261003-AA0003',
-      days: 12,
-      product: {
-        productId: keyboardId,
-        productName: keyboard.name,
-        categoryName: 'Keyboard',
-        quantity: 1,
-        unitPrice: 1800000,
-        unitCost: 1200000,
-        total: 1830000
-      }
+      productId: '507f1f77bcf86cd799439203',
+      categoryId: '507f1f77bcf86cd799439303',
+      name: 'Demo Gaming Monitor',
+      categoryName: 'Monitor',
+      unitPrice: 7990000,
+      unitCost: 6150000
+    },
+    {
+      productId: '507f1f77bcf86cd799439204',
+      categoryId: '507f1f77bcf86cd799439304',
+      name: 'Demo Wireless Mouse',
+      categoryName: 'Mouse',
+      unitPrice: 2190000,
+      unitCost: 1430000
+    },
+    {
+      productId: '507f1f77bcf86cd799439205',
+      categoryId: '507f1f77bcf86cd799439305',
+      name: 'Demo NVMe SSD 1TB',
+      categoryName: 'SSD and Storage',
+      unitPrice: 3290000,
+      unitCost: 2360000
     }
   ];
+
+  const userDays = [35, 27, 21, 15, 9, 5, 2, 0];
+  const events = userDays.map((days, index) => {
+    const fixtureUserId = index === 0
+      ? userId
+      : `507f1f77bcf86cd7${String(99439101 + index).padStart(8, '0')}`;
+    return occurredAt('users.created.v1', {
+      producer: 'identity-service',
+      key: fixtureUserId,
+      correlationId: 'analytics-fixture',
+      payload: {
+        userId: fixtureUserId,
+        email: index === 0
+          ? 'analytics-demo@example.com'
+          : `analytics-demo-${index + 1}@example.com`,
+        fullName: `Demo Customer ${index + 1}`,
+        role: 'CUSTOMER',
+        accountStatus: 'ACTIVE'
+      }
+    }, daysAgo(now, days));
+  });
+
+  for (const product of products) {
+    events.push(occurredAt('products.created.v1', {
+      producer: 'catalog-service',
+      key: product.productId,
+      correlationId: 'analytics-fixture',
+      payload: productPayload(product)
+    }, daysAgo(now, 60)));
+  }
+
+  events.push(occurredAt('ratings.updated.v1', {
+    producer: 'catalog-service',
+    key: products[0].productId,
+    correlationId: 'analytics-fixture',
+    payload: {
+      productId: products[0].productId,
+      averageRating: 4.5,
+      ratingCount: 12
+    }
+  }, daysAgo(now, 10)));
+
+  const orders = Array.from({length: 45}, (_, index) => {
+    const product = products[index % products.length];
+    const quantity = index % 6 === 0 ? 2 : 1;
+    const lineTotal = product.unitPrice * quantity;
+    const discount = index % 9 === 0 ? Math.min(200000, lineTotal) : 0;
+    const total = lineTotal + 30000 - discount;
+
+    return {
+      orderId: `507f1f77bcf86cd7${String(99439401 + index).padStart(8, '0')}`,
+      orderNumber: `ORD-DEMO-${String(index + 1).padStart(6, '0')}`,
+      days: index % 35,
+      product: {
+        productId: product.productId,
+        productName: product.name,
+        categoryName: product.categoryName,
+        quantity,
+        unitPrice: product.unitPrice,
+        unitCost: product.unitCost,
+        total
+      }
+    };
+  });
 
   for (const order of orders) {
     events.push(occurredAt('orders.confirmed.v1', {
@@ -179,17 +176,19 @@ export function buildDefaultAnalyticsFixtures(now = new Date()) {
     }, daysAgo(now, order.days)));
   }
 
-  const cancelled = orders[2];
-  events.push(occurredAt('orders.cancelled.v1', {
-    producer: 'order-service',
-    key: cancelled.orderId,
-    correlationId: 'analytics-fixture',
-    payload: {
-      orderId: cancelled.orderId,
-      orderNumber: cancelled.orderNumber,
-      reason: 'Cancelled analytics fixture'
-    }
-  }, daysAgo(now, 2)));
+  const cancelledOrders = [orders[8], orders[27], orders[41]];
+  for (const order of cancelledOrders) {
+    events.push(occurredAt('orders.cancelled.v1', {
+      producer: 'order-service',
+      key: order.orderId,
+      correlationId: 'analytics-fixture',
+      payload: {
+        orderId: order.orderId,
+        orderNumber: order.orderNumber,
+        reason: 'Cancelled analytics fixture'
+      }
+    }, daysAgo(now, Math.max(0, order.days - 1))));
+  }
 
   return events;
 }

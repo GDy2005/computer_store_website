@@ -15,7 +15,7 @@ function workflowFixture() {
     workflowStatus: 'AWAITING_INVENTORY', status: 'PENDING',
     createdAt: new Date('2026-10-18T00:00:00Z'),
     coupon: {couponId: 'coupon-1', status: 'RESERVED'},
-    payment: {method: 'SIMULATED_ONLINE', status: 'PAID'},
+    payment: {method: 'SIMULATED_CARD', status: 'PAID'},
     statusHistory: [], async save() {}
   };
   const service = createOrderWorkflowService({
@@ -61,15 +61,15 @@ test('inventory rejection refunds coupon only once', async () => {
   assert.equal(order.cancellationReason, 'Insufficient stock');
 });
 
-test('inventory rejection flags a paid sandbox gateway order for refund', async () => {
+test('inventory rejection marks a simulated card payment as failed', async () => {
   const {service, order} = workflowFixture();
-  order.payment = {method: 'VNPAY', status: 'PAID'};
+  order.payment = {method: 'SIMULATED_CARD', status: 'PAID'};
   await service.rejected({
     eventId: randomUUID(),
     correlationId: 'test',
     payload: {orderId: order._id, reason: 'Insufficient stock'}
   }, {});
-  assert.equal(order.payment.status, 'REFUND_REQUIRED');
+  assert.equal(order.payment.status, 'FAILED');
 });
 
 test('late inventory reservation requests release and cannot confirm a timed-out order', async () => {

@@ -8,7 +8,7 @@
 A full-stack computer-store platform built around event-driven Node.js
 microservices. The project includes a responsive customer storefront, an
 administration dashboard, real-time catalog feedback, loyalty points, grounded
-AI product recommendations, and optional VNPay sandbox checkout.
+AI product recommendations, and a local simulated-card checkout.
 
 > This repository is intended for development, demonstrations, and academic
 > evaluation. Payment integrations use sandbox credentials only.
@@ -20,7 +20,7 @@ AI product recommendations, and optional VNPay sandbox checkout.
 - Product catalog, variants, inventory, comments, ratings, and Cloudinary upload.
 - Elasticsearch search with filters, sorting, and Kafka synchronization.
 - Guest/customer carts, coupons, checkout Saga, order history, and loyalty.
-- Cash on Delivery and optional VNPay sandbox payment.
+- Cash on Delivery and a fixed simulated card for local payment testing.
 - Realtime feedback updates through Socket.IO.
 - Admin product, category, inventory, user, order, coupon, and analytics tools.
 - Search-grounded AI assistant with an offline fallback mode.
@@ -41,7 +41,7 @@ AI product recommendations, and optional VNPay sandbox checkout.
 | Search | Elasticsearch |
 | Media | Cloudinary (optional) |
 | AI | Local fallback or OpenAI-compatible API (optional) |
-| Payments | VNPay Sandbox (optional) |
+| Payments | Cash on Delivery, fixed simulated card |
 | Runtime | Docker Compose |
 
 Only Nginx publishes a host port. Databases, brokers, and application services
@@ -101,8 +101,11 @@ docker compose up -d
 ```
 
 The first run downloads/builds images, initializes MongoDB and Kafka, seeds the
-demo catalog, and creates the Elasticsearch index. One-shot containers ending
-with `Exited (0)` completed successfully.
+demo catalog, coupons, and 45 demo orders, and creates the Elasticsearch index.
+The order events are published through Kafka and automatically build the
+Analytics dashboard. One-shot containers ending with `Exited (0)` completed
+successfully. Demo orders are added once even if the database has a few real
+orders; later restarts do not duplicate them.
 
 ### 4. Open
 
@@ -224,103 +227,25 @@ docker compose up -d --force-recreate ai-service
 
 </details>
 
-## Optional VNPay sandbox checkout
+## Test the simulated card checkout
 
-Cash on Delivery works without public hosting. VNPay needs a public HTTPS
-callback, which can be supplied locally with a Cloudflare Quick Tunnel.
+No public domain, tunnel, provider account, or payment credential is required.
+Start the website on localhost, add a product to the cart, and select
+**Simulated card payment** at checkout.
 
-### 1. Install cloudflared
-
-```powershell
-winget install --id Cloudflare.cloudflared --exact
-cloudflared --version
-```
-
-If the executable is installed but not available on `PATH`:
-
-```powershell
-& "C:\Program Files (x86)\cloudflared\cloudflared.exe" --version
-```
-
-References: [cloudflared downloads](https://developers.cloudflare.com/tunnel/downloads/),
-[Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
-
-### 2. Start the tunnel
-
-Keep the website running, then open a second terminal:
-
-```powershell
-cloudflared tunnel --url http://localhost:80
-```
-
-Cloudflare prints a hostname similar to
-`https://YOUR-TUNNEL.trycloudflare.com`. Keep this terminal open.
-
-### 3. Configure the public origin
-
-```dotenv
-FRONTEND_URL=https://YOUR-TUNNEL.trycloudflare.com
-PAYMENT_PUBLIC_BASE_URL=https://YOUR-TUNNEL.trycloudflare.com
-GOOGLE_CALLBACK_URL=https://YOUR-TUNNEL.trycloudflare.com/api/v1/auth/google/callback
-```
-
-### 4. Register VNPay sandbox
-
-Register at [VNPay Sandbox](https://sandbox.vnpayment.vn/devreg) with the
-tunnel URL as the website URL, then configure the credentials supplied by
-VNPay:
-
-```dotenv
-VNPAY_TMN_CODE=terminal-code-provided-by-vnpay
-VNPAY_HASH_SECRET=hash-secret-provided-by-vnpay
-VNPAY_PAYMENT_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-```
-
-Callback URLs:
-
-```text
-Return: https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/return
-IPN:    https://YOUR-TUNNEL.trycloudflare.com/api/v1/payments/vnpay/ipn
-```
-
-Apply the environment:
-
-```bash
-docker compose up -d --force-recreate identity-service order-service gateway
-```
-
-Open the tunnel URL, sign in on that hostname, and complete checkout with
-`VNPay (sandbox)`.
-
-Sandbox success card:
+Use this exact test card:
 
 | Field | Value |
 | --- | --- |
-| Bank | NCB |
-| Card number | `9704198526191432198` |
-| Cardholder | `NGUYEN VAN A` |
-| Issue date | `07/15` |
-| OTP | `123456` |
+| Cardholder name | `NGUYEN VAN A` |
+| Card number | `4242 4242 4242 4242` |
+| Expiry date | `12/30` |
+| CVV | `123` |
 
-### When the Quick Tunnel hostname changes
-
-Quick Tunnel hostnames may change after restart. When that happens:
-
-1. Update `FRONTEND_URL` and `PAYMENT_PUBLIC_BASE_URL`.
-2. Update `GOOGLE_CALLBACK_URL` if Google OAuth is enabled.
-3. Update the VNPay website, Return URL, and IPN URL when required.
-4. Update the Google origin and redirect URI when Google OAuth is enabled.
-5. Recreate the services:
-
-   ```bash
-   docker compose up -d --force-recreate identity-service order-service gateway
-   ```
-
-6. Open the new hostname and sign in again.
-7. Request new activation/reset emails because old messages contain the old URL.
-
-For a stable public hostname, use a named Cloudflare Tunnel with a custom
-domain. Quick Tunnel is suitable for testing only.
+The interface displays a short authorization loading state. The backend only
+accepts the values above and then marks the simulated transaction as paid.
+Incorrect values are declined. The card number and CVV are never stored in the
+order. Do not enter real card information. Cash on Delivery remains available.
 
 ## Useful commands
 
@@ -364,19 +289,13 @@ Then hard-refresh with `Ctrl+Shift+R` or open a private browser window.
 docker compose logs --tail=200 search-reindex elasticsearch catalog-service
 ```
 
-### Verify VNPay variables without printing secrets
-
-```bash
-docker compose exec -T order-service node -e "for (const k of ['PAYMENT_PUBLIC_BASE_URL','VNPAY_TMN_CODE','VNPAY_HASH_SECRET']) console.log(k, process.env[k] ? 'SET' : 'MISSING')"
-```
-
 ## Data and security
 
 - Named volumes persist MongoDB, Kafka, Redis, and Elasticsearch data.
 - `source/.env` is ignored by Git; only `.env.example` should be committed.
-- Never publish OAuth secrets, SMTP App Passwords, Cloudinary secrets,
-  OpenAI API keys, or `VNPAY_HASH_SECRET`.
-- Sandbox and Quick Tunnel credentials must not be used as production setup.
+- Never publish OAuth secrets, SMTP App Passwords, Cloudinary secrets, or
+  OpenAI API keys.
+- The fixed card is test data only. This project does not process real cards.
 
 For the complete plain-text operations guide, see [README.txt](README.txt).
 Additional project evidence and submission notes are under

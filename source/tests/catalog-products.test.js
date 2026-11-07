@@ -118,6 +118,7 @@ test('public product output preserves MongoDB IDs and hides cost data', async ()
 });
 
 test('product filters come from active catalog data', async () => {
+  const categoryId = new mongoose.Types.ObjectId();
   const categoryQuery = {
     select() {
       return this;
@@ -126,7 +127,7 @@ test('product filters come from active catalog data', async () => {
       return this;
     },
     async lean() {
-      return [{name: 'Laptop', slug: 'laptop'}];
+      return [{_id: categoryId, name: 'Laptop', slug: 'laptop'}];
     }
   };
 
@@ -138,13 +139,14 @@ test('product filters come from active catalog data', async () => {
       }
     },
     Product: {
-      async distinct(field, filter) {
-        assert.equal(field, 'brand');
-        assert.deepEqual(filter, {isActive: true});
-        return ['Lenovo', 'Apple'];
-      },
-      async aggregate() {
-        return [{minPrice: 1000000, maxPrice: 50000000}];
+      async aggregate(pipeline) {
+        assert.deepEqual(pipeline[0], {$match: {isActive: true}});
+        return [{
+          categories: [{_id: categoryId, count: 3}],
+          brands: [{_id: 'Lenovo', count: 2}, {_id: 'Apple', count: 1}],
+          availability: [{_id: true, count: 2}, {_id: false, count: 1}],
+          priceRange: [{minPrice: 1000000, maxPrice: 50000000}]
+        }];
       }
     }
   });
@@ -152,10 +154,42 @@ test('product filters come from active catalog data', async () => {
   const result = await productService.getPublicFilters();
 
   assert.deepEqual(result, {
-    categories: [{name: 'Laptop', slug: 'laptop'}],
-    brands: ['Apple', 'Lenovo'],
+    categories: [{_id: categoryId, name: 'Laptop', slug: 'laptop', count: 3}],
+    brands: [{name: 'Apple', count: 1}, {name: 'Lenovo', count: 2}],
+    availability: {inStock: 2, outOfStock: 1},
     priceRange: {min: 1000000, max: 50000000}
   });
+});
+
+test('stock filter checks active variants after reservations', async () => {
+  const captured = [];
+  const query = {
+    populate() { return this; },
+    sort() { return this; },
+    skip() { return this; },
+    limit() { return this; },
+    async lean() { return []; }
+  };
+  const productService = createProductService({
+    Product: {
+      find(filter) {
+        captured.push(filter);
+        return query;
+      },
+      async countDocuments() { return 0; }
+    }
+  });
+
+  await productService.listPublic({page: 1, limit: 12, sort: 'newest', inStock: true});
+  await productService.listPublic({page: 1, limit: 12, sort: 'newest', inStock: false});
+
+  const available = captured[0].$expr;
+  assert.ok(available.$anyElementTrue[0].$map);
+  assert.deepEqual(
+    available.$anyElementTrue[0].$map.in.$and[1].$gt[0].$subtract,
+    ['$$variant.stock', {$ifNull: ['$$variant.reservedStock', 0]}]
+  );
+  assert.deepEqual(captured[1].$expr, {$not: [available]});
 });
 
 test('product update preserves variant IDs and reserved stock', async () => {

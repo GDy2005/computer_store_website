@@ -99,6 +99,24 @@ function sortDefinition(sort) {
   }[sort];
 }
 
+const hasAvailableVariant = {
+  $anyElementTrue: [{
+    $map: {
+      input: '$variants',
+      as: 'variant',
+      in: {
+        $and: [
+          '$$variant.isActive',
+          {$gt: [
+            {$subtract: ['$$variant.stock', {$ifNull: ['$$variant.reservedStock', 0]}]},
+            0
+          ]}
+        ]
+      }
+    }
+  }]
+};
+
 export function createProductService({
   connection,
   Product,
@@ -184,6 +202,12 @@ export function createProductService({
       };
     }
 
+    if (query.inStock !== undefined) {
+      filter.$expr = query.inStock
+        ? hasAvailableVariant
+        : {$not: [hasAvailableVariant]};
+    }
+
     const skip = (query.page - 1) * query.limit;
 
     const [documents, totalItems] =
@@ -231,32 +255,53 @@ export function createProductService({
   }
 
   async function getPublicFilters() {
-    const [categories, brands, priceRanges] =
+    const [categories, facets] =
       await Promise.all([
         Category.find({isActive: true})
           .select('name slug')
           .sort({name: 1})
           .lean(),
-        Product.distinct('brand', {isActive: true}),
         Product.aggregate([
           {$match: {isActive: true}},
           {
-            $group: {
-              _id: null,
-              minPrice: {$min: '$minPrice'},
-              maxPrice: {$max: '$maxPrice'}
+            $facet: {
+              categories: [{$group: {_id: '$categoryId', count: {$sum: 1}}}],
+              brands: [{$group: {_id: '$brand', count: {$sum: 1}}}],
+              availability: [
+                {$project: {available: hasAvailableVariant}},
+                {$group: {_id: '$available', count: {$sum: 1}}}
+              ],
+              priceRange: [{$group: {
+                _id: null,
+                minPrice: {$min: '$minPrice'},
+                maxPrice: {$max: '$maxPrice'}
+              }}]
             }
           }
         ])
       ]);
 
-    const range = priceRanges[0] || {};
+    const data = facets[0] || {};
+    const range = data.priceRange?.[0] || {};
+    const categoryCounts = new Map(
+      (data.categories || []).map(item => [String(item._id), item.count])
+    );
+    const availability = Object.fromEntries(
+      (data.availability || []).map(item => [String(item._id), item.count])
+    );
 
     return {
-      categories,
-      brands: brands.sort((left, right) =>
-        left.localeCompare(right)
-      ),
+      categories: categories.map(category => ({
+        ...category,
+        count: categoryCounts.get(String(category._id)) || 0
+      })),
+      brands: (data.brands || [])
+        .map(item => ({name: item._id, count: item.count}))
+        .sort((left, right) => left.name.localeCompare(right.name)),
+      availability: {
+        inStock: availability.true || 0,
+        outOfStock: availability.false || 0
+      },
       priceRange: {
         min: range.minPrice || 0,
         max: range.maxPrice || 0

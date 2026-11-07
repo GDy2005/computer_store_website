@@ -1,17 +1,10 @@
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import mongoose from 'mongoose';
 
 import {
   getCouponModel
 } from '../models/coupon.model.js';
-
-const connection = await mongoose
-  .createConnection(
-    process.env.MONGODB_URI,
-    {dbName: process.env.DB_NAME || 'order_db'}
-  )
-  .asPromise();
-
-const Coupon = getCouponModel(connection);
 
 const coupons = [
   {
@@ -56,49 +49,65 @@ const legacyCodes = new Map([
   ['SAVE200K', 'SAVE2']
 ]);
 
-for (const [legacyCode, replacementCode] of legacyCodes) {
-  const [legacy, replacement] = await Promise.all([
-    Coupon.findOne({code: legacyCode}),
-    Coupon.findOne({code: replacementCode})
-  ]);
+export async function seedCoupons(connection) {
+  const Coupon = getCouponModel(connection);
 
-  if (legacy && !replacement) {
-    const fields = coupons.find(
-      coupon => coupon.code === replacementCode
-    );
+  for (const [legacyCode, replacementCode] of legacyCodes) {
+    const [legacy, replacement] = await Promise.all([
+      Coupon.findOne({code: legacyCode}),
+      Coupon.findOne({code: replacementCode})
+    ]);
 
-    Object.assign(legacy, fields, {
-      usedCount: Math.min(
-        legacy.usedCount,
-        fields.usageLimit
-      ),
-      maximumDiscount: null,
-      minimumOrder: 0,
-      startsAt: null,
-      expiresAt: null
-    });
+    if (legacy && !replacement) {
+      const fields = coupons.find(
+        coupon => coupon.code === replacementCode
+      );
 
-    await legacy.save();
-  } else if (legacy && replacement) {
+      Object.assign(legacy, fields, {
+        usedCount: Math.min(
+          legacy.usedCount,
+          fields.usageLimit
+        ),
+        maximumDiscount: null,
+        minimumOrder: 0,
+        startsAt: null,
+        expiresAt: null
+      });
+
+      await legacy.save();
+    } else if (legacy && replacement) {
+      await Coupon.updateOne(
+        {_id: legacy._id},
+        {$set: {isActive: false}}
+      );
+    }
+  }
+
+  for (const coupon of coupons) {
+    const {code, ...fields} = coupon;
+
     await Coupon.updateOne(
-      {_id: legacy._id},
-      {$set: {isActive: false}}
+      {code},
+      {
+        $setOnInsert: {code, ...fields, usedCount: 0}
+      },
+      {upsert: true}
     );
   }
+
+  console.log(`Seeded ${coupons.length} coupons`);
 }
 
-for (const coupon of coupons) {
-  const {code, ...fields} = coupon;
+if (process.argv[1] &&
+    import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  const connection = await mongoose.createConnection(
+    process.env.MONGODB_URI,
+    {dbName: process.env.DB_NAME || 'order_db'}
+  ).asPromise();
 
-  await Coupon.updateOne(
-    {code},
-    {
-      $set: fields,
-      $setOnInsert: {code, usedCount: 0}
-    },
-    {upsert: true}
-  );
+  try {
+    await seedCoupons(connection);
+  } finally {
+    await connection.close();
+  }
 }
-
-console.log(`Seeded ${coupons.length} coupons`);
-await connection.close();

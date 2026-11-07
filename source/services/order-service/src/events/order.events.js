@@ -33,7 +33,7 @@ async function enqueue({
   return event;
 }
 
-function checkoutPayload(order) {
+export function orderEventPayload(order) {
   return {
     orderId: order._id.toString(),
     orderNumber: order.orderNumber,
@@ -65,7 +65,7 @@ export function enqueueOrderCreated(options) {
   return enqueue({
     ...options,
     topic: 'orders.created.v1',
-    payload: checkoutPayload(options.order)
+    payload: orderEventPayload(options.order)
   });
 }
 
@@ -73,7 +73,7 @@ export function enqueueOrderConfirmed(options) {
   return enqueue({
     ...options,
     topic: 'orders.confirmed.v1',
-    payload: checkoutPayload(options.order)
+    payload: orderEventPayload(options.order)
   });
 }
 

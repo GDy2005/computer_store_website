@@ -237,7 +237,16 @@ test('default rebuild fixtures obey versioned event contracts', () => {
   const fixtures = buildDefaultAnalyticsFixtures(
     new Date('2026-10-23T03:00:00.000Z')
   );
-  assert.ok(fixtures.length >= 6);
+  const confirmedOrders = fixtures.filter(
+    fixture => fixture.topic === 'orders.confirmed.v1'
+  );
+  const activeDates = new Set(
+    confirmedOrders.map(fixture => fixture.event.occurredAt.slice(0, 10))
+  );
+
+  assert.ok(fixtures.length >= 60);
+  assert.ok(confirmedOrders.length >= 40);
+  assert.ok(activeDates.size >= 30);
   for (const fixture of fixtures) {
     assert.doesNotThrow(() => validateEvent(fixture.topic, fixture.event));
   }
