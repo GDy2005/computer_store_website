@@ -115,7 +115,7 @@ export async function startService(name, buildApp, handleProbe, options = {}) {
             }
           }]
         });
-        log('warn', 'Event redirected', {service: name, consumer: groupId, topic: destination, eventId: event?.eventId, correlationId: event?.correlationId});
+        log('warn', 'Event redirected', {service: name, consumer: groupId, topic: destination, eventId: event?.eventId, correlationId: event?.correlationId, errorCode: error.code || 'HANDLER_ERROR', attempt: nextAttempt});
       }
       // Failure to send retry/DLQ throws before this commit, preserving the source message.
       await commit(context);
