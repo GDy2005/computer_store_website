@@ -115,7 +115,7 @@ export async function startService(name, buildApp, handleProbe, options = {}) {
             }
           }]
         });
-        log('warn', 'Event redirected', {service: name, consumer: groupId, topic: destination, eventId: event?.eventId, correlationId: event?.correlationId});
+        log('warn', 'Event redirected', {service: name, consumer: groupId, topic: destination, eventId: event?.eventId, correlationId: event?.correlationId, errorCode: error.code || 'HANDLER_ERROR', attempt: nextAttempt});
       }
       // Failure to send retry/DLQ throws before this commit, preserving the source message.
       await commit(context);
@@ -185,7 +185,7 @@ export async function startService(name, buildApp, handleProbe, options = {}) {
   app.use(internalAuth(secret));
   app.get('/internal/foundation', async (req, res) => res.json({success: true, data: {service: name, database: dbName, pendingOutbox: await Outbox.countDocuments({status: 'PENDING'}), processedEvents: await Processed.countDocuments(), deadLetters: await Dead.countDocuments()}}));
   app.get('/internal/foundation/probes/:id', async (req, res, next) => {
-    if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return next(new AppError(400, 'VALIDATION_ERROR', 'Invalid probe ID'));
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(req.params.id)) return next(new AppError(400, 'VALIDATION_ERROR', 'Invalid probe ID'));
     const probe = await Probe.findOne({probeId: req.params.id}).lean();
     res.json({success: true, data: probe});
   });
