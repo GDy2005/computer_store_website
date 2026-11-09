@@ -170,7 +170,8 @@ try {
       province: 'Test Province'
     }
   });
-  const addressId = createdAddress.payload.data._id;
+  const addressId = createdAddress.payload.data.id || createdAddress.payload.data._id;
+  assert(addressId, 'Created address response did not include an id');
 
   await request(gatewayOne, `/api/v1/users/me/addresses/${addressId}/default`, {
     method: 'PATCH',
