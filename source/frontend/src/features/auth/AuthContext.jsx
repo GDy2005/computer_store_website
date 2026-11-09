@@ -5,6 +5,8 @@ const AuthContext = createContext(null);
 
 export const DEFAULT_AVATAR_URL = 'https://res.cloudinary.com/ipc-media/image/upload/v1794128471/hcibhstn0zhnhzfxyipw.webp';
 
+const SESSION_REFRESH_INTERVAL_MS = 15 * 60 * 1000;
+
 export function getApiMessage(error, fallback) {
   return error.response?.data?.error?.message || fallback;
 }
@@ -32,6 +34,49 @@ export function AuthProvider({children}) {
   useEffect(() => {
     refresh().catch(() => setLoading(false));
   }, [refresh]);
+
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response?.status === 401) {
+          setUser(null);
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axios.interceptors.response.eject(interceptor);
+  }, []);
+
+  useEffect(() => {
+    if (!user) return undefined;
+
+    const refreshVisibleSession = () => {
+      if (document.visibilityState === 'visible') {
+        refresh().catch(() => {});
+      }
+    };
+
+    const interval = window.setInterval(
+      refreshVisibleSession,
+      SESSION_REFRESH_INTERVAL_MS
+    );
+
+    document.addEventListener(
+      'visibilitychange',
+      refreshVisibleSession
+    );
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener(
+        'visibilitychange',
+        refreshVisibleSession
+      );
+    };
+  }, [user, refresh]);
 
   const login = useCallback(async credentials => {
     await axios.post('/api/v1/auth/login', credentials);

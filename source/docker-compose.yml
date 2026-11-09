@@ -320,6 +320,7 @@ services:
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       SESSION_SECRET: ${SESSION_SECRET:-local-demo-session-change-before-production}
+      SESSION_TTL_MINUTES: ${SESSION_TTL_MINUTES:-480}
       INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
       FOUNDATION_PROBES_ENABLED: ${FOUNDATION_PROBES_ENABLED:-true}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}

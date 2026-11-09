@@ -35,6 +35,16 @@ const healthServiceNames = (
 const gatewayInstance =
   process.env.INSTANCE_ID || process.env.HOSTNAME || 'gateway';
 
+const sessionTtlMinutes = Number(
+  process.env.SESSION_TTL_MINUTES || 480
+);
+
+if (!Number.isFinite(sessionTtlMinutes) || sessionTtlMinutes <= 0) {
+  throw new Error('SESSION_TTL_MINUTES must be a positive number');
+}
+
+const sessionTtlMs = sessionTtlMinutes * 60 * 1000;
+
 export function requireAdminSession(req, res, next) {
   if (!req.session?.userId) {
     return next(new AppError(401, 'AUTH_REQUIRED', 'Authentication required'));
@@ -73,7 +83,19 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
       }
     } catch(error) { next(error); }
   });
-  app.use(session({store:new RedisStore({client:redis,prefix:'session:'}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:3600000}}));
+  app.use(session({
+    store: new RedisStore({client: redis, prefix: 'session:'}),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: sessionTtlMs
+    }
+  }));
   app.use(async (req,res,next) => {
     try { const key = `rate:${req.ip}:${Math.floor(Date.now()/60000)}`; const count = await redis.incr(key); if(count===1) await redis.expire(key,120); if(count>300) throw new AppError(429,'RATE_LIMITED','Too many requests'); next(); } catch(error) { next(error); }
   });
