@@ -4,7 +4,7 @@ import test from 'node:test';
 import {
   createPaymentService,
   DEMO_CARD
-} from '../services/order-service/src/services/payment.service.js';
+} from '../services/order-service/src/services/paymentService.js';
 
 const paymentService = createPaymentService();
 

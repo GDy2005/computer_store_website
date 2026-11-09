@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createEmailRequestedHandler} from '../services/notification-service/src/events/email-requested.consumer.js';
-import {createEmailService} from '../services/notification-service/src/services/email.service.js';
-import {createEmailWorker} from '../services/notification-service/src/services/email-worker.service.js';
+import {createEmailService} from '../services/notification-service/src/services/emailService.js';
+import {createEmailWorker} from '../services/notification-service/src/services/emailWorkerService.js';
 import {createOrderConfirmedHandler} from '../services/notification-service/src/events/order-confirmed.consumer.js';
 
 test('email requested handler creates an idempotent job by event ID', async () => {
@@ -41,7 +41,13 @@ test('confirmed order creates an idempotent confirmation email job', async () =>
       customer: {
         fullName: 'User',
         email: 'user@example.com'
-      }
+      },
+      items: [{
+        productName: 'Gaming laptop',
+        quantity: 1,
+        lineTotal: 25000000
+      }],
+      pricing: {total: 25000000}
     }
   }, {});
 
@@ -54,6 +60,8 @@ test('confirmed order creates an idempotent confirmation email job', async () =>
     operation[1].$setOnInsert.templateData.orderNumber,
     'ORD-20261016-ABC123'
   );
+  assert.equal(operation[1].$setOnInsert.templateData.items.length, 1);
+  assert.equal(operation[1].$setOnInsert.templateData.total, 25000000);
   assert.equal(operation[2].upsert, true);
 });
 
@@ -91,6 +99,32 @@ test('email service renders activation email without logging credentials', async
   assert.equal(message.to, 'user@example.com');
   assert.match(message.subject, /activate/i);
   assert.match(message.text, /https:\/\/example.com\/activate/);
+  assert.match(message.html, /COMPUTER STORE/);
+  assert.match(message.html, /Activate account/);
+  assert.match(message.html, /https:\/\/example.com\/activate/);
+});
+
+test('order email contains safe item and pricing details', async () => {
+  let message;
+  const service = createEmailService({
+    transporter: {sendMail: async value => { message = value; return {messageId: 'message-2'}; }}
+  });
+  await service.send({
+    recipientEmail: 'buyer@example.com',
+    template: 'ORDER_CONFIRMATION',
+    templateData: {
+      fullName: '<script>alert(1)</script>',
+      orderNumber: 'ORD-001',
+      items: [{productName: 'Laptop', quantity: 1, lineTotal: 25000000}],
+      total: 25000000,
+      shopUrl: 'http://localhost/products'
+    }
+  });
+  assert.match(message.html, /ORD-001/);
+  assert.match(message.html, /Laptop/);
+  assert.match(message.html, /25\.000\.000/);
+  assert.doesNotMatch(message.html, /<script>/);
+  assert.match(message.html, /&lt;script&gt;/);
 });
 
 test('email worker marks a successfully delivered job as sent', async () => {

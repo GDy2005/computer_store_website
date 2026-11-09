@@ -96,7 +96,10 @@ export function enqueueCommentCreated({
       commentId: comment._id.toString(),
       productId: comment.productId.toString(),
       displayName: comment.displayName,
-      content: comment.content
+      content: comment.content,
+      parentCommentId: comment.parentCommentId
+        ? comment.parentCommentId.toString()
+        : null
     },
     correlationId,
     session

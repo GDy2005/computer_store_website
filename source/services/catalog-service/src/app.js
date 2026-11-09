@@ -11,71 +11,75 @@ import {
 
 import {
   createIdentityClient
-} from './clients/identity-client.service.js';
+} from './clients/identityClient.js';
 
 import {
   createCategoryService
-} from './services/category.service.js';
+} from './services/categoryService.js';
 
 import {
   createProductService
-} from './services/product.service.js';
+} from './services/productService.js';
 
 import {
   createCommentService
-} from './services/comment.service.js';
+} from './services/commentService.js';
 
 import {
   createRatingService
-} from './services/rating.service.js';
+} from './services/ratingService.js';
 
 import {
   createUploadService
-} from './services/upload.service.js';
+} from './services/uploadService.js';
+
+import {createCategoryRepository} from './repositories/categoryRepository.js';
+import {createProductRepository} from './repositories/productRepository.js';
+import {createFeedbackRepository} from './repositories/feedbackRepository.js';
 
 import {
   createCategoryController
-} from './controllers/category.controller.js';
+} from './controllers/categoryController.js';
 
 import {
   createProductController
-} from './controllers/product.controller.js';
+} from './controllers/productController.js';
 
 import {
   createCommentController
-} from './controllers/comment.controller.js';
+} from './controllers/commentController.js';
 
 import {
   createRatingController
-} from './controllers/rating.controller.js';
+} from './controllers/ratingController.js';
 
 import {
   createUploadController
-} from './controllers/upload.controller.js';
+} from './controllers/uploadController.js';
 
 import {
   createCategoryRouter
-} from './routes/category.routes.js';
+} from './routes/categoryRoutes.js';
 
 import {
   createProductRouter
-} from './routes/product.routes.js';
+} from './routes/productRoutes.js';
 
 import {
   createCommentRouter
-} from './routes/comment.routes.js';
+} from './routes/commentRoutes.js';
 
 import {
   createRatingRouter
-} from './routes/rating.routes.js';
+} from './routes/ratingRoutes.js';
 
 import {
   createUploadRouter
-} from './routes/upload.routes.js';
+} from './routes/uploadRoutes.js';
 
 import {
   createAdminRouter
-} from './routes/admin.routes.js';
+} from './routes/adminRoutes.js';
 
 export function buildApp({connection, models}) {
   const router = express.Router();
@@ -92,25 +96,38 @@ export function buildApp({connection, models}) {
     secret: process.env.INTERNAL_SERVICE_SECRET
   });
 
+  const categoryRepository = createCategoryRepository({
+    Category: catalogModels.Category,
+    Product: catalogModels.Product
+  });
+
+  const productRepository = createProductRepository({
+    Product: catalogModels.Product
+  });
+
+  const feedbackRepository = createFeedbackRepository({
+    Comment: catalogModels.Comment,
+    Rating: catalogModels.Rating
+  });
+
   const categoryService =
     createCategoryService({
-      Category: catalogModels.Category,
-      Product: catalogModels.Product
+      categoryRepository
     });
 
   const productService =
     createProductService({
       connection,
-      Product: catalogModels.Product,
-      Category: catalogModels.Category,
+      productRepository,
+      categoryRepository,
       Outbox: catalogModels.Outbox
     });
 
   const commentService =
     createCommentService({
       connection,
-      Product: catalogModels.Product,
-      Comment: catalogModels.Comment,
+      productRepository,
+      feedbackRepository,
       Outbox: catalogModels.Outbox,
       identityClient
     });
@@ -118,8 +135,8 @@ export function buildApp({connection, models}) {
   const ratingService =
     createRatingService({
       connection,
-      Product: catalogModels.Product,
-      Rating: catalogModels.Rating,
+      productRepository,
+      feedbackRepository,
       Outbox: catalogModels.Outbox,
       identityClient
     });

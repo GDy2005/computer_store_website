@@ -6,10 +6,10 @@ import mongoose from 'mongoose';
 import {buildApp} from '../services/catalog-service/src/app.js';
 import {
   createProductService
-} from '../services/catalog-service/src/services/product.service.js';
+} from '../services/catalog-service/src/services/productService.js';
 import {
   createUploadController
-} from '../services/catalog-service/src/controllers/upload.controller.js';
+} from '../services/catalog-service/src/controllers/uploadController.js';
 import {
   seedProducts
 } from '../services/catalog-service/src/seeds/seedProducts.js';
@@ -40,8 +40,22 @@ test('catalog seed data lives in the data directory', () => {
     )
   );
 
-  assert.equal(categories.length, 5);
+  assert.equal(categories.length, 6);
   assert.ok(Array.isArray(products));
+  assert.equal(products.length, 46);
+  assert.equal(
+    products.filter(product => product.categorySlug === 'pc').length,
+    5
+  );
+  assert.equal(
+    products.filter(product => product.categorySlug === 'laptop').length,
+    9
+  );
+  assert.ok(products.some(product => product.slug === 'pc-omen-35l-valorant'));
+  assert.ok(products.some(product => product.slug === 'combo-pc-asus-rog-hatsune-miku-edition'));
+  assert.ok(products.some(product => product.slug === 'hp-hyperx-omen-16-ap1010ax-valorant-edition'));
+  assert.ok(products.every(product => product.slug !== 'creator-pro-amd-desktop'));
+  assert.ok(products.every(product => product.categorySlug !== 'loa'));
 });
 
 test('product seed requires at least forty products', async () => {
@@ -320,6 +334,7 @@ test('upload controller returns uploaded image metadata', async () => {
   assert.equal(statusCode, 201);
   assert.deepEqual(payload, {
     success: true,
+    message: 'Images uploaded successfully',
     data: {images}
   });
 });

@@ -48,6 +48,14 @@ export function CartProvider({children}) {
   useEffect(() => {
     if (authLoading) return undefined;
 
+    if (user?.role === 'ADMIN') {
+      setCart(emptyCart);
+      setDrawerOpen(false);
+      setError('');
+      setLoading(false);
+      return undefined;
+    }
+
     let active = true;
     setLoading(true);
     setError('');

@@ -2,45 +2,49 @@ import express from 'express';
 
 import {
   createCatalogClient
-} from './clients/catalog-client.service.js';
+} from './clients/catalogClient.js';
 
 import {
   createIdentityClient
-} from './clients/identity-client.service.js';
+} from './clients/identityClient.js';
 
 import {
   createCartService
-} from './services/cart.service.js';
+} from './services/cartService.js';
 
 import {
   createCouponService
-} from './services/coupon.service.js';
+} from './services/couponService.js';
 
 import {
   createCheckoutService
-} from './services/checkout.service.js';
-import {createCustomerOrderService} from './services/customer-order.service.js';
-import {createLoyaltyService} from './services/loyalty.service.js';
-import {createOrderStatusService} from './services/order-status.service.js';
-import {createAdminOrderService} from './services/admin-order.service.js';
-import {createAdminCouponService} from './services/admin-coupon.service.js';
-import {createPaymentService} from './services/payment.service.js';
+} from './services/checkoutService.js';
+import {createCustomerOrderService} from './services/customerOrderService.js';
+import {createLoyaltyService} from './services/loyaltyService.js';
+import {createOrderStatusService} from './services/orderStatusService.js';
+import {createAdminOrderService} from './services/adminOrderService.js';
+import {createAdminCouponService} from './services/adminCouponService.js';
+import {createPaymentService} from './services/paymentService.js';
+import {createCartRepository} from './repositories/cartRepository.js';
+import {createOrderRepository} from './repositories/orderRepository.js';
+import {createCouponRepository} from './repositories/couponRepository.js';
+import {createLoyaltyRepository} from './repositories/loyaltyRepository.js';
 
 import {
   createOrderController
-} from './controllers/order.controller.js';
+} from './controllers/orderController.js';
 
 import {
   createOrderRouter
-} from './routes/order.routes.js';
+} from './routes/orderRoutes.js';
 
 import {
   createAdminController
-} from './controllers/admin.controller.js';
+} from './controllers/adminController.js';
 
 import {
   createAdminRouter
-} from './routes/admin.routes.js';
+} from './routes/adminRoutes.js';
 
 export function buildApp({
   connection,
@@ -62,26 +66,32 @@ export function buildApp({
     secret: process.env.INTERNAL_SERVICE_SECRET
   });
 
+  const cartRepository = createCartRepository({Cart: models.Cart});
+  const orderRepository = createOrderRepository({Order: models.Order});
+  const couponRepository = createCouponRepository({Coupon: models.Coupon});
+  const loyaltyRepository = createLoyaltyRepository({
+    LoyaltyAccount: models.LoyaltyAccount,
+    LoyaltyTransaction: models.LoyaltyTransaction
+  });
+
   const cartService = createCartService({
     connection,
-    Cart: models.Cart,
+    cartRepository,
     catalogClient
   });
 
   const couponService = createCouponService({
-    Coupon: models.Coupon
+    couponRepository
   });
 
   const loyaltyService = createLoyaltyService({
-    LoyaltyAccount: models.LoyaltyAccount,
-    LoyaltyTransaction: models.LoyaltyTransaction
+    loyaltyRepository
   });
 
   const checkoutService =
     createCheckoutService({
       connection,
-      Cart: models.Cart,
-      Order: models.Order,
+      orderRepository,
       Outbox: models.Outbox,
       cartService,
       couponService,
@@ -92,23 +102,24 @@ export function buildApp({
   const paymentService = createPaymentService();
 
   const customerOrderService = createCustomerOrderService({
-    Order: models.Order
+    orderRepository
   });
 
   const orderStatusService = createOrderStatusService({
     connection,
-    Order: models.Order,
-    Coupon: models.Coupon,
+    orderRepository,
+    couponRepository,
     Outbox: models.Outbox,
     loyaltyService
   });
 
   const adminOrderService = createAdminOrderService({
-    Order: models.Order
+    orderRepository
   });
 
   const adminCouponService = createAdminCouponService({
-    Coupon: models.Coupon
+    couponRepository,
+    orderRepository
   });
 
   const controller = createOrderController({

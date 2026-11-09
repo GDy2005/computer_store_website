@@ -1,10 +1,10 @@
-import {getCategoryModel} from '../models/category.model.js';
-import {getProductModel} from '../models/product.model.js';
-import {getCommentModel} from '../models/comment.model.js';
-import {getRatingModel} from '../models/rating.model.js';
+import {getCategoryModel} from '../models/Category.js';
+import {getProductModel} from '../models/Product.js';
+import {getCommentModel} from '../models/Comment.js';
+import {getRatingModel} from '../models/Rating.js';
 import {
   getInventoryReservationModel
-} from '../models/inventory-reservation.model.js';
+} from '../models/InventoryReservation.js';
 
 export function registerCatalogModels(connection) {
   return {

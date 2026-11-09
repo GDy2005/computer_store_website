@@ -52,7 +52,7 @@ assert.deepEqual(
 );
 
 const categories = await request('/api/v1/categories?featured=true');
-assert.equal(categories.items.length, 5);
+assert.equal(categories.items.length, 6);
 assert.ok(categories.items.every(category => category.isFeatured));
 
 for (const mode of ['normal', 'retry', 'poison']) {
@@ -112,4 +112,4 @@ for (let index = 0; index < 8; index++) {
 }
 assert.equal(gateways.size, 2);
 console.log('PASS platform: 7 services, real Kafka, transactions, retry, DLQ, 2 gateways');
-console.log('PASS Catalog categories: 5 featured categories through Gateway');
+console.log('PASS Catalog categories: 6 featured categories through Gateway');

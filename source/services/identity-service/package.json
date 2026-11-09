@@ -7,9 +7,13 @@
     "seed:admin": "node src/seeds/seed-admin.js"
   },
   "dependencies": {
+    "@store/http-response": "1.0.0",
     "@store/service-runtime": "1.0.0",
+    "@store/validation": "1.0.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "express": "^5.1.0",
-    "mongoose": "^8.24.4"
+    "mongoose": "^8.24.4",
+    "multer": "^2.4.0"
   }
 }

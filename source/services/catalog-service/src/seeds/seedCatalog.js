@@ -35,6 +35,42 @@ function readSeedData(fileName) {
 const categories = readSeedData('categories.json');
 const products = readSeedData('products.json');
 
+const retiredProductSlugs = [
+  'logitech-g560-lightsync',
+  'creative-pebble-v3',
+  'edifier-r1280dbs',
+  'jbl-quantum-duo',
+  'creator-pro-amd-desktop'
+];
+
+async function removeRetiredSeedData({
+  Category,
+  Product,
+  session
+}) {
+  await Product.deleteMany(
+    {slug: {$in: retiredProductSlugs}},
+    {session}
+  );
+
+  const speakerCategory = await Category.findOne({
+    slug: 'loa'
+  }).session(session);
+
+  if (!speakerCategory) return;
+
+  const remainingProduct = await Product.exists({
+    categoryId: speakerCategory._id
+  }).session(session);
+
+  if (!remainingProduct) {
+    await Category.deleteOne(
+      {_id: speakerCategory._id},
+      {session}
+    );
+  }
+}
+
 const connection = await mongoose
   .createConnection(
     process.env.MONGODB_URI,
@@ -52,19 +88,27 @@ try {
   ]);
 
   const {categoryCount, productCount} =
-    await connection.transaction(async session => ({
-      categoryCount: await seedCategories({
+    await connection.transaction(async session => {
+      await removeRetiredSeedData({
+        Category,
+        Product,
+        session
+      });
+
+      return {
+        categoryCount: await seedCategories({
         Category,
         categories,
         session
       }),
-      productCount: await seedProducts({
-        Product,
-        Category,
-        products,
-        session
-      })
-    }));
+        productCount: await seedProducts({
+          Product,
+          Category,
+          products,
+          session
+        })
+      };
+    });
 
   console.log(
     `Seeded ${categoryCount} categories and ${productCount} products`

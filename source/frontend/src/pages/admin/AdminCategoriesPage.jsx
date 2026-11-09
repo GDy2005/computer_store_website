@@ -26,6 +26,7 @@ import {
 } from '../../features/admin/adminApi.js';
 import {AdminEmpty, AdminLoading, AdminPageHeader} from '../../features/admin/AdminUi.jsx';
 import {entityId} from '../../features/admin/adminFormat.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 const emptyForm = {
   name: '',
@@ -47,6 +48,7 @@ function slugify(value) {
 }
 
 export default function AdminCategoriesPage() {
+  const {t} = useLanguage();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [categories, setCategories] = useState([]);
@@ -65,7 +67,7 @@ export default function AdminCategoriesPage() {
     try {
       setCategories(await fetchAdminCategories({signal}));
     } catch (requestError) {
-      const message = adminErrorMessage(requestError, 'Không thể tải danh mục.');
+      const message = adminErrorMessage(requestError, t('admin.categories.loadError'));
       if (message) setError(message);
     } finally {
       if (!signal?.aborted) setLoading(false);
@@ -113,11 +115,11 @@ export default function AdminCategoriesPage() {
     try {
       if (editing) await updateAdminCategory(entityId(editing), payload);
       else await createAdminCategory(payload);
-      setNotice(editing ? 'Đã cập nhật danh mục.' : 'Đã tạo danh mục.');
+      setNotice(editing ? t('admin.categories.updated') : t('admin.categories.created'));
       setFormOpen(false);
       await load();
     } catch (requestError) {
-      setError(adminErrorMessage(requestError, editing ? 'Không thể cập nhật danh mục.' : 'Không thể tạo danh mục.'));
+      setError(adminErrorMessage(requestError, editing ? t('admin.categories.updateError') : t('admin.categories.createError')));
     } finally {
       setSaving(false);
     }
@@ -129,11 +131,11 @@ export default function AdminCategoriesPage() {
     setError('');
     try {
       await deactivateAdminCategory(entityId(pendingDeactivate));
-      setNotice(`Đã ẩn danh mục ${pendingDeactivate.name}.`);
+      setNotice(t('admin.categories.hiddenNotice', {name: pendingDeactivate.name}));
       setPendingDeactivate(null);
       await load();
     } catch (requestError) {
-      setError(adminErrorMessage(requestError, 'Không thể ẩn danh mục. Hãy kiểm tra các sản phẩm đang hoạt động.'));
+      setError(adminErrorMessage(requestError, t('admin.categories.hideError')));
     } finally {
       setSaving(false);
     }
@@ -142,14 +144,14 @@ export default function AdminCategoriesPage() {
   return (
     <Stack spacing={3}>
       <AdminPageHeader
-        title="Danh mục"
-        description="Danh mục chỉ có thể ngừng hoạt động khi không còn sản phẩm đang bán."
-        action={<Button variant="contained" onClick={openCreate}>Thêm danh mục</Button>}
+        title={t('admin.categories.title')}
+        description={t('admin.categories.description')}
+        action={<Button variant="contained" onClick={openCreate}>{t('admin.categories.add')}</Button>}
       />
       {error && <Alert severity="error" onClose={() => setError('')}>{error}</Alert>}
       {notice && <Alert severity="success" onClose={() => setNotice('')}>{notice}</Alert>}
-      {loading && <AdminLoading label="Đang tải danh mục"/>}
-      {!loading && categories.length === 0 && <AdminEmpty>Chưa có danh mục.</AdminEmpty>}
+      {loading && <AdminLoading label={t('admin.categories.loading')}/>}
+      {!loading && categories.length === 0 && <AdminEmpty>{t('admin.categories.empty')}</AdminEmpty>}
       {!loading && categories.length > 0 && (
         <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', xl: 'repeat(3, minmax(0, 1fr))'}, gap: 2}}>
           {categories.map(category => (
@@ -160,13 +162,13 @@ export default function AdminCategoriesPage() {
                     <Typography variant="h6" fontWeight={850}>{category.name}</Typography>
                     <Typography variant="caption" color="text.secondary">/{category.slug}</Typography>
                   </Box>
-                  <Chip size="small" color={category.isActive ? 'success' : 'default'} label={category.isActive ? 'Hoạt động' : 'Đã ẩn'}/>
+                  <Chip size="small" color={category.isActive ? 'success' : 'default'} label={category.isActive ? t('admin.categories.active') : t('admin.categories.hidden')}/>
                 </Stack>
                 <Typography color="text.secondary" variant="body2" sx={{flexGrow: 1}}>{category.description}</Typography>
-                {category.isFeatured && <Chip label="Nổi bật" color="secondary" size="small" sx={{alignSelf: 'flex-start'}}/>}
+                {category.isFeatured && <Chip label={t('admin.categories.featured')} color="secondary" size="small" sx={{alignSelf: 'flex-start'}}/>}
                 <Stack direction="row" spacing={1}>
-                  <Button variant="outlined" size="small" onClick={() => openEdit(category)}>Chỉnh sửa</Button>
-                  {category.isActive && <Button color="error" size="small" onClick={() => setPendingDeactivate(category)}>Ẩn danh mục</Button>}
+                  <Button variant="outlined" size="small" onClick={() => openEdit(category)}>{t('admin.common.edit')}</Button>
+                  {category.isActive && <Button color="error" size="small" onClick={() => setPendingDeactivate(category)}>{t('admin.categories.hide')}</Button>}
                 </Stack>
               </Stack>
             </Paper>
@@ -176,35 +178,35 @@ export default function AdminCategoriesPage() {
 
       <Dialog open={formOpen} onClose={() => !saving && setFormOpen(false)} fullWidth maxWidth="sm" fullScreen={fullScreen}>
         <Box component="form" onSubmit={saveCategory}>
-          <DialogTitle>{editing ? 'Chỉnh sửa danh mục' : 'Thêm danh mục'}</DialogTitle>
+          <DialogTitle>{editing ? t('admin.categories.editTitle') : t('admin.categories.add')}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{pt: 1}}>
-              <TextField label="Tên danh mục" value={form.name} onChange={event => setForm(current => ({...current, name: event.target.value}))} required inputProps={{maxLength: 100}}/>
+              <TextField label={t('admin.categories.name')} value={form.name} onChange={event => setForm(current => ({...current, name: event.target.value}))} required inputProps={{maxLength: 100}}/>
               <Stack direction="row" spacing={1}>
                 <TextField label="Slug" value={form.slug} onChange={event => setForm(current => ({...current, slug: event.target.value}))} required fullWidth inputProps={{maxLength: 100}}/>
-                <Button type="button" variant="outlined" onClick={() => setForm(current => ({...current, slug: slugify(current.name)}))}>Tạo slug</Button>
+                <Button type="button" variant="outlined" onClick={() => setForm(current => ({...current, slug: slugify(current.name)}))}>{t('admin.categories.generateSlug')}</Button>
               </Stack>
-              <TextField label="Mô tả" value={form.description} onChange={event => setForm(current => ({...current, description: event.target.value}))} required multiline minRows={4} inputProps={{maxLength: 500}}/>
-              <TextField label="URL ảnh HTTPS (không bắt buộc)" value={form.imageUrl} onChange={event => setForm(current => ({...current, imageUrl: event.target.value}))} type="url" inputProps={{maxLength: 1000}}/>
-              <FormControlLabel control={<Switch checked={form.isFeatured} onChange={event => setForm(current => ({...current, isFeatured: event.target.checked}))}/>} label="Hiển thị nổi bật"/>
-              <FormControlLabel control={<Switch checked={form.isActive} onChange={event => setForm(current => ({...current, isActive: event.target.checked}))}/>} label="Đang hoạt động"/>
+              <TextField label={t('admin.categories.descriptionField')} value={form.description} onChange={event => setForm(current => ({...current, description: event.target.value}))} required multiline minRows={4} inputProps={{maxLength: 500}}/>
+              <TextField label={t('admin.categories.imageUrl')} value={form.imageUrl} onChange={event => setForm(current => ({...current, imageUrl: event.target.value}))} type="url" inputProps={{maxLength: 1000}}/>
+              <FormControlLabel control={<Switch checked={form.isFeatured} onChange={event => setForm(current => ({...current, isFeatured: event.target.checked}))}/>} label={t('admin.categories.featuredToggle')}/>
+              <FormControlLabel control={<Switch checked={form.isActive} onChange={event => setForm(current => ({...current, isActive: event.target.checked}))}/>} label={t('admin.categories.activeToggle')}/>
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setFormOpen(false)} disabled={saving}>Hủy</Button>
-            <Button type="submit" variant="contained" disabled={saving}>{saving ? 'Đang lưu…' : 'Lưu'}</Button>
+            <Button onClick={() => setFormOpen(false)} disabled={saving}>{t('admin.common.cancel')}</Button>
+            <Button type="submit" variant="contained" disabled={saving}>{saving ? t('admin.common.saving') : t('admin.common.save')}</Button>
           </DialogActions>
         </Box>
       </Dialog>
 
       <Dialog open={Boolean(pendingDeactivate)} onClose={() => !saving && setPendingDeactivate(null)}>
-        <DialogTitle>Ẩn danh mục?</DialogTitle>
+        <DialogTitle>{t('admin.categories.hideTitle')}</DialogTitle>
         <DialogContent>
-          <Typography>Danh mục “{pendingDeactivate?.name}” sẽ không còn xuất hiện trong catalog.</Typography>
+          <Typography>{t('admin.categories.hideConfirm', {name: pendingDeactivate?.name})}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPendingDeactivate(null)} disabled={saving}>Quay lại</Button>
-          <Button color="error" variant="contained" onClick={confirmDeactivate} disabled={saving}>{saving ? 'Đang xử lý…' : 'Ẩn danh mục'}</Button>
+          <Button onClick={() => setPendingDeactivate(null)} disabled={saving}>{t('admin.common.back')}</Button>
+          <Button color="error" variant="contained" onClick={confirmDeactivate} disabled={saving}>{saving ? t('admin.common.processing') : t('admin.categories.hide')}</Button>
         </DialogActions>
       </Dialog>
     </Stack>

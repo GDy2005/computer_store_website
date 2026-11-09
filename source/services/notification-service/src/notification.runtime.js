@@ -1,14 +1,16 @@
-import {getEmailJobModel} from './models/email-job.model.js';
+import {getEmailJobModel} from './models/EmailJob.js';
 import {createEmailRequestedHandler} from './events/email-requested.consumer.js';
 import {createOrderConfirmedHandler} from './events/order-confirmed.consumer.js';
-import {createEmailService} from './services/email.service.js';
-import {createEmailWorker} from './services/email-worker.service.js';
+import {createEmailService} from './services/emailService.js';
+import {createEmailWorker} from './services/emailWorkerService.js';
+import {createEmailJobRepository} from './repositories/emailJobRepository.js';
 
 export async function configureNotification({connection}) {
   const EmailJob = getEmailJobModel(connection);
   await EmailJob.init();
+  const emailJobRepository = createEmailJobRepository({EmailJob});
   const emailService = createEmailService();
-  const worker = createEmailWorker({EmailJob, emailService});
+  const worker = createEmailWorker({emailJobRepository, emailService});
 
   return {
     models: {EmailJob},
@@ -16,12 +18,12 @@ export async function configureNotification({connection}) {
       {
         topic: 'email.requested.v1',
         groupId: 'notification-email-group',
-        handler: createEmailRequestedHandler({EmailJob})
+        handler: createEmailRequestedHandler({emailJobRepository})
       },
       {
         topic: 'orders.confirmed.v1',
         groupId: 'notification-order-group',
-        handler: createOrderConfirmedHandler({EmailJob})
+        handler: createOrderConfirmedHandler({emailJobRepository})
       }
     ],
     start: () => worker.start(),

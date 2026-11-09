@@ -10,7 +10,7 @@ import {signedContext} from '@store/validation';
 import mongoose from 'mongoose';
 
 import {orderEventPayload} from '../events/order.events.js';
-import {getOrderModel} from '../models/order.model.js';
+import {getOrderModel} from '../models/Order.js';
 import {seedCoupons} from './seed-coupons.js';
 
 const orderCount = 45;

@@ -1,5 +1,6 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
+  Alert,
   AppBar,
   Avatar,
   Badge,
@@ -28,7 +29,7 @@ import {
 } from '@mui/material';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 
-import {useAuth} from '../features/auth/AuthContext.jsx';
+import {DEFAULT_AVATAR_URL, getApiMessage, useAuth} from '../features/auth/AuthContext.jsx';
 import {useCart} from '../features/cart/CartContext.jsx';
 import {useLanguage} from '../features/i18n/LanguageContext.jsx';
 import {fetchCategories} from '../features/products/catalogApi.js';
@@ -46,6 +47,7 @@ function initials(user) {
 }
 
 function categoryIconName(slug = '') {
+  if (slug === 'pc') return 'desktop';
   if (slug.includes('laptop')) return 'laptop';
   if (slug.includes('man-hinh')) return 'monitor';
   if (slug.includes('ban-phim')) return 'keyboard';
@@ -163,7 +165,7 @@ function SearchBox({value, onChange, onSubmit, t}) {
 export default function SiteHeader() {
   const {pathname, search} = useLocation();
   const navigate = useNavigate();
-  const {user, loading, logout} = useAuth();
+  const {user, loading, logout, uploadAvatar} = useAuth();
   const {cart, openCart} = useCart();
   const {t} = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -173,12 +175,28 @@ export default function SiteHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const [topBarsHidden, setTopBarsHidden] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const [avatarMessage, setAvatarMessage] = useState('');
+  const scrollFrame = useRef(null);
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 12);
+    const update = () => {
+      if (scrollFrame.current) return;
+      scrollFrame.current = window.requestAnimationFrame(() => {
+        const offset = window.scrollY;
+        setScrolled(offset > 12);
+        setTopBarsHidden(current => current ? offset > 24 : offset > 92);
+        scrollFrame.current = null;
+      });
+    };
     update();
     window.addEventListener('scroll', update, {passive: true});
-    return () => window.removeEventListener('scroll', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      if (scrollFrame.current) window.cancelAnimationFrame(scrollFrame.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -207,7 +225,9 @@ export default function SiteHeader() {
     ? [
         ...(user.role === 'ADMIN' ? [{label: t('nav.admin'), to: '/admin', icon: 'dashboard'}] : []),
         {label: t('nav.profile'), to: '/profile', icon: 'user'},
-        {label: t('nav.orders'), to: '/orders', icon: 'receipt'}
+        {label: t('profile.addresses'), to: '/profile/addresses', icon: 'location'},
+        {label: t('nav.orders'), to: '/orders', icon: 'receipt'},
+        {label: t('profile.loyalty'), to: '/loyalty', icon: 'coupon'}
       ]
     : [{label: t('nav.login'), to: '/login', icon: 'user'}];
 
@@ -233,6 +253,24 @@ export default function SiteHeader() {
       navigate('/');
     } catch {
       navigate('/login');
+    }
+  }
+
+  async function changeAvatar(event) {
+    const [file] = event.target.files || [];
+    event.target.value = '';
+    if (!file) return;
+
+    try {
+      setUploadingAvatar(true);
+      setAvatarError('');
+      setAvatarMessage('');
+      await uploadAvatar(file);
+      setAvatarMessage(t('profile.avatarUpdated'));
+    } catch (error) {
+      setAvatarError(getApiMessage(error, t('profile.avatarError')));
+    } finally {
+      setUploadingAvatar(false);
     }
   }
 
@@ -265,6 +303,15 @@ export default function SiteHeader() {
     >
       <Box
         sx={{
+          height: topBarsHidden ? 0 : 71,
+          overflow: 'hidden',
+          opacity: topBarsHidden ? 0 : 1,
+          transform: topBarsHidden ? 'translateY(-12px)' : 'translateY(0)',
+          transition: 'height 240ms ease, opacity 180ms ease, transform 240ms ease'
+        }}
+      >
+      <Box
+        sx={{
           display: 'grid',
           height: 31,
           overflow: 'hidden',
@@ -293,6 +340,7 @@ export default function SiteHeader() {
             {t('home.shopNow')} →
           </Typography>
         </Stack>
+      </Box>
       </Box>
 
       <Container maxWidth="xl">
@@ -349,7 +397,7 @@ export default function SiteHeader() {
                   sx={{p: 0.4}}
                 >
                   <Avatar
-                    src={user?.avatarUrl || user?.picture || undefined}
+                    src={user ? (user.avatarUrl || DEFAULT_AVATAR_URL) : undefined}
                     alt={user?.fullName || user?.email || t('nav.guest')}
                     sx={{width: 38, height: 38, bgcolor: user ? 'secondary.main' : '#151515', color: user ? '#151515' : 'common.white', fontSize: 14, fontWeight: 900}}
                   >
@@ -407,19 +455,44 @@ export default function SiteHeader() {
           <Fade {...TransitionProps} timeout={180}>
             <Box sx={{pt: 1}}>
               <ClickAwayListener onClickAway={() => setAccountAnchor(null)}>
-                <Paper variant="outlined" sx={{width: 290, overflow: 'hidden', borderRadius: 2, boxShadow: '0 20px 56px rgba(0,0,0,.18)'}}>
-                  <Stack direction="row" spacing={1.35} alignItems="center" sx={{p: 2, bgcolor: '#171717', color: 'common.white'}}>
-                    <Avatar
-                      src={user?.avatarUrl || user?.picture || undefined}
-                      sx={{width: 50, height: 50, bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}
-                    >
-                      {user ? initials(user) : <UiIcon name="user"/>}
-                    </Avatar>
-                    <Box sx={{minWidth: 0}}>
-                      <Typography fontWeight={850} noWrap>{user?.fullName || user?.displayName || t('nav.guest')}</Typography>
-                      <Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}} noWrap>{user?.email || t('nav.login')}</Typography>
+                <Paper variant="outlined" sx={{width: 320, overflow: 'hidden', borderRadius: 1.5, boxShadow: '0 24px 64px rgba(0,0,0,.2)'}}>
+                  {user ? (
+                    <Box sx={{position: 'relative', pb: 1.5}}>
+                      <Box sx={{height: 88, background: 'linear-gradient(135deg,#171717 0%,#173e34 62%,#e8a326 160%)', position: 'relative', overflow: 'hidden', '&::after': {content: '""', position: 'absolute', width: 130, height: 130, border: '1px solid rgba(255,255,255,.13)', borderRadius: '50%', right: -30, top: -55}}}/>
+                      <Box sx={{position: 'absolute', top: 48, left: 18}}>
+                        <Avatar
+                          src={user.avatarUrl || DEFAULT_AVATAR_URL}
+                          alt={user.fullName || user.email}
+                          sx={{width: 76, height: 76, bgcolor: 'secondary.main', color: '#151515', fontWeight: 900, border: '4px solid white', boxShadow: '0 8px 22px rgba(0,0,0,.18)'}}
+                        >
+                          {initials(user)}
+                        </Avatar>
+                        <IconButton
+                          component="label"
+                          disabled={uploadingAvatar}
+                          aria-label={t('profile.changeAvatar')}
+                          sx={{position: 'absolute', right: -4, bottom: -2, width: 30, height: 30, bgcolor: 'secondary.main', color: '#151515', border: '2px solid white', '&:hover': {bgcolor: 'secondary.dark'}}}
+                        >
+                          {uploadingAvatar ? <CircularProgress size={15} color="inherit"/> : <UiIcon name="camera" sx={{fontSize: 16}}/>}
+                          <input hidden type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={changeAvatar}/>
+                        </IconButton>
+                      </Box>
+                      <Box sx={{pt: 5.5, px: 2.25}}>
+                        <Typography fontWeight={900} fontSize={17} noWrap>{user.fullName || user.email}</Typography>
+                        <Typography variant="body2" color="text.secondary" noWrap>{user.email}</Typography>
+                        <Typography variant="caption" sx={{display: 'inline-block', mt: 0.8, px: 1, py: 0.25, bgcolor: 'action.hover', fontWeight: 800}}>
+                          {user.role === 'ADMIN' ? t('nav.admin') : t('profile.customer')}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Stack>
+                  ) : (
+                    <Stack direction="row" spacing={1.35} alignItems="center" sx={{p: 2, bgcolor: '#171717', color: 'common.white'}}>
+                      <Avatar sx={{width: 50, height: 50, bgcolor: 'secondary.main', color: '#151515'}}><UiIcon name="user"/></Avatar>
+                      <Box><Typography fontWeight={850}>{t('nav.guest')}</Typography><Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}}>{t('nav.login')}</Typography></Box>
+                    </Stack>
+                  )}
+                  {avatarError && <Alert severity="error" sx={{mx: 1.5, mb: 1}}>{avatarError}</Alert>}
+                  {avatarMessage && <Alert severity="success" sx={{mx: 1.5, mb: 1}}>{avatarMessage}</Alert>}
                   <Stack sx={{p: 1}}>
                     {accountNavigation.map(item => (
                       <Button
@@ -460,7 +533,7 @@ export default function SiteHeader() {
           </Stack>
           {user && (
             <Stack direction="row" spacing={1.25} alignItems="center" sx={{mx: 1.5, mb: 1, p: 1.5, bgcolor: '#171717', color: 'common.white', borderRadius: 2}}>
-              <Avatar sx={{bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}>{initials(user)}</Avatar>
+              <Avatar src={user.avatarUrl || DEFAULT_AVATAR_URL} sx={{bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}>{initials(user)}</Avatar>
               <Box sx={{minWidth: 0}}>
                 <Typography fontWeight={800} noWrap>{user.fullName || user.email}</Typography>
                 <Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}} noWrap>{user.email}</Typography>

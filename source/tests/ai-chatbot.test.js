@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import {createSearchClient} from '../services/ai-service/src/clients/search-client.service.js';
-import {createAiProvider} from '../services/ai-service/src/services/ai-provider.service.js';
-import {createChatService} from '../services/ai-service/src/services/chat.service.js';
-import {extractIntent} from '../services/ai-service/src/services/intent.service.js';
-import {validateChat} from '../services/ai-service/src/validations/chat.validation.js';
+import {createSearchClient} from '../services/ai-service/src/clients/searchClient.js';
+import {createAiProvider} from '../services/ai-service/src/services/aiProviderService.js';
+import {createChatService} from '../services/ai-service/src/services/chatService.js';
+import {extractIntent} from '../services/ai-service/src/services/intentService.js';
+import {validateChat} from '../services/ai-service/src/validations/chatValidation.js';
 
 function validate(middleware, req) {
   let error;

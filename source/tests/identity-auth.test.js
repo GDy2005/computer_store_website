@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createAuthController} from '../api-gateway/src/controllers/auth.controller.js';
-import {normalizeGoogleProfile} from '../api-gateway/src/controllers/google-oauth.controller.js';
-import {createPasswordTokenService} from '../services/identity-service/src/services/password-token.service.js';
-import {validateLogin} from '../services/identity-service/src/validations/auth.validation.js';
-import {validateUpdateProfile} from '../services/identity-service/src/validations/user.validation.js';
-import {parseAddressInput} from '../services/identity-service/src/validations/address.validation.js';
+import {createAuthController} from '../api-gateway/src/controllers/authController.js';
+import {normalizeGoogleProfile} from '../api-gateway/src/controllers/googleOauthController.js';
+import {createPasswordTokenService} from '../services/identity-service/src/services/passwordTokenService.js';
+import {validateLogin} from '../services/identity-service/src/validations/authValidation.js';
+import {validateUpdateProfile} from '../services/identity-service/src/validations/userValidation.js';
+import {parseAddressInput} from '../services/identity-service/src/validations/addressValidation.js';
 import {enqueueUserCreated} from '../services/identity-service/src/events/user.events.js';
+import {toUserResponseDTO} from '../services/identity-service/src/dto/response/UserResponseDTO.js';
+
+const DEFAULT_AVATAR_URL =
+  'https://res.cloudinary.com/ipc-media/image/upload/v1794128471/hcibhstn0zhnhzfxyipw.webp';
 
 function runMiddleware(middleware, req) {
   return new Promise((resolve, reject) => {
@@ -36,6 +40,18 @@ test('address validation rejects client-controlled default flag', () => {
     () => parseAddressInput({recipientName: 'User', phone: '0900', addressLine: '1 Main', ward: 'Ward', district: 'District', province: 'Province', isDefault: true}),
     error => error.code === 'VALIDATION_ERROR'
   );
+});
+
+test('identity user response supplies the configured default avatar', () => {
+  const result = toUserResponseDTO({
+    _id: 'user-1',
+    email: 'user@example.com',
+    fullName: 'User A',
+    role: 'CUSTOMER',
+    accountStatus: 'ACTIVE'
+  });
+
+  assert.equal(result.avatarUrl, DEFAULT_AVATAR_URL);
 });
 
 test('password token service stores a hash and finite expiry', async () => {

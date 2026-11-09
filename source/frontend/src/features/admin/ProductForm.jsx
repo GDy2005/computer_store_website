@@ -26,6 +26,7 @@ import {
   uploadAdminProductImages
 } from './adminApi.js';
 import {AdminLoading, AdminPageHeader} from './AdminUi.jsx';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
 
 function makeVariant(values = {}) {
   return {
@@ -80,36 +81,37 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-function integer(value, label) {
+function integer(value, label, t) {
   const number = Number(value);
   if (!Number.isSafeInteger(number) || number < 0) {
-    throw new Error(`${label} phải là số nguyên không âm.`);
+    throw new Error(t('admin.productForm.nonNegativeInteger', {label}));
   }
   return number;
 }
 
-function parseAttributes(text, index) {
+function parseAttributes(text, index, t) {
   let attributes;
   try {
     attributes = JSON.parse(text || '{}');
   } catch {
-    throw new Error(`Thuộc tính biến thể ${index + 1} phải là JSON hợp lệ.`);
+    throw new Error(t('admin.productForm.invalidJson', {number: index + 1}));
   }
 
   if (!attributes || Array.isArray(attributes) || typeof attributes !== 'object') {
-    throw new Error(`Thuộc tính biến thể ${index + 1} phải là một object JSON.`);
+    throw new Error(t('admin.productForm.invalidJsonObject', {number: index + 1}));
   }
 
   const invalid = Object.entries(attributes).some(([key, value]) =>
     !key.trim() || typeof value !== 'string' || !value.trim()
   );
   if (invalid) {
-    throw new Error(`Tên và giá trị thuộc tính biến thể ${index + 1} phải là chuỗi không rỗng.`);
+    throw new Error(t('admin.productForm.invalidAttributes', {number: index + 1}));
   }
   return attributes;
 }
 
 export default function ProductForm() {
+  const {t} = useLanguage();
   const {id} = useParams();
   const editing = Boolean(id);
   const navigate = useNavigate();
@@ -133,7 +135,7 @@ export default function ProductForm() {
         if (product) setForm(normalizeProduct(product));
       })
       .catch(requestError => {
-        const message = adminErrorMessage(requestError, 'Không thể tải dữ liệu sản phẩm.');
+        const message = adminErrorMessage(requestError, t('admin.productForm.loadError'));
         if (message) setError(message);
       })
       .finally(() => {
@@ -178,7 +180,7 @@ export default function ProductForm() {
 
   function removeVariant(clientId) {
     if (form.variants.length <= 2) {
-      setError('Sản phẩm phải có ít nhất hai biến thể.');
+      setError(t('admin.productForm.minVariants'));
       return;
     }
     update('variants', form.variants.filter(variant => variant.clientId !== clientId));
@@ -192,13 +194,13 @@ export default function ProductForm() {
 
     const remaining = 10 - form.images.length;
     if (remaining <= 0) {
-      setError('Một sản phẩm chỉ được có tối đa 10 ảnh.');
+      setError(t('admin.productForm.maxImages'));
       return;
     }
 
     const files = selected.slice(0, Math.min(6, remaining));
     if (files.length < selected.length) {
-      setNotice(`Chỉ tải ${files.length} ảnh để không vượt giới hạn 6 ảnh/lần và 10 ảnh/sản phẩm.`);
+      setNotice(t('admin.productForm.uploadLimit', {count: files.length}));
     }
 
     setUploading(true);
@@ -207,7 +209,7 @@ export default function ProductForm() {
       const images = await uploadAdminProductImages(files);
       setForm(current => ({...current, images: [...current.images, ...images].slice(0, 10)}));
     } catch (requestError) {
-      setError(adminErrorMessage(requestError, 'Không thể tải ảnh lên Cloudinary.'));
+      setError(adminErrorMessage(requestError, t('admin.productForm.uploadError')));
     } finally {
       setUploading(false);
     }
@@ -215,26 +217,26 @@ export default function ProductForm() {
 
   function payload() {
     if (form.images.length < 3 || form.images.length > 10) {
-      throw new Error('Sản phẩm phải có từ 3 đến 10 ảnh.');
+      throw new Error(t('admin.productForm.imageCount'));
     }
     if (form.variants.length < 2 || form.variants.length > 30) {
-      throw new Error('Sản phẩm phải có từ 2 đến 30 biến thể.');
+      throw new Error(t('admin.productForm.variantCount'));
     }
     if (form.images.some(image => !image.alt?.trim())) {
-      throw new Error('Mỗi ảnh phải có mô tả thay thế.');
+      throw new Error(t('admin.productForm.imageAltRequired'));
     }
 
     const variants = form.variants.map((variant, index) => {
-      const stock = integer(variant.stock, `Tồn kho biến thể ${index + 1}`);
+      const stock = integer(variant.stock, t('admin.productForm.stockLabel', {number: index + 1}), t);
       if (stock < variant.reservedStock) {
-        throw new Error(`Tồn kho biến thể ${index + 1} không được thấp hơn ${variant.reservedStock} sản phẩm đang giữ.`);
+        throw new Error(t('admin.productForm.stockReservedError', {number: index + 1, count: variant.reservedStock}));
       }
       return {
         sku: variant.sku.trim().toUpperCase(),
         name: variant.name.trim(),
-        attributes: parseAttributes(variant.attributesText, index),
-        price: integer(variant.price, `Giá bán biến thể ${index + 1}`),
-        costPrice: integer(variant.costPrice, `Giá vốn biến thể ${index + 1}`),
+        attributes: parseAttributes(variant.attributesText, index, t),
+        price: integer(variant.price, t('admin.productForm.priceLabel', {number: index + 1}), t),
+        costPrice: integer(variant.costPrice, t('admin.productForm.costLabel', {number: index + 1}), t),
         stock,
         isActive: variant.isActive
       };
@@ -273,51 +275,51 @@ export default function ProductForm() {
       else await createAdminProduct(data);
       navigate('/admin/products', {
         replace: true,
-        state: {notice: editing ? 'Đã cập nhật sản phẩm.' : 'Đã tạo sản phẩm.'}
+        state: {notice: editing ? t('admin.productForm.updated') : t('admin.productForm.created')}
       });
     } catch (requestError) {
-      setError(adminErrorMessage(requestError, editing ? 'Không thể cập nhật sản phẩm.' : 'Không thể tạo sản phẩm.'));
+      setError(adminErrorMessage(requestError, editing ? t('admin.productForm.updateError') : t('admin.productForm.createError')));
       window.scrollTo({top: 0, behavior: 'smooth'});
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <AdminLoading label="Đang tải trình chỉnh sửa sản phẩm"/>;
+  if (loading) return <AdminLoading label={t('admin.productForm.loading')}/>;
 
   return (
     <Stack component="form" onSubmit={submit} spacing={3}>
       <AdminPageHeader
-        title={editing ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm'}
-        description="Thông tin giá và tồn kho luôn được backend kiểm tra lại trước khi lưu."
-        action={<Button component={Link} to="/admin/products" color="inherit">← Danh sách sản phẩm</Button>}
+        title={editing ? t('admin.productForm.editTitle') : t('admin.productForm.addTitle')}
+        description={t('admin.productForm.description')}
+        action={<Button component={Link} to="/admin/products" color="inherit">{t('admin.productForm.back')}</Button>}
       />
       {error && <Alert severity="error">{error}</Alert>}
       {notice && <Alert severity="info" onClose={() => setNotice('')}>{notice}</Alert>}
 
       <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
-        <Typography component="h2" variant="h6" fontWeight={850} mb={2}>Thông tin chung</Typography>
+        <Typography component="h2" variant="h6" fontWeight={850} mb={2}>{t('admin.productForm.general')}</Typography>
         <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: 'repeat(2, minmax(0, 1fr))'}, gap: 2}}>
-          <TextField label="Tên sản phẩm" value={form.name} onChange={event => update('name', event.target.value)} required inputProps={{maxLength: 200}}/>
-          <TextField label="Thương hiệu" value={form.brand} onChange={event => update('brand', event.target.value)} required inputProps={{maxLength: 100}}/>
+          <TextField label={t('admin.productForm.name')} value={form.name} onChange={event => update('name', event.target.value)} required inputProps={{maxLength: 200}}/>
+          <TextField label={t('admin.productForm.brand')} value={form.brand} onChange={event => update('brand', event.target.value)} required inputProps={{maxLength: 100}}/>
           <Stack direction="row" spacing={1}>
             <TextField label="Slug" value={form.slug} onChange={event => update('slug', event.target.value)} required fullWidth inputProps={{maxLength: 200}}/>
-            <Button type="button" variant="outlined" onClick={() => update('slug', slugify(form.name))}>Tạo slug</Button>
+            <Button type="button" variant="outlined" onClick={() => update('slug', slugify(form.name))}>{t('admin.productForm.generateSlug')}</Button>
           </Stack>
           <FormControl required>
-            <InputLabel id="product-category-label">Danh mục</InputLabel>
-            <Select labelId="product-category-label" label="Danh mục" value={form.categoryId} onChange={event => update('categoryId', event.target.value)}>
+            <InputLabel id="product-category-label">{t('admin.productForm.category')}</InputLabel>
+            <Select labelId="product-category-label" label={t('admin.productForm.category')} value={form.categoryId} onChange={event => update('categoryId', event.target.value)}>
               {categories.filter(category => category.isActive || String(category._id || category.id) === String(form.categoryId)).map(category => (
-                <MenuItem key={category._id || category.id} value={category._id || category.id}>{category.name}{category.isActive ? '' : ' (đã ẩn)'}</MenuItem>
+                <MenuItem key={category._id || category.id} value={category._id || category.id}>{category.name}{category.isActive ? '' : t('admin.productForm.hiddenCategory')}</MenuItem>
               ))}
             </Select>
           </FormControl>
-          <TextField label="Tags (phân cách bằng dấu phẩy)" value={form.tagsText} onChange={event => update('tagsText', event.target.value)} inputProps={{maxLength: 600}}/>
-          <TextField label="Mô tả ngắn" value={form.shortDescription} onChange={event => update('shortDescription', event.target.value)} required multiline minRows={2} inputProps={{maxLength: 300}} sx={{gridColumn: {md: '1 / -1'}}}/>
-          <TextField label="Mô tả chi tiết" value={form.description} onChange={event => update('description', event.target.value)} required multiline minRows={7} inputProps={{maxLength: 5000}} sx={{gridColumn: {md: '1 / -1'}}}/>
+          <TextField label={t('admin.productForm.tags')} value={form.tagsText} onChange={event => update('tagsText', event.target.value)} inputProps={{maxLength: 600}}/>
+          <TextField label={t('admin.productForm.shortDescription')} value={form.shortDescription} onChange={event => update('shortDescription', event.target.value)} required multiline minRows={2} inputProps={{maxLength: 300}} sx={{gridColumn: {md: '1 / -1'}}}/>
+          <TextField label={t('admin.productForm.fullDescription')} value={form.description} onChange={event => update('description', event.target.value)} required multiline minRows={7} inputProps={{maxLength: 5000}} sx={{gridColumn: {md: '1 / -1'}}}/>
           <FormControlLabel
             control={<Switch checked={form.isActive} onChange={event => update('isActive', event.target.checked)}/>}
-            label="Đang bán"
+            label={t('admin.productForm.selling')}
           />
         </Box>
       </Paper>
@@ -325,21 +327,21 @@ export default function ProductForm() {
       <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
         <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={2} mb={2}>
           <Box>
-            <Typography component="h2" variant="h6" fontWeight={850}>Hình ảnh</Typography>
-            <Typography variant="body2" color="text.secondary">Bắt buộc 3–10 ảnh HTTPS. Mỗi lượt chọn tối đa 6 ảnh, 5 MB/ảnh.</Typography>
+            <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.productForm.images')}</Typography>
+            <Typography variant="body2" color="text.secondary">{t('admin.productForm.imageGuide')}</Typography>
           </Box>
           <Button component="label" variant="outlined" disabled={uploading || form.images.length >= 10}>
-            {uploading ? 'Đang tải ảnh…' : 'Tải ảnh lên'}
+            {uploading ? t('admin.productForm.uploading') : t('admin.productForm.upload')}
             <input hidden type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={uploadImages}/>
           </Button>
         </Stack>
-        {form.images.length === 0 && <Alert severity="info">Chưa có ảnh sản phẩm.</Alert>}
+        {form.images.length === 0 && <Alert severity="info">{t('admin.productForm.noImages')}</Alert>}
         <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)'}, gap: 2}}>
           {form.images.map((image, index) => (
             <Paper key={`${image.publicId}-${index}`} variant="outlined" sx={{p: 1.5}}>
               <Box component="img" src={image.url} alt={image.alt || ''} sx={{width: '100%', aspectRatio: '4 / 3', objectFit: 'contain', bgcolor: 'background.default', borderRadius: 1}}/>
               <TextField
-                label={`Mô tả ảnh ${index + 1}`}
+                label={t('admin.productForm.imageAlt', {number: index + 1})}
                 value={image.alt || ''}
                 onChange={event => updateImage(index, 'alt', event.target.value)}
                 fullWidth
@@ -348,7 +350,7 @@ export default function ProductForm() {
                 inputProps={{maxLength: 200}}
                 sx={{mt: 1.5}}
               />
-              <Button type="button" color="error" size="small" onClick={() => removeImage(index)} sx={{mt: 1}}>Xóa ảnh</Button>
+              <Button type="button" color="error" size="small" onClick={() => removeImage(index)} sx={{mt: 1}}>{t('admin.productForm.removeImage')}</Button>
             </Paper>
           ))}
         </Box>
@@ -357,35 +359,35 @@ export default function ProductForm() {
       <Paper variant="outlined" sx={{p: {xs: 2, sm: 3}}}>
         <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={2} mb={2}>
           <Box>
-            <Typography component="h2" variant="h6" fontWeight={850}>Biến thể & tồn kho</Typography>
-            <Typography variant="body2" color="text.secondary">Bắt buộc ít nhất hai biến thể. SKU phải duy nhất toàn hệ thống.</Typography>
+            <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.productForm.variants')}</Typography>
+            <Typography variant="body2" color="text.secondary">{t('admin.productForm.variantGuide')}</Typography>
           </Box>
-          <Button type="button" variant="outlined" onClick={addVariant} disabled={form.variants.length >= 30}>Thêm biến thể</Button>
+          <Button type="button" variant="outlined" onClick={addVariant} disabled={form.variants.length >= 30}>{t('admin.productForm.addVariant')}</Button>
         </Stack>
         <Stack spacing={2.5} divider={<Divider flexItem/>}>
           {form.variants.map((variant, index) => (
             <Box key={variant.clientId}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography fontWeight={850}>Biến thể {index + 1}</Typography>
-                  {variant.reservedStock > 0 && <Chip size="small" color="warning" label={`${variant.reservedStock} đang giữ`}/>} 
+                  <Typography fontWeight={850}>{t('admin.productForm.variant', {number: index + 1})}</Typography>
+                  {variant.reservedStock > 0 && <Chip size="small" color="warning" label={t('admin.productForm.reserved', {count: variant.reservedStock})}/>} 
                 </Stack>
-                <Button type="button" color="error" size="small" onClick={() => removeVariant(variant.clientId)} disabled={form.variants.length <= 2}>Xóa</Button>
+                <Button type="button" color="error" size="small" onClick={() => removeVariant(variant.clientId)} disabled={form.variants.length <= 2}>{t('admin.productForm.remove')}</Button>
               </Stack>
               <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: 'repeat(2, minmax(0, 1fr))', xl: 'repeat(3, minmax(0, 1fr))'}, gap: 2}}>
                 <TextField label="SKU" value={variant.sku} onChange={event => updateVariant(variant.clientId, 'sku', event.target.value.toUpperCase())} required inputProps={{maxLength: 100}}/>
-                <TextField label="Tên biến thể" value={variant.name} onChange={event => updateVariant(variant.clientId, 'name', event.target.value)} required inputProps={{maxLength: 150}}/>
-                <FormControlLabel control={<Switch checked={variant.isActive} onChange={event => updateVariant(variant.clientId, 'isActive', event.target.checked)}/>} label="Đang bán"/>
-                <TextField label="Giá bán (₫)" type="number" value={variant.price} onChange={event => updateVariant(variant.clientId, 'price', event.target.value)} required inputProps={{min: 0, step: 1000}}/>
-                <TextField label="Giá vốn (₫)" type="number" value={variant.costPrice} onChange={event => updateVariant(variant.clientId, 'costPrice', event.target.value)} required inputProps={{min: 0, step: 1000}}/>
-                <TextField helperText={variant.reservedStock ? `Không được thấp hơn ${variant.reservedStock} đang giữ` : 'Tổng tồn kho hiện tại'} label="Tồn kho" type="number" value={variant.stock} onChange={event => updateVariant(variant.clientId, 'stock', event.target.value)} required inputProps={{min: variant.reservedStock, step: 1}}/>
+                <TextField label={t('admin.productForm.variantName')} value={variant.name} onChange={event => updateVariant(variant.clientId, 'name', event.target.value)} required inputProps={{maxLength: 150}}/>
+                <FormControlLabel control={<Switch checked={variant.isActive} onChange={event => updateVariant(variant.clientId, 'isActive', event.target.checked)}/>} label={t('admin.productForm.selling')}/>
+                <TextField label={t('admin.productForm.price')} type="number" value={variant.price} onChange={event => updateVariant(variant.clientId, 'price', event.target.value)} required inputProps={{min: 0, step: 1000}}/>
+                <TextField label={t('admin.productForm.cost')} type="number" value={variant.costPrice} onChange={event => updateVariant(variant.clientId, 'costPrice', event.target.value)} required inputProps={{min: 0, step: 1000}}/>
+                <TextField helperText={variant.reservedStock ? t('admin.productForm.reservedHelp', {count: variant.reservedStock}) : t('admin.productForm.stockHelp')} label={t('admin.productForm.stock')} type="number" value={variant.stock} onChange={event => updateVariant(variant.clientId, 'stock', event.target.value)} required inputProps={{min: variant.reservedStock, step: 1}}/>
                 <TextField
-                  label="Thuộc tính (JSON)"
+                  label={t('admin.productForm.attributes')}
                   value={variant.attributesText}
                   onChange={event => updateVariant(variant.clientId, 'attributesText', event.target.value)}
                   multiline
                   minRows={3}
-                  helperText={'Ví dụ: {"RAM":"16GB","SSD":"512GB"}'}
+                  helperText={t('admin.productForm.attributesExample')}
                   sx={{gridColumn: {md: '1 / -1'}}}
                 />
               </Box>
@@ -395,9 +397,9 @@ export default function ProductForm() {
       </Paper>
 
       <Stack direction={{xs: 'column-reverse', sm: 'row'}} justifyContent="flex-end" spacing={2}>
-        <Button component={Link} to="/admin/products" color="inherit" size="large">Hủy</Button>
+        <Button component={Link} to="/admin/products" color="inherit" size="large">{t('admin.common.cancel')}</Button>
         <Button type="submit" variant="contained" size="large" disabled={saving || uploading}>
-          {saving ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Tạo sản phẩm'}
+          {saving ? t('admin.common.saving') : editing ? t('admin.productForm.saveChanges') : t('admin.productForm.create')}
         </Button>
       </Stack>
     </Stack>

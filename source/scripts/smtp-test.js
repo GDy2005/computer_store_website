@@ -1,4 +1,4 @@
-import {createEmailService} from '../services/notification-service/src/services/email.service.js';
+import {createEmailService} from '../services/notification-service/src/services/emailService.js';
 
 const recipient = process.env.SMTP_TEST_RECIPIENT || process.env.SMTP_USER;
 

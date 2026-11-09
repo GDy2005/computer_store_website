@@ -6,20 +6,23 @@ import {
   validateAdminUserBan,
   validateAdminUserList,
   validateAdminUserUpdate
-} from '../services/identity-service/src/validations/admin-user.validation.js';
+} from '../services/identity-service/src/validations/adminUserValidation.js';
 import {
   createAdminUserService
-} from '../services/identity-service/src/services/admin-user.service.js';
+} from '../services/identity-service/src/services/adminUserService.js';
 import {
   validateAdminOrderList,
   validateCreateCoupon
-} from '../services/order-service/src/validations/admin.validation.js';
+} from '../services/order-service/src/validations/adminValidation.js';
 import {
   createAdminOrderService
-} from '../services/order-service/src/services/admin-order.service.js';
+} from '../services/order-service/src/services/adminOrderService.js';
 import {
   createAdminCouponService
-} from '../services/order-service/src/services/admin-coupon.service.js';
+} from '../services/order-service/src/services/adminCouponService.js';
+import {
+  rejectAdministrator
+} from '../services/order-service/src/routes/orderRoutes.js';
 
 function validate(middleware, req) {
   let error;
@@ -197,13 +200,28 @@ test('admin order query normalizes an inclusive date range', () => {
 
   assert.equal(
     request.validatedQuery.startDate.toISOString(),
-    '2026-10-01T00:00:00.000Z'
+    '2026-09-30T17:00:00.000Z'
   );
   assert.equal(
     request.validatedQuery.endDate.toISOString(),
-    '2026-10-23T23:59:59.999Z'
+    '2026-10-23T16:59:59.999Z'
   );
   assert.equal(request.validatedQuery.limit, 20);
+});
+
+test('administrator role cannot use customer shopping functions', () => {
+  let error;
+  rejectAdministrator({
+    context: {userId: 'admin-1', role: 'ADMIN'}
+  }, {}, value => { error = value; });
+  assert.equal(error.status, 403);
+  assert.equal(error.code, 'FORBIDDEN');
+
+  error = null;
+  rejectAdministrator({
+    context: {userId: 'customer-1', role: 'CUSTOMER'}
+  }, {}, value => { error = value; });
+  assert.equal(error, undefined);
 });
 
 test('admin order list filters by date and never exposes guest credentials', async () => {
@@ -292,4 +310,49 @@ test('coupon creation accepts only five-character codes and ten uses', async () 
 
   assert.equal(coupon.remainingUses, 10);
   assert.equal(coupon.isUsable, true);
+});
+
+test('coupon administration lists the orders where a coupon was applied', async () => {
+  const couponId = new mongoose.Types.ObjectId();
+  const orderId = new mongoose.Types.ObjectId();
+  const service = createAdminCouponService({
+    couponRepository: {
+      async list() {
+        return {
+          items: [{
+            _id: couponId,
+            code: 'SAVE1',
+            discountType: 'PERCENTAGE',
+            discountValue: 10,
+            usageLimit: 10,
+            usedCount: 1,
+            isActive: true,
+            createdAt: new Date('2026-10-01T00:00:00.000Z'),
+            updatedAt: new Date('2026-10-23T00:00:00.000Z')
+          }],
+          totalItems: 1
+        };
+      }
+    },
+    orderRepository: {
+      async listAppliedCouponOrders(ids) {
+        assert.deepEqual(ids, [couponId]);
+        return [{
+          _id: orderId,
+          orderNumber: 'ORD-20261023-A1B2C3',
+          customer: {fullName: 'Customer'},
+          pricing: {total: 9000},
+          coupon: {couponId},
+          createdAt: new Date('2026-10-23T01:00:00.000Z')
+        }];
+      }
+    }
+  });
+
+  const result = await service.list({page: 1, limit: 20});
+  assert.equal(result.items[0].appliedOrders.length, 1);
+  assert.equal(
+    result.items[0].appliedOrders[0].orderNumber,
+    'ORD-20261023-A1B2C3'
+  );
 });

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import {
   getUserModel
-} from '../models/user.model.js';
+} from '../models/User.js';
 
 import {
   enqueueUserCreated

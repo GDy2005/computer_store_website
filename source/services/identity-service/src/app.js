@@ -3,70 +3,85 @@ import express from 'express';
 import {
   registerIdentityModels
 } from './config/database.js';
+import {
+  cloudinary,
+  cloudinaryConfigured
+} from './config/cloudinary.js';
 
 import {
   createPasswordTokenService
-} from './services/password-token.service.js';
+} from './services/passwordTokenService.js';
+import {
+  createAvatarStorageService
+} from './services/avatarStorageService.js';
+
+import {
+  createUserRepository
+} from './repositories/userRepository.js';
+
+import {
+  createPasswordTokenRepository
+} from './repositories/passwordTokenRepository.js';
 
 import {
   createAuthService
-} from './services/auth.service.js';
+} from './services/authService.js';
 
 import {
   createUserService
-} from './services/user.service.js';
+} from './services/userService.js';
 
 import {
   createAddressService
-} from './services/address.service.js';
+} from './services/addressService.js';
 
 import {
   createInternalUserService
-} from './services/internal-user.service.js';
+} from './services/internalUserService.js';
 
 import {
   createAdminUserService
-} from './services/admin-user.service.js';
+} from './services/adminUserService.js';
 
 import {
   createAuthController
-} from './controllers/auth.controller.js';
+} from './controllers/authController.js';
 
 import {
   createUserController
-} from './controllers/user.controller.js';
+} from './controllers/userController.js';
 
 import {
   createAddressController
-} from './controllers/address.controller.js';
+} from './controllers/addressController.js';
 
 import {
   createInternalUserController
-} from './controllers/internal-user.controller.js';
+} from './controllers/internalUserController.js';
 
 import {
   createAdminUserController
-} from './controllers/admin-user.controller.js';
+} from './controllers/adminUserController.js';
 
 import {
   createAuthRouter
-} from './routes/auth.routes.js';
+} from './routes/authRoutes.js';
 
 import {
   createUserRouter
-} from './routes/user.routes.js';
+} from './routes/userRoutes.js';
 
 import {
   createAddressRouter
-} from './routes/address.routes.js';
+} from './routes/addressRoutes.js';
 
 import {
   createInternalUserRouter
-} from './routes/internal-user.routes.js';
+} from './routes/internalUserRoutes.js';
 
 import {
   createAdminUserRouter
-} from './routes/admin-user.routes.js';
+} from './routes/adminUserRoutes.js';
 
 export function buildApp({connection, models}) {
   const router = express.Router();
@@ -74,38 +89,50 @@ export function buildApp({connection, models}) {
   const {User, PasswordToken} =
     registerIdentityModels(connection);
 
+  const userRepository = createUserRepository({User});
+  const passwordTokenRepository =
+    createPasswordTokenRepository({PasswordToken});
+
   const passwordTokenService =
-    createPasswordTokenService({PasswordToken});
+    createPasswordTokenService({
+      passwordTokenRepository
+    });
+
+  const avatarStorageService = createAvatarStorageService({
+    cloudinary,
+    configured: cloudinaryConfigured
+  });
 
   const internalUserService =
     createInternalUserService({
       connection,
-      User,
+      userRepository,
       Outbox: models.Outbox,
       passwordTokenService
     });
 
   const authService = createAuthService({
     connection,
-    User,
+    userRepository,
     Outbox: models.Outbox,
     passwordTokenService
   });
 
   const userService = createUserService({
     connection,
-    User,
+    userRepository,
     Outbox: models.Outbox,
-    passwordTokenService
+    passwordTokenService,
+    avatarStorageService
   });
 
   const addressService = createAddressService({
-    User
+    userRepository
   });
 
   const adminUserService = createAdminUserService({
     connection,
-    User,
+    userRepository,
     Outbox: models.Outbox
   });
 

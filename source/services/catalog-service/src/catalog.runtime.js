@@ -4,11 +4,13 @@ import {
 
 import {
   createInventoryService
-} from './services/inventory.service.js';
+} from './services/inventoryService.js';
 
 import {
   createInventoryConsumers
 } from './events/inventory.consumer.js';
+import {createProductRepository} from './repositories/productRepository.js';
+import {createInventoryRepository} from './repositories/inventoryRepository.js';
 
 export async function configureCatalogRuntime({
   connection,
@@ -25,9 +27,12 @@ export async function configureCatalogRuntime({
 
   const inventoryService =
     createInventoryService({
-      Product: catalogModels.Product,
-      InventoryReservation:
-        catalogModels.InventoryReservation,
+      productRepository: createProductRepository({
+        Product: catalogModels.Product
+      }),
+      inventoryRepository: createInventoryRepository({
+        InventoryReservation: catalogModels.InventoryReservation
+      }),
       Outbox: models.Outbox
     });
 

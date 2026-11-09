@@ -7,6 +7,7 @@
     "seed": "node src/seeds/seedCatalog.js"
   },
   "dependencies": {
+    "@store/http-response": "1.0.0",
     "@store/service-runtime": "1.0.0",
     "@store/validation": "1.0.0",
     "cloudinary": "^2.11.0",

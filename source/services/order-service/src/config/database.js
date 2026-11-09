@@ -1,8 +1,8 @@
-import {getCartModel} from '../models/cart.model.js';
-import {getCouponModel} from '../models/coupon.model.js';
-import {getOrderModel} from '../models/order.model.js';
-import {getLoyaltyAccountModel} from '../models/loyalty-account.model.js';
-import {getLoyaltyTransactionModel} from '../models/loyalty-transaction.model.js';
+import {getCartModel} from '../models/Cart.js';
+import {getCouponModel} from '../models/Coupon.js';
+import {getOrderModel} from '../models/Order.js';
+import {getLoyaltyAccountModel} from '../models/LoyaltyAccount.js';
+import {getLoyaltyTransactionModel} from '../models/LoyaltyTransaction.js';
 
 export function registerOrderModels(connection) {
   return {

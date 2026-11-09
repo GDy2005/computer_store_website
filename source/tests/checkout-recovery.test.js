@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {validateEvent} from '@store/event-contracts';
-import {createOrderWorkflowService} from '../services/order-service/src/services/order-workflow.service.js';
-import {createCheckoutTimeoutWorker} from '../services/order-service/src/services/checkout-timeout.service.js';
-import {createCheckoutService} from '../services/order-service/src/services/checkout.service.js';
-import {createInventoryService} from '../services/catalog-service/src/services/inventory.service.js';
+import {createOrderWorkflowService} from '../services/order-service/src/services/orderWorkflowService.js';
+import {createCheckoutTimeoutWorker} from '../services/order-service/src/services/checkoutTimeoutService.js';
+import {createCheckoutService} from '../services/order-service/src/services/checkoutService.js';
+import {createInventoryService} from '../services/catalog-service/src/services/inventoryService.js';
 
 function workflowFixture() {
   const rows = [];

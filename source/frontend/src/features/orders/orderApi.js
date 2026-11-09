@@ -8,7 +8,7 @@ export async function fetchMyOrders(page = 1, options = {}) {
 
   return {
     items: response.data.data.items,
-    meta: response.data.meta
+    meta: response.data.data.meta
   };
 }
 

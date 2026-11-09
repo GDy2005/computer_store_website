@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {validateEvent} from '@store/event-contracts';
-import {createLoyaltyService} from '../services/order-service/src/services/loyalty.service.js';
-import {createOrderStatusService} from '../services/order-service/src/services/order-status.service.js';
+import {createLoyaltyService} from '../services/order-service/src/services/loyaltyService.js';
+import {createOrderStatusService} from '../services/order-service/src/services/orderStatusService.js';
 
 function orderFixture(status = 'SHIPPING') {
   return {

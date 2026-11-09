@@ -6,7 +6,7 @@ import {
   emitProductEvent,
   productRoom,
   registerProductRooms
-} from '../api-gateway/src/services/realtime.service.js';
+} from '../api-gateway/src/services/realtimeService.js';
 
 test('realtime feedback Gateway emits catalog events only to the product room', () => {
   const productId = '507f1f77bcf86cd799439011';

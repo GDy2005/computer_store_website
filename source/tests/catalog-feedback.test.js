@@ -5,10 +5,10 @@ import {validateEvent} from '@store/event-contracts';
 
 import {
   createCommentService
-} from '../services/catalog-service/src/services/comment.service.js';
+} from '../services/catalog-service/src/services/commentService.js';
 import {
   createRatingService
-} from '../services/catalog-service/src/services/rating.service.js';
+} from '../services/catalog-service/src/services/ratingService.js';
 
 test('catalog guest comment is sanitized, keeps email private and writes an event', async () => {
   const productId = '507f1f77bcf86cd799439011';
@@ -54,11 +54,102 @@ test('catalog guest comment is sanitized, keeps email private and writes an even
   });
 
   assert.equal(savedInput.content, 'Sản phẩm tốt');
+  assert.equal(savedInput.parentCommentId, null);
   assert.equal(result.guestEmail, undefined);
   assert.equal(outbox.topic, 'comments.created.v1');
   assert.equal(outbox.payload.payload.content, 'Sản phẩm tốt');
   assert.equal(outbox.payload.payload.guestEmail, undefined);
   validateEvent(outbox.topic, outbox.payload);
+});
+
+test('catalog signed-in user can reply to one top-level comment', async () => {
+  const productId = '507f1f77bcf86cd799439011';
+  const parentId = '507f1f77bcf86cd799439012';
+  const replyId = '507f1f77bcf86cd799439013';
+  let createdInput;
+  let outbox;
+  const service = createCommentService({
+    connection: {transaction: handler => handler({})},
+    productRepository: {async existsActive() { return true; }},
+    feedbackRepository: {
+      async findComment({productId: requestedProductId, commentId}) {
+        assert.equal(requestedProductId, productId);
+        assert.equal(commentId, parentId);
+        return {_id: parentId, parentCommentId: null};
+      },
+      async createComment(input) {
+        createdInput = input;
+        return {
+          _id: {toString: () => replyId},
+          productId: {toString: () => productId},
+          parentCommentId: {toString: () => parentId},
+          displayName: input.displayName,
+          content: input.content,
+          likedBy: [],
+          dislikedBy: [],
+          toObject() { return this; }
+        };
+      }
+    },
+    Outbox: {async create(rows) { [outbox] = rows; }},
+    identityClient: {
+      async getUserSummary({userId}) {
+        assert.equal(userId, 'user-1');
+        return {fullName: 'Customer A'};
+      }
+    }
+  });
+
+  const result = await service.create({
+    productId,
+    input: {parentCommentId: parentId, content: 'Cam on ban'},
+    userId: 'user-1',
+    requestId: randomUUID()
+  });
+
+  assert.equal(createdInput.parentCommentId, parentId);
+  assert.equal(result.parentCommentId, parentId);
+  assert.equal(outbox.payload.payload.parentCommentId, parentId);
+  validateEvent(outbox.topic, outbox.payload);
+});
+
+test('catalog comment reaction is mutually exclusive and returns counts', async () => {
+  const productId = '507f1f77bcf86cd799439011';
+  const targetCommentId = '507f1f77bcf86cd799439012';
+  let reactionInput;
+  const service = createCommentService({
+    connection: {transaction: handler => handler({transactionId: 'tx-1'})},
+    productRepository: {async existsActive() { return true; }},
+    feedbackRepository: {
+      async updateReaction(input) {
+        reactionInput = input;
+        return {
+          _id: {toString: () => targetCommentId},
+          productId: {toString: () => productId},
+          parentCommentId: null,
+          displayName: 'Customer A',
+          content: 'Useful',
+          likedBy: ['user-1', 'user-2'],
+          dislikedBy: [],
+          toObject() { return this; }
+        };
+      }
+    }
+  });
+
+  const result = await service.react({
+    productId,
+    commentId: targetCommentId,
+    userId: 'user-1',
+    reaction: 'LIKE'
+  });
+
+  assert.equal(reactionInput.reaction, 'LIKE');
+  assert.equal(reactionInput.userId, 'user-1');
+  assert.deepEqual(reactionInput.session, {transactionId: 'tx-1'});
+  assert.equal(result.likeCount, 2);
+  assert.equal(result.dislikeCount, 0);
+  assert.equal(result.myReaction, 'LIKE');
 });
 
 test('rating upsert recalculates cached average and writes a valid event', async () => {

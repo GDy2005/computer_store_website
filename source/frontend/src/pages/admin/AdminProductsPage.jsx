@@ -36,6 +36,7 @@ import {
   AdminPagination
 } from '../../features/admin/AdminUi.jsx';
 import {entityId, formatAdminMoney, formatAdminNumber} from '../../features/admin/adminFormat.js';
+import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 
 function readQuery(params) {
   const rawPage = Number(params.get('page') || 1);
@@ -55,16 +56,16 @@ function inventory(product) {
   }), {stock: 0, reserved: 0});
 }
 
-function ProductActions({product, onDeactivate}) {
+function ProductActions({product, onDeactivate, t}) {
   const id = entityId(product);
   return (
     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
       <Button component={Link} to={`/admin/products/${id}/edit`} size="small" variant="outlined">
-        Chỉnh sửa
+        {t('admin.common.edit')}
       </Button>
       {product.isActive && (
         <Button size="small" color="error" onClick={() => onDeactivate(product)}>
-          Ngừng bán
+          {t('admin.products.stopped')}
         </Button>
       )}
     </Stack>
@@ -72,6 +73,7 @@ function ProductActions({product, onDeactivate}) {
 }
 
 export default function AdminProductsPage() {
+  const {locale, t} = useLanguage();
   const [params, setParams] = useSearchParams();
   const paramsKey = params.toString();
   const query = useMemo(() => readQuery(params), [paramsKey]);
@@ -95,7 +97,7 @@ export default function AdminProductsPage() {
     fetchAdminProducts(query, {signal: controller.signal})
       .then(setResult)
       .catch(requestError => {
-        const message = adminErrorMessage(requestError, 'Không thể tải danh sách sản phẩm.');
+        const message = adminErrorMessage(requestError, t('admin.products.loadError'));
         if (message) setError(message);
       })
       .finally(() => {
@@ -125,11 +127,11 @@ export default function AdminProductsPage() {
     setError('');
     try {
       await deactivateAdminProduct(entityId(pendingDeactivate));
-      setNotice(`Đã ngừng bán ${pendingDeactivate.name}.`);
+      setNotice(t('admin.products.deactivated', {name: pendingDeactivate.name}));
       setPendingDeactivate(null);
       setRefreshKey(value => value + 1);
     } catch (requestError) {
-      setError(adminErrorMessage(requestError, 'Không thể ngừng bán sản phẩm.'));
+      setError(adminErrorMessage(requestError, t('admin.products.deactivateError')));
     } finally {
       setSaving(false);
     }
@@ -138,55 +140,55 @@ export default function AdminProductsPage() {
   return (
     <Stack spacing={3}>
       <AdminPageHeader
-        title="Sản phẩm & tồn kho"
-        description="Quản lý thông tin bán hàng, hình ảnh, biến thể và số lượng tồn kho."
-        action={<Button component={Link} to="/admin/products/new" variant="contained">Thêm sản phẩm</Button>}
+        title={t('admin.products.title')}
+        description={t('admin.products.description')}
+        action={<Button component={Link} to="/admin/products/new" variant="contained">{t('admin.products.add')}</Button>}
       />
 
       <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{p: 2}}>
         <Stack direction={{xs: 'column', sm: 'row'}} spacing={2}>
           <TextField
-            label="Tên, slug, thương hiệu hoặc SKU"
+            label={t('admin.products.search')}
             value={draft.search}
             onChange={event => setDraft(current => ({...current, search: event.target.value}))}
             inputProps={{maxLength: 100}}
             fullWidth
           />
           <FormControl sx={{minWidth: {sm: 170}}}>
-            <InputLabel id="product-active-filter">Trạng thái</InputLabel>
+            <InputLabel id="product-active-filter">{t('admin.common.status')}</InputLabel>
             <Select
               labelId="product-active-filter"
-              label="Trạng thái"
+              label={t('admin.common.status')}
               value={draft.isActive}
               onChange={event => setDraft(current => ({...current, isActive: event.target.value}))}
             >
-              <MenuItem value="">Tất cả</MenuItem>
-              <MenuItem value="true">Đang bán</MenuItem>
-              <MenuItem value="false">Ngừng bán</MenuItem>
+              <MenuItem value="">{t('admin.common.all')}</MenuItem>
+              <MenuItem value="true">{t('admin.products.selling')}</MenuItem>
+              <MenuItem value="false">{t('admin.products.stopped')}</MenuItem>
             </Select>
           </FormControl>
-          <Button type="submit" variant="contained" sx={{minWidth: 110}}>Lọc</Button>
-          <Button type="button" color="inherit" onClick={() => setParams({})}>Xóa lọc</Button>
+          <Button type="submit" variant="contained" sx={{minWidth: 110}}>{t('admin.common.filter')}</Button>
+          <Button type="button" color="inherit" onClick={() => setParams({})}>{t('admin.common.clearFilters')}</Button>
         </Stack>
       </Paper>
 
       {error && <Alert severity="error">{error}</Alert>}
       {notice && <Alert severity="success" onClose={() => setNotice('')}>{notice}</Alert>}
-      {loading && <AdminLoading label="Đang tải sản phẩm"/>}
-      {!loading && !error && result.items.length === 0 && <AdminEmpty>Không tìm thấy sản phẩm phù hợp.</AdminEmpty>}
+      {loading && <AdminLoading label={t('admin.products.loading')}/>}
+      {!loading && !error && result.items.length === 0 && <AdminEmpty>{t('admin.products.empty')}</AdminEmpty>}
 
       {!loading && result.items.length > 0 && (
         <>
           <TableContainer component={Paper} variant="outlined" sx={{display: {xs: 'none', md: 'block'}}}>
-            <Table aria-label="Danh sách quản trị sản phẩm">
+            <Table aria-label={t('admin.products.listAria')}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Sản phẩm</TableCell>
-                  <TableCell>Danh mục</TableCell>
-                  <TableCell>Kho</TableCell>
-                  <TableCell>Giá bán</TableCell>
-                  <TableCell>Trạng thái</TableCell>
-                  <TableCell align="right">Thao tác</TableCell>
+                  <TableCell>{t('admin.products.product')}</TableCell>
+                  <TableCell>{t('admin.products.category')}</TableCell>
+                  <TableCell>{t('admin.products.inventory')}</TableCell>
+                  <TableCell>{t('admin.products.price')}</TableCell>
+                  <TableCell>{t('admin.common.status')}</TableCell>
+                  <TableCell align="right">{t('admin.common.actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -200,12 +202,12 @@ export default function AdminProductsPage() {
                       </TableCell>
                       <TableCell>{product.categoryId?.name || '—'}</TableCell>
                       <TableCell>
-                        <Typography variant="body2">{formatAdminNumber(stock.stock)} tổng</Typography>
-                        <Typography variant="caption" color="text.secondary">{formatAdminNumber(stock.reserved)} đang giữ</Typography>
+                        <Typography variant="body2">{t('admin.products.totalStock', {count: formatAdminNumber(stock.stock, locale)})}</Typography>
+                        <Typography variant="caption" color="text.secondary">{t('admin.products.reservedStock', {count: formatAdminNumber(stock.reserved, locale)})}</Typography>
                       </TableCell>
-                      <TableCell>{formatAdminMoney(product.minPrice)} – {formatAdminMoney(product.maxPrice)}</TableCell>
-                      <TableCell><Chip size="small" color={product.isActive ? 'success' : 'default'} label={product.isActive ? 'Đang bán' : 'Ngừng bán'}/></TableCell>
-                      <TableCell align="right"><ProductActions product={product} onDeactivate={setPendingDeactivate}/></TableCell>
+                      <TableCell>{formatAdminMoney(product.minPrice, locale)} – {formatAdminMoney(product.maxPrice, locale)}</TableCell>
+                      <TableCell><Chip size="small" color={product.isActive ? 'success' : 'default'} label={product.isActive ? t('admin.products.selling') : t('admin.products.stopped')}/></TableCell>
+                      <TableCell align="right"><ProductActions product={product} onDeactivate={setPendingDeactivate} t={t}/></TableCell>
                     </TableRow>
                   );
                 })}
@@ -222,13 +224,13 @@ export default function AdminProductsPage() {
                     <Stack direction="row" justifyContent="space-between" gap={1} alignItems="flex-start">
                       <Box>
                         <Typography fontWeight={850}>{product.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">{product.brand} · {product.categoryId?.name || 'Chưa có danh mục'}</Typography>
+                        <Typography variant="body2" color="text.secondary">{product.brand} · {product.categoryId?.name || t('admin.products.noCategory')}</Typography>
                       </Box>
-                      <Chip size="small" color={product.isActive ? 'success' : 'default'} label={product.isActive ? 'Đang bán' : 'Ngừng bán'}/>
+                      <Chip size="small" color={product.isActive ? 'success' : 'default'} label={product.isActive ? t('admin.products.selling') : t('admin.products.stopped')}/>
                     </Stack>
-                    <Typography variant="body2">{product.variants?.length || 0} biến thể · Kho {formatAdminNumber(stock.stock)} · Giữ {formatAdminNumber(stock.reserved)}</Typography>
-                    <Typography fontWeight={750}>{formatAdminMoney(product.minPrice)} – {formatAdminMoney(product.maxPrice)}</Typography>
-                    <ProductActions product={product} onDeactivate={setPendingDeactivate}/>
+                    <Typography variant="body2">{t('admin.products.mobileSummary', {variants: product.variants?.length || 0, stock: formatAdminNumber(stock.stock, locale), reserved: formatAdminNumber(stock.reserved, locale)})}</Typography>
+                    <Typography fontWeight={750}>{formatAdminMoney(product.minPrice, locale)} – {formatAdminMoney(product.maxPrice, locale)}</Typography>
+                    <ProductActions product={product} onDeactivate={setPendingDeactivate} t={t}/>
                   </Stack>
                 </Paper>
               );
@@ -240,16 +242,16 @@ export default function AdminProductsPage() {
       )}
 
       <Dialog open={Boolean(pendingDeactivate)} onClose={() => !saving && setPendingDeactivate(null)}>
-        <DialogTitle>Ngừng bán sản phẩm?</DialogTitle>
+        <DialogTitle>{t('admin.products.deactivateTitle')}</DialogTitle>
         <DialogContent>
           <Typography>
-            “{pendingDeactivate?.name}” sẽ bị ẩn khỏi catalog. Dữ liệu cũ và snapshot trong đơn hàng vẫn được giữ lại.
+            {t('admin.products.deactivateConfirm', {name: pendingDeactivate?.name})}
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPendingDeactivate(null)} disabled={saving}>Quay lại</Button>
+          <Button onClick={() => setPendingDeactivate(null)} disabled={saving}>{t('admin.common.back')}</Button>
           <Button color="error" variant="contained" onClick={confirmDeactivate} disabled={saving}>
-            {saving ? 'Đang xử lý…' : 'Ngừng bán'}
+            {saving ? t('admin.common.processing') : t('admin.products.stopped')}
           </Button>
         </DialogActions>
       </Dialog>

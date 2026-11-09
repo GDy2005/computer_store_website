@@ -38,5 +38,13 @@
     "imageUrl": "",
     "isFeatured": true,
     "isActive": true
+  },
+  {
+    "name": "PC",
+    "slug": "pc",
+    "description": "Máy tính để bàn lắp sẵn cho gaming, sáng tạo và làm việc",
+    "imageUrl": "",
+    "isFeatured": true,
+    "isActive": true
   }
 ]

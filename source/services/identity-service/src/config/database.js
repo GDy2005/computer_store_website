@@ -1,7 +1,7 @@
-import {getUserModel} from '../models/user.model.js';
+import {getUserModel} from '../models/User.js';
 import {
   getPasswordTokenModel
-} from '../models/password-token.model.js';
+} from '../models/PasswordToken.js';
 
 export function registerIdentityModels(connection) {
   return {

@@ -6,7 +6,6 @@ export async function fetchLoyalty(page = 1, options = {}) {
     signal: options.signal
   });
   return {
-    ...response.data.data,
-    meta: response.data.meta
+    ...response.data.data
   };
 }

@@ -7,6 +7,7 @@
     "reindex": "node src/scripts/reindex-products.js"
   },
   "dependencies": {
+    "@store/http-response": "1.0.0",
     "@store/service-runtime": "1.0.0",
     "@store/validation": "1.0.0",
     "express": "^5.1.0"

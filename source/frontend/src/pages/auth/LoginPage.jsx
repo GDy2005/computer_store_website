@@ -20,8 +20,14 @@ export default function LoginPage() {
     try {
       setSubmitting(true);
       setError('');
-      await login(form);
-      navigate(location.state?.from || '/profile', {replace:true});
+      const authenticatedUser = await login(form);
+      const requestedPath = location.state?.from;
+      const destination = authenticatedUser?.role === 'ADMIN'
+        ? '/admin'
+        : requestedPath?.startsWith('/admin')
+          ? '/profile'
+          : requestedPath || '/profile';
+      navigate(destination, {replace:true});
     } catch (requestError) {
       setError(getApiMessage(requestError, t('auth.loginError')));
     } finally {

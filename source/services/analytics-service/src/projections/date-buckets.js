@@ -65,7 +65,7 @@ function monthEnd(year, monthIndex) {
 }
 
 export function resolveDashboardRange(query, now = new Date()) {
-  const period = query.period || 'month';
+  const period = query.period || 'year';
   const current = dateKey(now);
   const currentDate = parseDateKey(current);
   const year = currentDate.getUTCFullYear();

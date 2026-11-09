@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createLoyaltyService} from '../services/order-service/src/services/loyalty.service.js';
-import {createCheckoutService} from '../services/order-service/src/services/checkout.service.js';
-import {validatePlaceOrder, validatePreview} from '../services/order-service/src/validations/order.validation.js';
+import {createLoyaltyService} from '../services/order-service/src/services/loyaltyService.js';
+import {createCheckoutService} from '../services/order-service/src/services/checkoutService.js';
+import {validatePlaceOrder, validatePreview} from '../services/order-service/src/validations/orderValidation.js';
 
 function runMiddleware(middleware, body) {
   return new Promise((resolve, reject) => {

@@ -7,7 +7,20 @@ export class AppError extends Error {
 export function errorHandler(error, req, res, next) {
   if (res.headersSent) return next(error);
   const status = error.status || 500;
-  res.status(status).json({success: false, error: {code: error.code || 'INTERNAL_ERROR', message: status >= 500 ? 'Service temporarily unavailable' : error.message, details: error.details || []}});
+  const message = status >= 500
+    ? 'Service temporarily unavailable'
+    : error.message;
+
+  res.status(status).json({
+    success: false,
+    message,
+    data: null,
+    error: {
+      code: error.code || 'INTERNAL_ERROR',
+      message,
+      details: error.details || []
+    }
+  });
 }
 
 export function internalAuth(secret) {

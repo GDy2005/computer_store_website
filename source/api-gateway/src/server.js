@@ -1,7 +1,7 @@
 import {createClient} from 'redis';
 import {createServer} from 'node:http';
 import {buildApp} from './app.js';
-import {createRealtimeService} from './services/realtime.service.js';
+import {createRealtimeService} from './services/realtimeService.js';
 if(!process.env.SESSION_SECRET || !process.env.INTERNAL_SERVICE_SECRET) throw new Error('Gateway secrets required');
 const redis = createClient({url:process.env.REDIS_URL});
 redis.on('error',error=>console.error('Redis unavailable:',error.message));

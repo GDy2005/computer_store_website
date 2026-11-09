@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 import {
   getCouponModel
-} from '../models/coupon.model.js';
+} from '../models/Coupon.js';
 
 const coupons = [
   {

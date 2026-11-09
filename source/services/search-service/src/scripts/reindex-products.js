@@ -1,4 +1,4 @@
-import {createCatalogClient} from '../clients/catalog-client.service.js';
+import {createCatalogClient} from '../clients/catalogClient.js';
 import {createElasticsearchClient} from '../config/elasticsearch.js';
 
 const searchIndex = createElasticsearchClient();

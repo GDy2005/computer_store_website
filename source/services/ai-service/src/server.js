@@ -1,10 +1,11 @@
 import express from 'express';
 
+import {sendSuccess} from '@store/http-response';
 import {AppError, errorHandler, internalAuth} from '@store/validation';
 
 import {buildApp} from './app.js';
-import {createSearchClient} from './clients/search-client.service.js';
-import {createAiProvider} from './services/ai-provider.service.js';
+import {createSearchClient} from './clients/searchClient.js';
+import {createAiProvider} from './services/aiProviderService.js';
 
 const secret = process.env.INTERNAL_SERVICE_SECRET;
 
@@ -20,7 +21,10 @@ const app = express();
 
 app.use(express.json({limit: '32kb'}));
 app.get('/health/live', (req, res) => {
-  res.json({success: true, data: {service: 'ai-service'}});
+  sendSuccess(res, {
+    message: 'AI Service is live',
+    data: {service: 'ai-service'}
+  });
 });
 app.get('/health/ready', async (req, res) => {
   try {
@@ -28,21 +32,31 @@ app.get('/health/ready', async (req, res) => {
       signal: AbortSignal.timeout(5000)
     });
     const ready = response.ok;
-    res.status(ready ? 200 : 503).json({
-      success: ready,
-      data: {service: 'ai-service', search: ready}
+    if (ready) {
+      sendSuccess(res, {
+        message: 'AI Service is ready',
+        data: {service: 'ai-service', search: true}
+      });
+      return;
+    }
+
+    res.status(503).json({
+      success: false,
+      message: 'Search Service is not ready',
+      data: {service: 'ai-service', search: false}
     });
   } catch {
     res.status(503).json({
       success: false,
+      message: 'Search Service is unavailable',
       data: {service: 'ai-service', search: false}
     });
   }
 });
 app.use(internalAuth(secret));
 app.get('/internal/foundation', (req, res) => {
-  res.json({
-    success: true,
+  sendSuccess(res, {
+    message: 'AI foundation status retrieved successfully',
     data: {
       service: 'ai-service',
       database: null,

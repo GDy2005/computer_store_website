@@ -1,9 +1,8 @@
 import {useEffect} from 'react';
 import {Alert,Box,Container} from '@mui/material';
-import {Route,Routes,useLocation,useNavigate} from 'react-router-dom';
+import {Navigate,Route,Routes,useLocation,useNavigate} from 'react-router-dom';
 import SiteFooter from './components/SiteFooter.jsx';
 import SiteHeader from './components/SiteHeader.jsx';
-import FoundationPage from './pages/FoundationPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
@@ -33,6 +32,7 @@ import ChatWidget from './features/chatbot/ChatWidget.jsx';
 import {useLanguage} from './features/i18n/LanguageContext.jsx';
 import CartDrawer from './features/cart/CartDrawer.jsx';
 import {useCart} from './features/cart/CartContext.jsx';
+import {useAuth} from './features/auth/AuthContext.jsx';
 
 function LegacyCartRoute() {
   const navigate = useNavigate();
@@ -49,8 +49,13 @@ function LegacyCartRoute() {
 export default function App() {
   const {pathname} = useLocation();
   const {t} = useLanguage();
+  const {user,loading:authLoading} = useAuth();
   const adminPage = pathname === '/admin' || pathname.startsWith('/admin/');
   const homePage = pathname === '/';
+
+  if (!authLoading && user?.role === 'ADMIN' && !adminPage) {
+    return <Navigate to="/admin" replace/>;
+  }
 
   return (
     <Box sx={{display:'flex',minHeight:'100vh',flexDirection:'column'}}>
@@ -76,13 +81,18 @@ export default function App() {
       >
         {t('a11y.skip')}
       </Box>
-      <SiteHeader/>
+      {!adminPage && <SiteHeader/>}
       <Container
         id="main-content"
         tabIndex={-1}
         component="main"
-        maxWidth={adminPage || homePage ? 'xl' : 'lg'}
-        sx={{flexGrow:1,py:homePage ? {xs:2,sm:3,md:4} : {xs:3,sm:4,md:6},outline:'none'}}
+        maxWidth={adminPage ? false : homePage ? 'xl' : 'lg'}
+        disableGutters={adminPage}
+        sx={{
+          flexGrow:1,
+          py:adminPage ? 0 : homePage ? {xs:2,sm:3,md:4} : {xs:3,sm:4,md:6},
+          outline:'none'
+        }}
       >
         <Routes>
           <Route path="/" element={<HomePage/>}/>
@@ -96,11 +106,11 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
           <Route path="/activate" element={<PasswordActionPage activation/>}/>
           <Route path="/reset-password" element={<PasswordActionPage/>}/>
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage/></ProtectedRoute>}/>
-          <Route path="/profile/addresses" element={<ProtectedRoute><AddressesPage/></ProtectedRoute>}/>
-          <Route path="/orders" element={<ProtectedRoute><OrdersPage/></ProtectedRoute>}/>
-          <Route path="/orders/:orderNumber" element={<ProtectedRoute><OrderDetailPage/></ProtectedRoute>}/>
-          <Route path="/loyalty" element={<ProtectedRoute><LoyaltyPage/></ProtectedRoute>}/>
+          <Route path="/profile" element={<ProtectedRoute roles={['CUSTOMER']}><ProfilePage/></ProtectedRoute>}/>
+          <Route path="/profile/addresses" element={<ProtectedRoute roles={['CUSTOMER']}><AddressesPage/></ProtectedRoute>}/>
+          <Route path="/orders" element={<ProtectedRoute roles={['CUSTOMER']}><OrdersPage/></ProtectedRoute>}/>
+          <Route path="/orders/:orderNumber" element={<ProtectedRoute roles={['CUSTOMER']}><OrderDetailPage/></ProtectedRoute>}/>
+          <Route path="/loyalty" element={<ProtectedRoute roles={['CUSTOMER']}><LoyaltyPage/></ProtectedRoute>}/>
           <Route path="/admin" element={<AdminRoute><AdminLayout/></AdminRoute>}>
             <Route index element={<AdminDashboardPage/>}/>
             <Route path="products" element={<AdminProductsPage/>}/>
@@ -111,12 +121,11 @@ export default function App() {
             <Route path="orders" element={<AdminOrdersPage/>}/>
             <Route path="orders/:id" element={<AdminOrderDetailPage/>}/>
             <Route path="coupons" element={<AdminCouponsPage/>}/>
-            <Route path="system" element={<FoundationPage/>}/>
           </Route>
           <Route path="*" element={<Alert severity="info">{t('common.notFound')}</Alert>}/>
         </Routes>
       </Container>
-      <SiteFooter/>
+      {!adminPage && <SiteFooter/>}
       {!adminPage && <CartDrawer/>}
       {!adminPage && <ChatWidget/>}
     </Box>

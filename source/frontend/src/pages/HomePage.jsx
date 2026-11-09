@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import {Link} from 'react-router-dom';
 
+import HomeSectionPanel from '../components/HomeSectionPanel.jsx';
 import UiIcon from '../components/UiIcon.jsx';
 import {useLanguage} from '../features/i18n/LanguageContext.jsx';
 import ProductSection from '../features/products/ProductSection.jsx';
@@ -21,6 +22,14 @@ import {
 } from '../features/products/catalogApi.js';
 
 const promotionSlides = [
+  {
+    src: '/banners/omen-valorant.jpg',
+    alt: 'OMEN 35L VALORANT Limited Edition Gaming PC',
+    titleKey: 'home.banner.omenTitle',
+    textKey: 'home.banner.omenText',
+    fit: 'contain',
+    background: '#ff4655'
+  },
   {src: '/banners/halloween-sale.jpg', alt: 'Halloween săn deal build PC cực chill', titleKey: 'home.banner.halloweenTitle', textKey: 'home.banner.halloweenText'},
   {src: '/banners/delta-force.jpg', alt: 'Top cấu hình PC chiến Delta Force', titleKey: 'home.banner.deltaTitle', textKey: 'home.banner.deltaText'},
   {src: '/banners/premium-gaming.jpg', alt: 'PC Premium Gaming tốc độ bứt phá', titleKey: 'home.banner.premiumTitle', textKey: 'home.banner.premiumText'},
@@ -34,10 +43,12 @@ const categoryColors = [
   ['#fff2d5', '#a96500'],
   ['#eeeeeb', '#181818'],
   ['#fff6e4', '#9a6100'],
-  ['#ececea', '#181818']
+  ['#ececea', '#181818'],
+  ['#e8f1ff', '#1d4ed8']
 ];
 
 function categoryIconName(slug = '') {
+  if (slug === 'pc') return 'desktop';
   if (slug.includes('laptop')) return 'laptop';
   if (slug.includes('man-hinh')) return 'monitor';
   if (slug.includes('ban-phim')) return 'keyboard';
@@ -289,12 +300,24 @@ function PromotionCarousel() {
               key={item.renderKey}
               aria-hidden={index !== trackIndex}
               sx={{
+                position: 'relative',
                 width: viewportWidth ? `${viewportWidth}px` : 0,
                 height: '100%',
                 flex: '0 0 auto',
                 overflow: 'hidden',
                 borderRadius: '6px',
-                bgcolor: '#111'
+                bgcolor: item.background || '#111',
+                '&::before': item.fit === 'contain' ? {
+                  content: '""',
+                  position: 'absolute',
+                  inset: -24,
+                  backgroundImage: `url(${item.src})`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  filter: 'blur(20px)',
+                  opacity: 0.72,
+                  transform: 'scale(1.06)'
+                } : undefined
               }}
             >
               <Box
@@ -302,7 +325,15 @@ function PromotionCarousel() {
                 src={item.src}
                 alt={index === trackIndex ? item.alt : ''}
                 draggable={false}
-                sx={{display: 'block', width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none'}}
+                sx={{
+                  position: 'relative',
+                  zIndex: 1,
+                  display: 'block',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: item.fit || 'cover',
+                  pointerEvents: 'none'
+                }}
               />
             </Box>
           ))}
@@ -483,19 +514,17 @@ export default function HomePage() {
       <PromotionCarousel/>
       <TrustStrip/>
 
-      <Box id="categories" component="section" aria-labelledby="category-heading" sx={{scrollMarginTop: {xs: 130, md: 150}}}>
-        <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="flex-end" sx={{mb: 3}}>
-          <Box>
-            <Typography id="category-heading" component="h2" variant="h4">{t('home.categories')}</Typography>
-            <Typography color="text.secondary" mt={0.5}>{t('home.categoriesDescription')}</Typography>
-          </Box>
-          <Button component={Link} to="/products" endIcon={<UiIcon name="arrowRight"/>} sx={{display: {xs: 'none', sm: 'inline-flex'}}}>
-            {t('common.viewAll')}
-          </Button>
-        </Stack>
+      <HomeSectionPanel
+        id="categories"
+        titleId="category-heading"
+        title={t('home.categories')}
+        description={t('home.categoriesDescription')}
+        actionTo="/products"
+        icon="grid"
+      >
         {loading && (
-          <Box aria-label="Loading categories" sx={{display: 'grid', gridTemplateColumns: {xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)'}, gap: 2}}>
-            {Array.from({length: 5}, (_, index) => <Skeleton key={index} variant="circular" width={122} height={122} sx={{mx: 'auto'}}/>)}
+          <Box aria-label="Loading categories" sx={{display: 'grid', gridTemplateColumns: {xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', lg: 'repeat(6, 1fr)'}, gap: 2}}>
+            {Array.from({length: 6}, (_, index) => <Skeleton key={index} variant="circular" width={122} height={122} sx={{mx: 'auto'}}/>)}
           </Box>
         )}
         {error && (
@@ -505,14 +534,14 @@ export default function HomePage() {
         )}
         {!loading && !error && categories.length === 0 && <Alert severity="info">{t('home.noCategories')}</Alert>}
         {!loading && !error && categories.length > 0 && (
-          <Box sx={{display: 'grid', gridTemplateColumns: {xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(5, minmax(0, 1fr))'}, gap: {xs: 2.5, md: 3}}}>
+          <Box sx={{display: 'grid', gridTemplateColumns: {xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(6, minmax(0, 1fr))'}, gap: {xs: 2.5, md: 3}}}>
             {categories.map((category, index) => <CategoryCard key={category._id || category.slug} {...category} index={index}/>)}
           </Box>
         )}
-      </Box>
+      </HomeSectionPanel>
 
-      {!loading && !error && <ProductSection title={t('home.newProducts')} description={t('home.newDescription')} products={newProducts} actionTo="/products?sort=newest"/>}
-      {!loading && !error && <ProductSection title={t('home.selling')} description={t('home.sellingDescription')} products={bestSellers} actionTo="/products?sort=best_selling"/>}
+      {!loading && !error && <ProductSection title={t('home.newProducts')} description={t('home.newDescription')} products={newProducts} actionTo="/products?sort=newest" icon="package"/>}
+      {!loading && !error && <ProductSection title={t('home.selling')} description={t('home.sellingDescription')} products={bestSellers} actionTo="/products?sort=best_selling" icon="cart"/>}
       {!loading && !error && categorySections.map(({category, products}) => (
         <ProductSection
           key={category.slug}
@@ -520,6 +549,7 @@ export default function HomePage() {
           description={category.description}
           products={products}
           actionTo={`/products?category=${category.slug}`}
+          icon={categoryIconName(category.slug)}
         />
       ))}
     </Stack>

@@ -6,23 +6,23 @@ import {validateEvent} from '@store/event-contracts';
 
 import {
   validatePlaceOrder
-} from '../services/order-service/src/validations/order.validation.js';
+} from '../services/order-service/src/validations/orderValidation.js';
 
 import {
   createCouponService
-} from '../services/order-service/src/services/coupon.service.js';
+} from '../services/order-service/src/services/couponService.js';
 
 import {
   createCheckoutService
-} from '../services/order-service/src/services/checkout.service.js';
+} from '../services/order-service/src/services/checkoutService.js';
 
 import {
   createCartService
-} from '../services/order-service/src/services/cart.service.js';
+} from '../services/order-service/src/services/cartService.js';
 
 import {
   createOrderWorkflowService
-} from '../services/order-service/src/services/order-workflow.service.js';
+} from '../services/order-service/src/services/orderWorkflowService.js';
 
 import {
   createOrderWorkflowConsumers

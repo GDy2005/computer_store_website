@@ -1,16 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createCategoryController} from '../services/catalog-service/src/controllers/category.controller.js';
-import {createCategoryService} from '../services/catalog-service/src/services/category.service.js';
-import {parseFeatured,validateCategoryList} from '../services/catalog-service/src/validations/category.validation.js';
+import {createCategoryController} from '../services/catalog-service/src/controllers/categoryController.js';
+import {createCategoryService} from '../services/catalog-service/src/services/categoryService.js';
+import {parseFeatured,validateCategoryList} from '../services/catalog-service/src/validations/categoryValidation.js';
 
-test('category seed contains five unique active featured computer categories', () => {
+test('category seed contains six unique active featured computer categories', () => {
   const categories = JSON.parse(readFileSync(new URL('../services/catalog-service/src/seeds/data/categories.json', import.meta.url), 'utf8'));
-  assert.equal(categories.length, 5);
-  assert.equal(new Set(categories.map(category => category.slug)).size, 5);
+  assert.equal(categories.length, 6);
+  assert.equal(new Set(categories.map(category => category.slug)).size, 6);
   assert.ok(categories.every(category => category.isActive && category.isFeatured));
-  assert.deepEqual(categories.map(category => category.slug).sort(), ['ban-phim','chuot','laptop','man-hinh','ssd-luu-tru']);
+  assert.deepEqual(categories.map(category => category.slug).sort(), ['ban-phim','chuot','laptop','man-hinh','pc','ssd-luu-tru']);
 });
 
 test('featured query accepts only true or false', () => {
@@ -66,5 +66,9 @@ test('category controller delegates validated input to service', async () => {
   );
   assert.equal(receivedError, undefined);
   assert.deepEqual(receivedQuery, {featured:true});
-  assert.deepEqual(payload, {success:true,data:{items:[]}});
+  assert.deepEqual(payload, {
+    success: true,
+    message: 'Categories retrieved successfully',
+    data: {items: []}
+  });
 });

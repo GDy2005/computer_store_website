@@ -1,19 +1,25 @@
-export function createEmailRequestedHandler({EmailJob}) {
+import {
+  createEmailJobRepository
+} from '../repositories/emailJobRepository.js';
+
+export function createEmailRequestedHandler({
+  emailJobRepository: injectedEmailJobRepository,
+  EmailJob
+}) {
+  const emailJobRepository = injectedEmailJobRepository ||
+    createEmailJobRepository({EmailJob});
   return async function handleEmailRequested(event, session) {
-    await EmailJob.updateOne(
-      {eventId: event.eventId},
+    await emailJobRepository.enqueue(
+      event.eventId,
       {
-        $setOnInsert: {
-          eventId: event.eventId,
-          recipientEmail: event.payload.recipientEmail,
-          template: event.payload.type,
-          templateData: event.payload.templateData,
-          status: 'PENDING',
-          attempts: 0,
-          nextAttemptAt: new Date()
-        }
+        recipientEmail: event.payload.recipientEmail,
+        template: event.payload.type,
+        templateData: event.payload.templateData,
+        status: 'PENDING',
+        attempts: 0,
+        nextAttemptAt: new Date()
       },
-      {upsert: true, session}
+      session
     );
   };
 }

@@ -314,14 +314,19 @@ source/
 Tất cả business service hiện tại và tạo ở phase sau đều dùng cùng một cấu trúc
 MVC/layered. Không tạo lại `src/modules/` hoặc chia mỗi nghiệp vụ thành một cây
 MVC lồng riêng. Tên miền nghiệp vụ được phân biệt bằng tên file như
-`product.controller.js`, `order.service.js` và `rating.model.js`.
+`productController.js`, `orderService.js`, `userRepository.js`, `User.js` và
+`UserRequestDTO.js`.
 
 ```text
 <service>/src/
 ├── config/
 ├── controllers/
 ├── models/
+├── repositories/
 ├── services/
+├── dto/
+│   ├── request/
+│   └── response/
 ├── routes/
 ├── validations/
 ├── middlewares/
@@ -336,11 +341,23 @@ MVC lồng riêng. Tên miền nghiệp vụ được phân biệt bằng tên f
 └── server.js
 ```
 
+Quy ước tên file:
+
+- Controller, service, repository, route, validation, middleware và client dùng
+  `camelCase`, ví dụ `userController.js`, `authService.js` và
+  `userRepository.js`.
+- Model và DTO dùng `PascalCase`, ví dụ `User.js`, `UserRequestDTO.js` và
+  `UserResponseDTO.js`.
+
 Trách nhiệm:
 
 - `models`: Mongoose schema, indexes và thao tác dữ liệu cơ bản thuộc database
   của chính service.
-- `services`: toàn bộ nghiệp vụ, truy vấn model, local transaction và tạo Outbox.
+- `repositories`: lớp truy cập dữ liệu, cô lập Mongoose/Elasticsearch khỏi service.
+- `services`: toàn bộ nghiệp vụ, local transaction và tạo Outbox; repository được
+  truyền vào bằng dependency injection thay vì service truy cập model trực tiếp.
+- `dto/request`: định hình dữ liệu controller truyền vào service sau validation.
+- `dto/response`: định hình dữ liệu public trả về và loại bỏ field nội bộ.
 - `controllers`: chỉ nhận HTTP request, gọi service và tạo HTTP response.
 - `validations`: kiểm tra và normalize params, query, body trước controller.
 - `routes`: khai báo endpoint và nối validation/middleware/controller.
@@ -355,11 +372,17 @@ Trách nhiệm:
   `seedCatalog.js`) chỉ kết nối database và gọi các hàm seed theo thứ tự, còn
   `seedCategories.js`, `seedProducts.js` chỉ chứa logic của từng loại dữ liệu.
 
-Luồng HTTP bắt buộc là `Route -> Validation/Middleware -> Controller -> Service
--> Model`. Luồng Kafka/worker là `Consumer/Worker -> Service -> Model`. Controller
+Luồng HTTP bắt buộc là `Route -> Validation/Middleware -> Controller -> Request DTO
+-> Service -> Repository -> Model -> Response DTO`. Luồng Kafka/worker là
+`Consumer/Worker -> Service -> Repository -> Model`. Controller
 không gọi Mongoose trực tiếp; route không chứa nghiệp vụ; model không tạo HTTP
 response. React frontend là View hiển thị, còn JSON response là representation
 của backend nên business service không render View server-side.
+
+HTTP response thành công được chuẩn hóa thành
+`{ "success": true, "message": "...", "data": ... }`. Response lỗi giữ ba field
+cốt lõi và bổ sung `error.code`, `error.message`, `error.details` để client xử lý
+theo mã lỗi.
 
 API Gateway không sở hữu business database nên không cần `models/`; nó vẫn tách
 `routes/`, `controllers/`, `services/clients` và `middlewares/`. Các thư mục tùy

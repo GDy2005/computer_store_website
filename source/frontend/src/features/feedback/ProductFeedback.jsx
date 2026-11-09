@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   Alert,
   Box,
@@ -21,10 +21,12 @@ import {
   feedbackErrorMessage,
   fetchComments,
   fetchRatingSummary,
+  updateCommentReaction,
   updateRating
 } from './feedbackApi.js';
 import {useProductRealtime} from './useProductRealtime.js';
 import {useLanguage} from '../i18n/LanguageContext.jsx';
+import UiIcon from '../../components/UiIcon.jsx';
 
 const emptyComments = {
   items: [],
@@ -57,8 +59,18 @@ export default function ProductFeedback({productId, onRatingChange}) {
   const [loading, setLoading] = useState(true);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [replyTarget, setReplyTarget] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
+  const [submittingReply, setSubmittingReply] = useState(false);
+  const [reactingId, setReactingId] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+
+  const refreshComments = useCallback(async (signal) => {
+    const result = await fetchComments(productId, page, {signal});
+    setComments(result);
+    return result;
+  }, [productId, page]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,7 +78,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
     setError('');
 
     Promise.all([
-      fetchComments(productId, page, {signal: controller.signal}),
+      refreshComments(controller.signal),
       fetchRatingSummary(productId, {signal: controller.signal})
     ])
       .then(([commentResult, ratingResult]) => {
@@ -87,36 +99,12 @@ export default function ProductFeedback({productId, onRatingChange}) {
       });
 
     return () => controller.abort();
-  }, [productId, page, user?._id, t]);
+  }, [productId, page, user?._id, t, refreshComments]);
 
   useProductRealtime(productId, {
     onComment(event) {
-      setComments(current => {
-        if (current.items.some(item => commentId(item) === event.commentId)) {
-          return current;
-        }
-
-        const totalItems = current.meta.totalItems + 1;
-        return {
-          items: page === 1
-            ? [{
-                _id: event.commentId,
-                productId: event.productId,
-                displayName: event.displayName,
-                content: event.content,
-                createdAt: event.occurredAt
-              }, ...current.items].slice(0, current.meta.limit)
-            : current.items,
-          meta: {
-            ...current.meta,
-            totalItems,
-            totalPages: Math.max(
-              1,
-              Math.ceil(totalItems / current.meta.limit)
-            )
-          }
-        };
-      });
+      if (!event?.commentId) return;
+      refreshComments().catch(() => {});
     },
     onRating(event) {
       setRating(current => ({
@@ -203,6 +191,138 @@ export default function ProductFeedback({productId, onRatingChange}) {
     } finally {
       setSubmittingRating(false);
     }
+  }
+
+  function openReply(comment) {
+    if (!user) {
+      setError(t('feedback.signInToInteract'));
+      return;
+    }
+
+    setError('');
+    setReplyContent('');
+    setReplyTarget(current => current === commentId(comment) ? null : commentId(comment));
+  }
+
+  async function submitReply(event, parentCommentId) {
+    event.preventDefault();
+    try {
+      setSubmittingReply(true);
+      setError('');
+      await createComment(productId, {
+        content: replyContent,
+        parentCommentId
+      });
+      setReplyContent('');
+      setReplyTarget(null);
+      setMessage(t('feedback.replySent'));
+      await refreshComments();
+    } catch (requestError) {
+      setError(feedbackErrorMessage(requestError, t('feedback.replyError')));
+    } finally {
+      setSubmittingReply(false);
+    }
+  }
+
+  async function reactToComment(comment, reaction) {
+    if (!user) {
+      setError(t('feedback.signInToInteract'));
+      return;
+    }
+
+    const id = commentId(comment);
+    const nextReaction = comment.myReaction === reaction ? 'NONE' : reaction;
+
+    try {
+      setReactingId(id);
+      setError('');
+      await updateCommentReaction(productId, id, nextReaction);
+      await refreshComments();
+    } catch (requestError) {
+      setError(feedbackErrorMessage(requestError, t('feedback.reactionError')));
+    } finally {
+      setReactingId(null);
+    }
+  }
+
+  function renderComment(comment, {reply = false} = {}) {
+    const id = commentId(comment);
+
+    return (
+      <Paper
+        key={id}
+        variant="outlined"
+        sx={{
+          p: reply ? 2 : 2.5,
+          ml: reply ? {xs: 2, sm: 5} : 0,
+          bgcolor: reply ? 'rgba(0,0,0,.018)' : 'background.paper',
+          borderLeft: reply ? '3px solid' : undefined,
+          borderLeftColor: reply ? 'secondary.main' : undefined
+        }}
+      >
+        <Stack spacing={1.25}>
+          <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={0.5}>
+            <Typography fontWeight={800}>{comment.displayName}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {dateFormatter.format(new Date(comment.createdAt))}
+            </Typography>
+          </Stack>
+          <Typography sx={{whiteSpace: 'pre-wrap', overflowWrap: 'anywhere'}}>{comment.content}</Typography>
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Button
+              size="small"
+              color={comment.myReaction === 'LIKE' ? 'secondary' : 'inherit'}
+              disabled={reactingId === id}
+              startIcon={<UiIcon name="thumbUp" sx={{fontSize: 17}}/>}
+              onClick={() => reactToComment(comment, 'LIKE')}
+            >
+              {comment.likeCount || 0}
+            </Button>
+            <Button
+              size="small"
+              color={comment.myReaction === 'DISLIKE' ? 'error' : 'inherit'}
+              disabled={reactingId === id}
+              startIcon={<UiIcon name="thumbDown" sx={{fontSize: 17}}/>}
+              onClick={() => reactToComment(comment, 'DISLIKE')}
+            >
+              {comment.dislikeCount || 0}
+            </Button>
+            {!reply && (
+              <Button
+                size="small"
+                color="inherit"
+                startIcon={<UiIcon name="reply" sx={{fontSize: 17}}/>}
+                onClick={() => openReply(comment)}
+              >
+                {t('feedback.reply')}
+              </Button>
+            )}
+          </Stack>
+          {!reply && replyTarget === id && (
+            <Stack component="form" direction={{xs: 'column', sm: 'row'}} spacing={1} onSubmit={event => submitReply(event, id)}>
+              <TextField
+                autoFocus
+                fullWidth
+                required
+                size="small"
+                value={replyContent}
+                onChange={event => setReplyContent(event.target.value)}
+                placeholder={t('feedback.replyPlaceholder')}
+                inputProps={{maxLength: 1000}}
+              />
+              <Button type="submit" variant="contained" disabled={submittingReply || !replyContent.trim()}>
+                {submittingReply ? t('feedback.sending') : t('feedback.sendReply')}
+              </Button>
+            </Stack>
+          )}
+          {!reply && (comment.replies || []).length > 0 && (
+            <Stack spacing={1.25} sx={{pt: 0.5}}>
+              {comment.replies.map(item => renderComment(item, {reply: true}))}
+            </Stack>
+          )}
+        </Stack>
+      </Paper>
+    );
   }
 
   return (
@@ -326,19 +446,7 @@ export default function ProductFeedback({productId, onRatingChange}) {
           {!loading && comments.items.length === 0 && (
             <Alert severity="info">{t('feedback.empty')}</Alert>
           )}
-          {!loading && comments.items.map(comment => (
-            <Paper key={commentId(comment)} variant="outlined" sx={{p: 2.5}}>
-              <Stack spacing={1}>
-                <Stack direction={{xs: 'column', sm: 'row'}} justifyContent="space-between" gap={0.5}>
-                  <Typography fontWeight={800}>{comment.displayName}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {dateFormatter.format(new Date(comment.createdAt))}
-                  </Typography>
-                </Stack>
-                <Typography sx={{whiteSpace: 'pre-wrap', overflowWrap: 'anywhere'}}>{comment.content}</Typography>
-              </Stack>
-            </Paper>
-          ))}
+          {!loading && comments.items.map(comment => renderComment(comment))}
           {!loading && comments.meta.totalPages > 1 && (
             <Stack alignItems="center" sx={{pt: 1}}>
               <Pagination

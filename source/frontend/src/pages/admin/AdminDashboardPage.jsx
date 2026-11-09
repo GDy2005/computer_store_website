@@ -57,8 +57,8 @@ export default function AdminDashboardPage() {
   const {locale, t} = useLanguage();
   const [summary, setSummary] = useState(null);
   const [analytics, setAnalytics] = useState(null);
-  const [draft, setDraft] = useState({period: 'month', startDate: '', endDate: ''});
-  const [query, setQuery] = useState({period: 'month'});
+  const [draft, setDraft] = useState({period: 'year', startDate: '', endDate: ''});
+  const [query, setQuery] = useState({period: 'year'});
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [summaryError, setSummaryError] = useState('');
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
         </Paper>
       )}
 
-      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2, sm: 3}, bgcolor: 'secondary.light'}}>
+      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2.25, sm: 3}, background: 'linear-gradient(120deg, #fffaf0 0%, #fff3d4 100%)', boxShadow: '0 8px 24px rgba(104,72,14,.06)'}}>
         <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.dashboard.analytics.title')}</Typography>
         <Stack direction={{xs: 'column', md: 'row'}} spacing={2} alignItems={{md: 'center'}} sx={{mt: 2}}>
           <FormControl sx={{minWidth: 210}}>

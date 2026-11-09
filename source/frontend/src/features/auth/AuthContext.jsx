@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+export const DEFAULT_AVATAR_URL = 'https://res.cloudinary.com/ipc-media/image/upload/v1794128471/hcibhstn0zhnhzfxyipw.webp';
+
 export function getApiMessage(error, fallback) {
   return error.response?.data?.error?.message || fallback;
 }
@@ -41,9 +43,18 @@ export function AuthProvider({children}) {
     setUser(null);
   }, []);
 
+  const uploadAvatar = useCallback(async file => {
+    const body = new FormData();
+    body.append('avatar', file);
+
+    const response = await axios.put('/api/v1/users/me/avatar', body);
+    setUser(response.data.data);
+    return response.data.data;
+  }, []);
+
   const value = useMemo(
-    () => ({user,loading,login,logout,refresh}),
-    [user,loading,login,logout,refresh]
+    () => ({user,loading,login,logout,refresh,uploadAvatar}),
+    [user,loading,login,logout,refresh,uploadAvatar]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

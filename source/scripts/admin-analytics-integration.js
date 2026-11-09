@@ -56,7 +56,7 @@ async function request(path, {
 
   return {
     data: payload.data,
-    meta: payload.meta,
+    meta: payload.data.meta,
     cookie: response.headers.get('set-cookie')?.split(';')[0]
   };
 }

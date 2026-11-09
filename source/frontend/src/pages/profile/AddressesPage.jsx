@@ -9,6 +9,10 @@ import UiIcon from '../../components/UiIcon.jsx';
 
 const emptyForm = {label:'Nhà',recipientName:'',phone:'',addressLine:'',ward:'',district:'',province:''};
 
+function addressId(address) {
+  return address?.id || address?._id || '';
+}
+
 export default function AddressesPage() {
   const {locale, t} = useLanguage();
   const [addresses,setAddresses] = useState([]);
@@ -33,7 +37,7 @@ export default function AddressesPage() {
   useEffect(() => { load(); }, [load]);
 
   function edit(address) {
-    setEditingId(address._id);
+    setEditingId(addressId(address));
     setForm(Object.fromEntries(Object.keys(emptyForm).map(key => [key,address[key] || ''])));
   }
 
@@ -53,7 +57,7 @@ export default function AddressesPage() {
         ...(form.label.trim() ? {} : {label: undefined})
       };
       if (editingId) {
-        await axios.patch(`/api/v1/users/me/addresses/${editingId}`, payload);
+        await axios.patch(`/api/v1/users/me/addresses/${encodeURIComponent(editingId)}`, payload);
       } else {
         await axios.post('/api/v1/users/me/addresses', payload);
       }
@@ -90,7 +94,7 @@ export default function AddressesPage() {
         <Stack spacing={2}>
           {addresses.length === 0 && <Alert severity="info">{t('address.empty')}</Alert>}
           {addresses.map(address => (
-            <Paper key={address._id} variant="outlined" sx={{p:{xs:2.25,sm:3},bgcolor:'rgba(255,255,255,.88)',transition:'transform 180ms ease, box-shadow 180ms ease','&:hover':{transform:'translateY(-2px)',boxShadow:'0 14px 38px rgba(18,76,61,.09)'}}}>
+            <Paper key={addressId(address)} variant="outlined" sx={{p:{xs:2.25,sm:3},bgcolor:'rgba(255,255,255,.88)',transition:'transform 180ms ease, box-shadow 180ms ease','&:hover':{transform:'translateY(-2px)',boxShadow:'0 14px 38px rgba(18,76,61,.09)'}}}>
               <Stack direction={{xs:'column',sm:'row'}} spacing={2.25}>
                 <Box sx={{display:'grid',placeItems:'center',width:48,height:48,flex:'0 0 auto',borderRadius:'15px',bgcolor:'rgba(18,76,61,.09)',color:'primary.main'}}>
                   <UiIcon name="location"/>
@@ -103,9 +107,9 @@ export default function AddressesPage() {
                   <Typography fontWeight={650}>{address.recipientName} · {address.phone}</Typography>
                   <Typography color="text.secondary" sx={{lineHeight:1.7}}>{formatAddress(address, locale)}</Typography>
                   <Stack direction="row" gap={1} flexWrap="wrap" pt={0.5}>
-                    <Button size="small" onClick={() => edit(address)}>{t('address.edit')}</Button>
-                    {!address.isDefault && <Button size="small" onClick={() => run(() => axios.patch(`/api/v1/users/me/addresses/${address._id}/default`), t('address.defaultError'))}>{t('address.setDefault')}</Button>}
-                    <Button color="error" size="small" onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${address._id}`), t('address.deleteError'))}>{t('address.delete')}</Button>
+                    <Button size="small" disabled={!addressId(address)} onClick={() => edit(address)}>{t('address.edit')}</Button>
+                    {!address.isDefault && <Button size="small" disabled={!addressId(address)} onClick={() => run(() => axios.patch(`/api/v1/users/me/addresses/${encodeURIComponent(addressId(address))}/default`), t('address.defaultError'))}>{t('address.setDefault')}</Button>}
+                    <Button color="error" size="small" disabled={!addressId(address)} onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${encodeURIComponent(addressId(address))}`), t('address.deleteError'))}>{t('address.delete')}</Button>
                   </Stack>
                 </Stack>
               </Stack>

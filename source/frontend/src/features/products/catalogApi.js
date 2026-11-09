@@ -16,7 +16,7 @@ export async function fetchProducts(params = {}, options = {}) {
 
   return {
     items: response.data?.data?.items || [],
-    meta: response.data?.meta || {
+    meta: response.data?.data?.meta || {
       page: 1,
       limit: 12,
       totalItems: 0,

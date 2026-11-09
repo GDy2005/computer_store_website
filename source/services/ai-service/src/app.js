@@ -1,8 +1,8 @@
 import {Router} from 'express';
 
-import {createChatController} from './controllers/chat.controller.js';
-import {createChatRouter} from './routes/chat.routes.js';
-import {createChatService} from './services/chat.service.js';
+import {createChatController} from './controllers/chatController.js';
+import {createChatRouter} from './routes/chatRoutes.js';
+import {createChatService} from './services/chatService.js';
 
 export function buildApp({searchClient, aiProvider}) {
   const router = Router();

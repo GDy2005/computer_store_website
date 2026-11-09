@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {validateEvent} from '@store/event-contracts';
 
 import {createAnalyticsConsumers} from '../services/analytics-service/src/events/analytics.consumer.js';
-import {requireAdmin} from '../services/analytics-service/src/middlewares/require-admin.js';
+import {requireAdmin} from '../services/analytics-service/src/middlewares/requireAdmin.js';
 import {
   allocateOrderItems,
   createAnalyticsProjector
@@ -13,7 +13,7 @@ import {
   resolveDashboardRange
 } from '../services/analytics-service/src/projections/date-buckets.js';
 import {buildDefaultAnalyticsFixtures} from '../services/analytics-service/src/scripts/default-fixtures.js';
-import {validateDashboardQuery} from '../services/analytics-service/src/validations/dashboard.validation.js';
+import {validateDashboardQuery} from '../services/analytics-service/src/validations/dashboardValidation.js';
 
 function query(value) {
   return {
@@ -201,6 +201,14 @@ test('analytics consumers cover every dashboard source topic', () => {
 });
 
 test('dashboard validation rejects malformed ranges and accepts a custom range', () => {
+  const defaultRequest = {query: {}};
+  let defaultError;
+  validateDashboardQuery(defaultRequest, {}, error => {
+    defaultError = error;
+  });
+  assert.equal(defaultError, undefined);
+  assert.equal(defaultRequest.validatedQuery.period, 'year');
+
   let accepted;
   validateDashboardQuery({
     query: {

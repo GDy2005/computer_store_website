@@ -1,15 +1,17 @@
 import {Alert, Box, Button, CircularProgress, Stack} from '@mui/material';
 import {Link, Navigate, useLocation} from 'react-router-dom';
 import {useAuth} from '../auth/AuthContext.jsx';
+import {useLanguage} from '../i18n/LanguageContext.jsx';
 
 export default function AdminRoute({children}) {
+  const {t} = useLanguage();
   const {user, loading} = useAuth();
   const location = useLocation();
 
   if (loading) {
     return (
       <Box sx={{display: 'grid', placeItems: 'center', minHeight: 320}}>
-        <CircularProgress aria-label="Đang kiểm tra quyền quản trị"/>
+        <CircularProgress aria-label={t('admin.route.checking')}/>
       </Box>
     );
   }
@@ -22,10 +24,10 @@ export default function AdminRoute({children}) {
     return (
       <Stack spacing={2} maxWidth={680} mx="auto">
         <Alert severity="error">
-          Bạn không có quyền truy cập khu vực quản trị.
+          {t('admin.route.forbidden')}
         </Alert>
         <Button component={Link} to="/" sx={{alignSelf: 'flex-start'}}>
-          Về trang chủ
+          {t('admin.route.home')}
         </Button>
       </Stack>
     );

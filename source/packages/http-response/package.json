@@ -1,0 +1,6 @@
+{
+  "name": "@store/http-response",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": "./index.js"
+}

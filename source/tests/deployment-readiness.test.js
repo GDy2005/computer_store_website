@@ -32,7 +32,7 @@ test('production-style deployment scales every backend service and Gateway', () 
 
 test('Nginx and realtime Gateway are configured for horizontal scaling', () => {
   const nginx = read('../infra/nginx/nginx.conf');
-  const realtime = read('../api-gateway/src/services/realtime.service.js');
+  const realtime = read('../api-gateway/src/services/realtimeService.js');
 
   assert.match(nginx, /resolver 127\.0\.0\.11/);
   assert.match(nginx, /server gateway:5000 resolve/);
@@ -57,6 +57,14 @@ test('demo catalog satisfies the submission product baseline', () => {
   assert.ok(products.length >= 40);
   assert.ok(products.every(product => product.images.length >= 3));
   assert.ok(products.every(product => product.variants.length >= 2));
+});
+
+test('frontend image installs the Linux esbuild binary before building', () => {
+  const dockerfile = read('../frontend/Dockerfile');
+
+  assert.match(dockerfile, /npm ci --include=optional --ignore-scripts/);
+  assert.match(dockerfile, /npm rebuild esbuild/);
+  assert.match(dockerfile, /npm run build --workspace frontend/);
 });
 
 test('fresh Docker stack seeds orders and projects them through Kafka', () => {

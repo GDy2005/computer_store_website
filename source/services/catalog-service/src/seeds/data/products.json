@@ -2406,6 +2406,365 @@
       }
     ],
     "isActive": true
+  },
+  {
+    "name": "ASUS ROG G700 Gaming PC",
+    "slug": "asus-rog-g700-gaming-pc",
+    "brand": "ASUS",
+    "categorySlug": "pc",
+    "tags": ["asus", "rog", "gaming-pc", "rtx"],
+    "shortDescription": "PC gaming lắp sẵn dòng ROG với hệ thống tản nhiệt và đèn RGB đồng bộ.",
+    "description": "PC gaming lắp sẵn dòng ROG, phù hợp chơi game độ phân giải cao và livestream. Đây là dữ liệu seed mẫu; hãy thay ảnh placeholder và đối chiếu cấu hình, giá bán theo nguồn sản phẩm thực tế.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146598/dqecftwmtc2iakgaxbmj.webp",
+        "publicId": "seed/products/asus-rog-g700-front",
+        "alt": "ASUS ROG G700 Gaming PC mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146598/hfj16qoc17ww9uigapuy.webp",
+        "publicId": "seed/products/asus-rog-g700-side",
+        "alt": "ASUS ROG G700 Gaming PC góc nghiêng"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146598/o4fsf6gdardkailcldr7.webp",
+        "publicId": "seed/products/asus-rog-g700-detail",
+        "alt": "ASUS ROG G700 Gaming PC ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ROG-G700-I7-4070S",
+        "name": "Core i7 - 32GB - RTX 4070 Super",
+        "attributes": {
+          "cpu": "Intel Core i7",
+          "ram": "32GB DDR5",
+          "gpu": "GeForce RTX 4070 Super",
+          "storage": "1TB NVMe SSD"
+        },
+        "price": 49990000,
+        "costPrice": 44800000,
+        "stock": 10,
+        "isActive": true
+      },
+      {
+        "sku": "ROG-G700-I9-4080S",
+        "name": "Core i9 - 64GB - RTX 4080 Super",
+        "attributes": {
+          "cpu": "Intel Core i9",
+          "ram": "64GB DDR5",
+          "gpu": "GeForce RTX 4080 Super",
+          "storage": "2TB NVMe SSD"
+        },
+        "price": 79990000,
+        "costPrice": 72400000,
+        "stock": 6,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "MSI MAG Infinite S3 Gaming PC",
+    "slug": "msi-mag-infinite-s3-gaming-pc",
+    "brand": "MSI",
+    "categorySlug": "pc",
+    "tags": ["msi", "mag", "gaming-pc", "desktop"],
+    "shortDescription": "PC gaming MSI MAG thiết kế gọn, mặt hông trong suốt và khả năng nâng cấp linh hoạt.",
+    "description": "PC gaming MSI MAG Infinite S3 hướng đến người dùng cần một bộ máy lắp sẵn cân bằng giữa hiệu năng và khả năng nâng cấp. Đây là dữ liệu seed mẫu; hãy thay ảnh placeholder và đối chiếu thông số thực tế.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146602/lqoivfkeqtuq60xaz77i.webp",
+        "publicId": "seed/products/msi-mag-infinite-s3-front",
+        "alt": "MSI MAG Infinite S3 mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146602/hpvvfxtcozi8yy3ldmcr.webp",
+        "publicId": "seed/products/msi-mag-infinite-s3-side",
+        "alt": "MSI MAG Infinite S3 góc nghiêng"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/fhjmb6rfc4nrqwzomtre.webp",
+        "publicId": "seed/products/msi-mag-infinite-s3-detail",
+        "alt": "MSI MAG Infinite S3 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "MAG-S3-I5-4060",
+        "name": "Core i5 - 16GB - RTX 4060",
+        "attributes": {
+          "cpu": "Intel Core i5",
+          "ram": "16GB DDR5",
+          "gpu": "GeForce RTX 4060",
+          "storage": "1TB NVMe SSD"
+        },
+        "price": 28990000,
+        "costPrice": 25400000,
+        "stock": 16,
+        "isActive": true
+      },
+      {
+        "sku": "MAG-S3-I7-4070",
+        "name": "Core i7 - 32GB - RTX 4070",
+        "attributes": {
+          "cpu": "Intel Core i7",
+          "ram": "32GB DDR5",
+          "gpu": "GeForce RTX 4070",
+          "storage": "1TB NVMe SSD"
+        },
+        "price": 41990000,
+        "costPrice": 37400000,
+        "stock": 9,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Acer Predator Orion 5000",
+    "slug": "acer-predator-orion-5000",
+    "brand": "Acer",
+    "categorySlug": "pc",
+    "tags": ["acer", "predator", "gaming-pc", "orion"],
+    "shortDescription": "PC gaming Predator Orion với khung máy tối ưu luồng gió và hiệu năng cao.",
+    "description": "Acer Predator Orion 5000 là bộ PC gaming lắp sẵn dành cho game thủ cần cấu hình mạnh và thiết kế đồng bộ. Đây là dữ liệu seed mẫu; hãy thay ảnh placeholder và cập nhật theo cấu hình phân phối thực tế.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/g9ktiiyj4dhifhjvocvw.jpg",
+        "publicId": "seed/products/acer-predator-orion-5000-front",
+        "alt": "Acer Predator Orion 5000 mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/n719pa8ot9agvghgjdzc.jpg",
+        "publicId": "seed/products/acer-predator-orion-5000-side",
+        "alt": "Acer Predator Orion 5000 góc nghiêng"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/nhc3go82lfxqhkuwmxwv.jpg",
+        "publicId": "seed/products/acer-predator-orion-5000-detail",
+        "alt": "Acer Predator Orion 5000 ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ORION5000-I7-4070",
+        "name": "Core i7 - 32GB - RTX 4070",
+        "attributes": {
+          "cpu": "Intel Core i7",
+          "ram": "32GB DDR5",
+          "gpu": "GeForce RTX 4070",
+          "storage": "1TB NVMe SSD"
+        },
+        "price": 45990000,
+        "costPrice": 41200000,
+        "stock": 11,
+        "isActive": true
+      },
+      {
+        "sku": "ORION5000-I9-4080",
+        "name": "Core i9 - 64GB - RTX 4080",
+        "attributes": {
+          "cpu": "Intel Core i9",
+          "ram": "64GB DDR5",
+          "gpu": "GeForce RTX 4080",
+          "storage": "2TB NVMe SSD"
+        },
+        "price": 73990000,
+        "costPrice": 66800000,
+        "stock": 5,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "PC OMEN 35L VALORANT",
+    "slug": "pc-omen-35l-valorant",
+    "brand": "HP OMEN",
+    "categorySlug": "pc",
+    "tags": ["hp", "omen", "valorant", "gaming-pc", "limited-edition"],
+    "shortDescription": "PC gaming OMEN 35L phiên bản giới hạn VALORANT với thiết kế xanh navy, điểm nhấn đỏ và tản nhiệt nước LCD 240mm.",
+    "description": "PC OMEN 35L VALORANT Limited Edition kết hợp Intel Core i7-14700F, bộ nhớ Kingston FURY DDR5 và GPU NVIDIA GeForce RTX 50 Series. Thùng máy lấy cảm hứng từ VALORANT, dùng kính tối màu, quạt tùy biến và hỗ trợ nâng cấp không cần dụng cụ.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/ydiuw5u6smft49jsd5q7.avif",
+        "publicId": "seed/products/omen-35l-valorant-front",
+        "alt": "PC OMEN 35L VALORANT mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146600/h5wt1mfwosnal8rwfpdg.avif",
+        "publicId": "seed/products/omen-35l-valorant-hero",
+        "alt": "PC OMEN 35L VALORANT cùng các đặc vụ VALORANT"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146600/txnkcw4xiynvsmtcgfic.jpg",
+        "publicId": "seed/products/omen-35l-valorant-detail",
+        "alt": "PC OMEN 35L VALORANT ảnh thiết kế chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "OMEN35L-VAL-I7-5060-32",
+        "name": "Core i7-14700F - 32GB - RTX 5060",
+        "attributes": {
+          "cpu": "Intel Core i7-14700F",
+          "ram": "32GB DDR5-6000",
+          "gpu": "GeForce RTX 5060 8GB GDDR7",
+          "storage": "1TB PCIe Gen4 NVMe SSD",
+          "cooling": "240mm LCD liquid cooling",
+          "os": "Windows 11 Home"
+        },
+        "price": 54990000,
+        "costPrice": 49600000,
+        "stock": 8,
+        "isActive": true
+      },
+      {
+        "sku": "OMEN35L-VAL-I7-5080-64",
+        "name": "Core i7-14700F - 64GB - RTX 5080",
+        "attributes": {
+          "cpu": "Intel Core i7-14700F",
+          "ram": "64GB DDR5-6000",
+          "gpu": "GeForce RTX 5080 16GB GDDR7",
+          "storage": "4TB PCIe Gen4 NVMe SSD",
+          "cooling": "240mm LCD liquid cooling",
+          "os": "Windows 11 Home"
+        },
+        "price": 99990000,
+        "costPrice": 91400000,
+        "stock": 3,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Combo PC ASUS ROG x Hatsune Miku Edition",
+    "slug": "combo-pc-asus-rog-hatsune-miku-edition",
+    "brand": "ASUS ROG",
+    "categorySlug": "pc",
+    "tags": ["asus", "rog", "hatsune-miku", "gaming-pc", "custom-build"],
+    "shortDescription": "Combo PC lắp ráp theo bộ sưu tập ASUS ROG x Hatsune Miku với tông xanh ngọc, hồng và hệ thống Aura Sync.",
+    "description": "Đây là cấu hình PC custom sử dụng các linh kiện trong bộ sưu tập ROG x Hatsune Miku Edition, gồm bo mạch chủ ROG Strix X870E-H, tản nhiệt ROG Ryuo IV 360 ARGB, GPU ROG Astral RTX 5080, thùng máy ROG Strix Helios II và nguồn ROG Thor 1200W. Sản phẩm được cửa hàng lắp ráp và kiểm thử hoàn chỉnh.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/s1x8itiijpnf0hdrmdol.png",
+        "publicId": "seed/products/rog-miku-pc-front",
+        "alt": "Combo PC ASUS ROG x Hatsune Miku mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146599/phriorqoaelyjihtpoog.webp",
+        "publicId": "seed/products/rog-miku-pc-side",
+        "alt": "Combo PC ASUS ROG x Hatsune Miku góc nghiêng"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146601/b6fr8tlqhllhdfhwtkgi.png",
+        "publicId": "seed/products/rog-miku-pc-detail",
+        "alt": "Bộ linh kiện ASUS ROG x Hatsune Miku Edition"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "ROG-MIKU-R9-5080-32",
+        "name": "Ryzen 9 - 32GB - RTX 5080",
+        "attributes": {
+          "cpu": "AMD Ryzen 9 9950X3D",
+          "ram": "32GB DDR5",
+          "gpu": "ROG Astral GeForce RTX 5080 16GB Miku Edition",
+          "storage": "2TB PCIe Gen4 NVMe SSD",
+          "case": "ROG Strix Helios II Miku Edition",
+          "cooling": "ROG Ryuo IV 360 ARGB Miku Edition"
+        },
+        "price": 149990000,
+        "costPrice": 137500000,
+        "stock": 3,
+        "isActive": true
+      },
+      {
+        "sku": "ROG-MIKU-R9-5080-64",
+        "name": "Ryzen 9 - 64GB - RTX 5080",
+        "attributes": {
+          "cpu": "AMD Ryzen 9 9950X3D",
+          "ram": "64GB DDR5",
+          "gpu": "ROG Astral GeForce RTX 5080 16GB Miku Edition",
+          "storage": "4TB PCIe Gen4 NVMe SSD",
+          "case": "ROG Strix Helios II Miku Edition",
+          "cooling": "ROG Ryuo IV 360 ARGB Miku Edition"
+        },
+        "price": 159990000,
+        "costPrice": 146800000,
+        "stock": 2,
+        "isActive": true
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "name": "HP HyperX OMEN 16 ap1010AX Gaming Laptop (Valorant Edition)",
+    "slug": "hp-hyperx-omen-16-ap1010ax-valorant-edition",
+    "brand": "HP",
+    "categorySlug": "laptop",
+    "tags": ["hp", "hyperx", "omen", "valorant", "gaming-laptop", "rtx-5060"],
+    "shortDescription": "Laptop gaming 16 inch 2K 165Hz dùng Ryzen 7 8745HX, RTX 5060 8GB và SSD 1TB, thiết kế màu xanh VALORANT.",
+    "description": "HP HyperX OMEN 16 ap1010AX Valorant Edition trang bị AMD Ryzen 7 8745HX, NVIDIA GeForce RTX 5060 8GB, RAM DDR5 có thể nâng cấp và SSD 1TB. Màn hình 16 inch độ phân giải 2K, tần số quét 165Hz, độ sáng 400 nit và thời gian phản hồi 3ms. Máy cài Windows 11, Office 2024 và có khối lượng khoảng 2,47kg.",
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146599/hlssjffmgkwsq1kkaddo.avif",
+        "publicId": "seed/products/hyperx-omen-16-ap1010ax-front",
+        "alt": "HP HyperX OMEN 16 ap1010AX mặt trước"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146599/dm1r0kam5zsuhizu9ptv.avif",
+        "publicId": "seed/products/hyperx-omen-16-ap1010ax-side",
+        "alt": "HP HyperX OMEN 16 ap1010AX góc nghiêng"
+      },
+      {
+        "url": "https://res.cloudinary.com/ipc-media/image/upload/v1794146600/hf9aomuyu0lkh0zpuj90.avif",
+        "publicId": "seed/products/hyperx-omen-16-ap1010ax-detail",
+        "alt": "HP HyperX OMEN 16 Valorant Edition ảnh chi tiết"
+      }
+    ],
+    "variants": [
+      {
+        "sku": "OMEN16-AP1010AX-16-1TB",
+        "name": "16GB RAM - 1TB SSD",
+        "attributes": {
+          "cpu": "AMD Ryzen 7 8745HX",
+          "ram": "16GB DDR5 (Upgradeable)",
+          "gpu": "GeForce RTX 5060 8GB GDDR7",
+          "storage": "1TB PCIe Gen4 NVMe SSD",
+          "display": "16 inch 2K 165Hz, 400 nits, 3ms",
+          "os": "Windows 11",
+          "office": "Office 2024",
+          "color": "Blue",
+          "weight": "2.47kg"
+        },
+        "price": 44990000,
+        "costPrice": 40700000,
+        "stock": 10,
+        "isActive": true
+      },
+      {
+        "sku": "OMEN16-AP1010AX-32-1TB",
+        "name": "32GB RAM - 1TB SSD",
+        "attributes": {
+          "cpu": "AMD Ryzen 7 8745HX",
+          "ram": "32GB DDR5 (Upgraded)",
+          "gpu": "GeForce RTX 5060 8GB GDDR7",
+          "storage": "1TB PCIe Gen4 NVMe SSD",
+          "display": "16 inch 2K 165Hz, 400 nits, 3ms",
+          "os": "Windows 11",
+          "office": "Office 2024",
+          "color": "Blue",
+          "weight": "2.47kg"
+        },
+        "price": 47490000,
+        "costPrice": 42800000,
+        "stock": 7,
+        "isActive": true
+      }
+    ],
+    "isActive": true
   }
 ]
-

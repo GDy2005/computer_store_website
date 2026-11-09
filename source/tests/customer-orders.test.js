@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCustomerOrderService} from '../services/order-service/src/services/customer-order.service.js';
-import {validateOrderListQuery} from '../services/order-service/src/validations/order.validation.js';
+import {createCustomerOrderService} from '../services/order-service/src/services/customerOrderService.js';
+import {validateOrderListQuery} from '../services/order-service/src/validations/orderValidation.js';
 
 function runQuery(query) {
   return new Promise((resolve, reject) => {

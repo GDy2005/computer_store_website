@@ -11,7 +11,7 @@ function compactParams(params) {
 function listResult(response, fallbackLimit = 20) {
   return {
     items: response.data?.data?.items || [],
-    meta: response.data?.meta || {
+    meta: response.data?.data?.meta || {
       page: 1,
       limit: fallbackLimit,
       totalItems: 0,

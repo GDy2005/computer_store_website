@@ -4,9 +4,10 @@ import session from 'express-session';
 import {RedisStore} from 'connect-redis';
 import http from 'node:http';
 import {AppError, errorHandler, signedContext} from '@store/validation';
-import {createAuthController} from './controllers/auth.controller.js';
-import {createGoogleOAuthRouter} from './controllers/google-oauth.controller.js';
-import {createIdentityClient} from './services/identity-client.service.js';
+import {sendSuccess} from '@store/http-response';
+import {createAuthController} from './controllers/authController.js';
+import {createGoogleOAuthRouter} from './controllers/googleOauthController.js';
+import {createIdentityClient} from './services/identityClientService.js';
 export const serviceUrls = {
   ...Object.fromEntries(
     ['identity', 'catalog', 'order', 'notification', 'analytics']
@@ -48,17 +49,28 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   const app = express();
   app.set('trust proxy', 1);
   app.use((req, res, next) => { req.requestId = randomUUID(); res.set('x-request-id', req.requestId); res.set('x-gateway-instance', gatewayInstance); next(); });
-  app.get('/health/live', (req,res) => res.json({success:true}));
+  app.get('/health/live', (req, res) => sendSuccess(res, {
+    message: 'Gateway is live',
+    data: {live: true}
+  }));
   app.get('/health/ready', async (req,res,next) => {
     try {
       await redis.ping();
       const checks = await Promise.all(healthServiceNames.map(async name => { const url = serviceUrls[name]; const response = await fetch(`${url}/health/ready`, {signal:AbortSignal.timeout(5000)}); return {name,ready:response.ok}; }));
       const realtime = isRealtimeReady();
       const ready = checks.every(check=>check.ready) && realtime;
-      res.status(ready ? 200 : 503).json({
-        success: ready,
-        data: {services: checks, realtime}
-      });
+      if (ready) {
+        sendSuccess(res, {
+          message: 'Gateway is ready',
+          data: {services: checks, realtime}
+        });
+      } else {
+        res.status(503).json({
+          success: false,
+          message: 'Gateway dependencies are not ready',
+          data: {services: checks, realtime}
+        });
+      }
     } catch(error) { next(error); }
   });
   app.use(session({store:new RedisStore({client:redis,prefix:'session:'}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',maxAge:3600000}}));
@@ -70,7 +82,11 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
       const data = await Promise.all(Object.entries(serviceUrls).map(async ([name,url]) => {
         const response = await fetch(`${url}/internal/foundation`, {headers:{'x-internal-token':signedContext(process.env.INTERNAL_SERVICE_SECRET,req.requestId)},signal:AbortSignal.timeout(5000)});
         if (!response.ok) throw new Error(`${name} unavailable`); return (await response.json()).data;
-      })); res.json({success:true,data});
+      }));
+      sendSuccess(res, {
+        message: 'Foundation status retrieved successfully',
+        data
+      });
     } catch(error) {next(error);}
   });
 

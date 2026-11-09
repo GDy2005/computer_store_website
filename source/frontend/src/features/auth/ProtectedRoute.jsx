@@ -2,7 +2,7 @@ import {CircularProgress,Stack} from '@mui/material';
 import {Navigate,useLocation} from 'react-router-dom';
 import {useAuth} from './AuthContext.jsx';
 
-export default function ProtectedRoute({children}) {
+export default function ProtectedRoute({children, roles}) {
   const {user,loading} = useAuth();
   const location = useLocation();
 
@@ -22,6 +22,10 @@ export default function ProtectedRoute({children}) {
         state={{from: location.pathname}}
       />
     );
+  }
+
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to={user.role === 'ADMIN' ? '/admin' : '/'} replace/>;
   }
 
   return children;

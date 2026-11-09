@@ -9,7 +9,7 @@ import {
 } from '../services/search-service/src/events/search.consumer.js';
 import {
   validateSearch
-} from '../services/search-service/src/validations/search.validation.js';
+} from '../services/search-service/src/validations/searchValidation.js';
 
 test('product search service loads the Elasticsearch mapping', () => {
   const client = createElasticsearchClient({

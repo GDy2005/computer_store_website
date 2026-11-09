@@ -1,9 +1,9 @@
-import {getDashboardDailyModel} from '../models/dashboard-daily.model.js';
-import {getDashboardMonthlyModel} from '../models/dashboard-monthly.model.js';
-import {getOrderProjectionModel} from '../models/order-projection.model.js';
-import {getProductProjectionModel} from '../models/product-projection.model.js';
-import {getProductSalesModel} from '../models/product-sales.model.js';
-import {getUserProjectionModel} from '../models/user-projection.model.js';
+import {getDashboardDailyModel} from '../models/DashboardDaily.js';
+import {getDashboardMonthlyModel} from '../models/DashboardMonthly.js';
+import {getOrderProjectionModel} from '../models/OrderProjection.js';
+import {getProductProjectionModel} from '../models/ProductProjection.js';
+import {getProductSalesModel} from '../models/ProductSales.js';
+import {getUserProjectionModel} from '../models/UserProjection.js';
 
 export function registerAnalyticsModels(connection) {
   return {

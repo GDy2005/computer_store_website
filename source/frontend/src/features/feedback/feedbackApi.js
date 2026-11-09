@@ -11,7 +11,7 @@ export async function fetchComments(productId, page = 1, options = {}) {
 
   return {
     items: response.data?.data?.items || [],
-    meta: response.data?.meta || {
+    meta: response.data?.data?.meta || {
       page,
       limit: 10,
       totalItems: 0,
@@ -24,6 +24,18 @@ export async function createComment(productId, input) {
   const response = await axios.post(
     `/api/v1/products/${encodeURIComponent(productId)}/comments`,
     input
+  );
+  return response.data?.data;
+}
+
+export async function updateCommentReaction(
+  productId,
+  commentId,
+  reaction
+) {
+  const response = await axios.put(
+    `/api/v1/products/${encodeURIComponent(productId)}/comments/${encodeURIComponent(commentId)}/reaction`,
+    {reaction}
   );
   return response.data?.data;
 }

@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import mongoose from 'mongoose';
 
-import {getOrderModel} from '../services/order-service/src/models/order.model.js';
+import {getOrderModel} from '../services/order-service/src/models/Order.js';
 import {
   buildOrder,
   orderEvents
