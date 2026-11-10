@@ -46,7 +46,7 @@ function Message({message, t}) {
           aria-hidden="true"
           sx={{
             display:'grid',placeItems:'center',flex:'0 0 auto',width:27,height:27,
-            borderRadius:'50%',bgcolor:'secondary.main',color:'#151515',
+            borderRadius:'50%',bgcolor:'secondary.main',color:'common.white',
             boxShadow:'0 6px 14px rgba(0,0,0,.14)'
           }}
         >
@@ -226,7 +226,7 @@ export default function ChatWidget() {
             sx={{
               width: 62,
               height: 62,
-              color: '#151515',
+              color: 'common.white',
               bgcolor: 'secondary.main',
               border: '1px solid rgba(255,255,255,.8)',
               boxShadow: '0 18px 42px rgba(0,0,0,.28)',
@@ -238,8 +238,8 @@ export default function ChatWidget() {
                 boxShadow: '0 23px 50px rgba(0,0,0,.34)'
               },
               '@keyframes chat-fab-breathe': {
-                '0%, 100%': {boxShadow: '0 18px 42px rgba(0,0,0,.28), 0 0 0 0 rgba(246,173,50,.34)'},
-                '50%': {boxShadow: '0 18px 42px rgba(0,0,0,.28), 0 0 0 10px rgba(246,173,50,0)'}
+                '0%, 100%': {boxShadow: '0 18px 42px rgba(0,0,0,.28), 0 0 0 0 rgba(31,107,80,.34)'},
+                '50%': {boxShadow: '0 18px 42px rgba(0,0,0,.28), 0 0 0 10px rgba(31,107,80,0)'}
               },
               '@media (prefers-reduced-motion: reduce)': {animation: 'none'}
             }}
@@ -282,7 +282,7 @@ export default function ChatWidget() {
               px: 1.6,
               py: 1.25,
               color: 'common.white',
-              background: 'linear-gradient(120deg, #101010 0%, #2a2a2a 100%)',
+              background: 'linear-gradient(120deg, #08251c 0%, #174b39 100%)',
               borderBottom: '3px solid',
               borderColor: 'secondary.main',
               '&::after': {
@@ -307,7 +307,7 @@ export default function ChatWidget() {
                     height: 36,
                     borderRadius: '50%',
                     bgcolor: 'secondary.main',
-                    color: '#151515',
+                    color: 'common.white',
                     boxShadow: '0 7px 16px rgba(0,0,0,.16)'
                   }}
                 >
@@ -369,7 +369,7 @@ export default function ChatWidget() {
                       onClick={() => submit(suggestion)}
                       clickable
                       sx={{
-                        height:'auto',border:'1px solid rgba(246,173,50,.58)',bgcolor:'rgba(255,242,213,.72)',
+                        height:'auto',border:'1px solid rgba(31,107,80,.5)',bgcolor:'rgba(229,242,237,.8)',
                         boxShadow:'0 4px 12px rgba(0,0,0,.035)',
                         '& .MuiChip-label':{px:1.15,py:0.55,whiteSpace:'normal',fontSize:12,fontWeight:650},
                         '&:hover':{borderColor:'secondary.dark',bgcolor:'secondary.light',transform:'translateY(-1px)'}
@@ -420,7 +420,7 @@ export default function ChatWidget() {
                   boxShadow:'0 7px 16px rgba(0,0,0,.16)',
                   transition:'transform 160ms ease, background-color 160ms ease',
                   '&:hover':{bgcolor:'primary.dark',transform:'translateY(-2px)'},
-                  '&.Mui-disabled':{bgcolor:'rgba(246,173,50,.2)',color:'rgba(0,0,0,.32)',boxShadow:'none'}
+                  '&.Mui-disabled':{bgcolor:'rgba(31,107,80,.2)',color:'rgba(0,0,0,.32)',boxShadow:'none'}
                 }}
               >
                 <UiIcon name="send" fontSize="small"/>

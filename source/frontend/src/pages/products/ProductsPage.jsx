@@ -72,9 +72,9 @@ function FilterGroup({title, options, selected, onSelect, onClear, clearLabel, v
               px: 1.1, mx: -1.1, borderRadius: 1,
               cursor: option.count === 0 && selected !== option.value ? 'default' : 'pointer',
               color: option.count === 0 && selected !== option.value ? 'text.disabled' : 'text.primary',
-              bgcolor: selected === option.value ? '#fff6e5' : 'transparent',
+              bgcolor: selected === option.value ? '#e8f3ef' : 'transparent',
               transition: 'background-color 160ms ease',
-              '&:hover': {bgcolor: option.count === 0 && selected !== option.value ? 'transparent' : selected === option.value ? '#fff1d5' : '#f7f7f5'}
+              '&:hover': {bgcolor: option.count === 0 && selected !== option.value ? 'transparent' : selected === option.value ? '#dceee6' : '#f7f7f5'}
             }}
           >
             <Checkbox
@@ -86,7 +86,7 @@ function FilterGroup({title, options, selected, onSelect, onClear, clearLabel, v
               sx={{p: 0, borderRadius: 0, color: '#a4a4a0', '&.Mui-checked': {color: 'secondary.dark'}, '& .MuiSvgIcon-root': {fontSize: 21}}}
             />
             <Typography component="span" fontSize="0.88rem" fontWeight={selected === option.value ? 750 : 450} sx={{flex: 1, lineHeight: 1.3}}>{option.label}</Typography>
-            <Typography component="span" fontSize="0.76rem" fontWeight={700} sx={{minWidth: 25, px: 0.65, py: 0.25, textAlign: 'center', borderRadius: 1, bgcolor: selected === option.value ? '#f6ad32' : '#f3f3f1', color: selected === option.value ? '#161616' : 'text.secondary'}}>{option.count}</Typography>
+            <Typography component="span" fontSize="0.76rem" fontWeight={700} sx={{minWidth: 25, px: 0.65, py: 0.25, textAlign: 'center', borderRadius: 1, bgcolor: selected === option.value ? 'secondary.main' : '#f3f3f1', color: selected === option.value ? 'secondary.contrastText' : 'text.secondary'}}>{option.count}</Typography>
           </Box>
         ))}
       </Stack>
@@ -229,9 +229,9 @@ export default function ProductsPage() {
 
       <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '290px minmax(0, 1fr)'}, gap: {xs: 2, md: 3}, alignItems: 'start'}}>
         <Paper component="form" onSubmit={applyFilters} variant="outlined" sx={{overflow: 'hidden', borderRadius: 1.5, borderColor: 'rgba(21,21,21,.1)', boxShadow: '0 12px 34px rgba(22,22,22,.045)'}}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{px: 2.5, py: 2.1, bgcolor: '#1b1b1b', color: '#fff', borderBottom: '3px solid #f6ad32'}}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{px: 2.5, py: 2.1, bgcolor: 'primary.main', color: '#fff', borderBottom: '3px solid', borderColor: 'secondary.main'}}>
             <Typography component="h2" variant="h6" fontWeight={850}>{t('products.filters')}</Typography>
-            <Button type="button" size="small" onClick={() => setSearchParams({})} sx={{color: '#f6ad32', fontSize: 12, minHeight: 30, px: 0.6, '&:hover': {bgcolor: 'rgba(255,255,255,.1)'}}}>{t('products.clear')}</Button>
+            <Button type="button" size="small" onClick={() => setSearchParams({})} sx={{color: '#b9dfcf', fontSize: 12, minHeight: 30, px: 0.6, '&:hover': {bgcolor: 'rgba(255,255,255,.1)'}}}>{t('products.clear')}</Button>
           </Stack>
           <Stack spacing={2.5} sx={{p: 2.5}}>
             <TextField

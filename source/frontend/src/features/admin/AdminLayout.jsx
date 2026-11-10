@@ -52,10 +52,10 @@ function AdminNavigation({pathname, onNavigate, t}) {
             '&:hover': {bgcolor: 'rgba(255,255,255,.08)', color: 'common.white', transform: 'translateX(2px)'},
             '&.Mui-selected': {
               bgcolor: 'secondary.main',
-              color: '#151515',
-              boxShadow: '0 7px 18px rgba(246,173,50,.2)'
+              color: 'secondary.contrastText',
+              boxShadow: '0 7px 18px rgba(31,107,80,.24)'
             },
-            '&.Mui-selected:hover': {bgcolor: 'secondary.dark', color: '#151515'}
+            '&.Mui-selected:hover': {bgcolor: 'secondary.dark', color: 'secondary.contrastText'}
           }}
         >
           <UiIcon name={item.icon} sx={{fontSize: 20, mr: 1.4}}/>
@@ -92,9 +92,9 @@ function AdminLanguageSwitch({locale, setLocale, t}) {
             sx={{
               minHeight: 34,
               borderRadius: '7px',
-              color: locale === value ? '#151515' : 'rgba(255,255,255,.65)',
+              color: locale === value ? 'secondary.contrastText' : 'rgba(255,255,255,.65)',
               bgcolor: locale === value ? 'secondary.main' : 'transparent',
-              '&:hover': {bgcolor: locale === value ? 'secondary.dark' : 'rgba(255,255,255,.08)', color: locale === value ? '#151515' : 'common.white'}
+              '&:hover': {bgcolor: locale === value ? 'secondary.dark' : 'rgba(255,255,255,.08)', color: locale === value ? 'secondary.contrastText' : 'common.white'}
             }}
           >
             {value.toUpperCase()}
@@ -113,7 +113,7 @@ function AdminSidebar({pathname, onNavigate, onSignOut, t, user, locale, setLoca
         flexDirection: 'column',
         height: '100%',
         color: 'common.white',
-        background: 'linear-gradient(180deg, #17241f 0%, #1d2421 48%, #171a19 100%)'
+        background: 'linear-gradient(180deg, #111312 0%, #181a19 52%, #0c0d0d 100%)'
       }}
     >
       <Box sx={{px: 2.5, pt: 2.75, pb: 2.25}}>
@@ -127,9 +127,9 @@ function AdminSidebar({pathname, onNavigate, onSignOut, t, user, locale, setLoca
               placeItems: 'center',
               borderRadius: '11px 11px 11px 3px',
               bgcolor: 'secondary.main',
-              color: '#151515',
+              color: 'secondary.contrastText',
               fontWeight: 950,
-              boxShadow: '0 8px 22px rgba(246,173,50,.2)'
+              boxShadow: '0 8px 22px rgba(31,107,80,.24)'
             }}
           >
             CS
@@ -199,7 +199,7 @@ export default function AdminLayout() {
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
         ModalProps={{keepMounted: true}}
-        slotProps={{paper: {sx: {width: 286, border: 0, bgcolor: '#17241f'}}}}
+        slotProps={{paper: {sx: {width: 286, border: 0, bgcolor: '#111312'}}}}
       >
         <AdminSidebar
           pathname={pathname}

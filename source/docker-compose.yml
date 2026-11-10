@@ -125,6 +125,9 @@ services:
       DB_NAME: identity_db
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-change-me}
+      DEMO_CUSTOMER_ID: ${DEMO_CUSTOMER_ID:-64b000000000000000000001}
+      DEMO_CUSTOMER_EMAIL: ${DEMO_CUSTOMER_EMAIL:-customer@example.com}
+      DEMO_CUSTOMER_PASSWORD: ${DEMO_CUSTOMER_PASSWORD:-Customer@123}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
 
@@ -255,6 +258,8 @@ services:
       DB_NAME: order_db
       CATALOG_SERVICE_URL: http://catalog-service:5002
       INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:-local-demo-internal-change-before-production}
+      DEMO_CUSTOMER_ID: ${DEMO_CUSTOMER_ID:-64b000000000000000000001}
+      DEMO_CUSTOMER_EMAIL: ${DEMO_CUSTOMER_EMAIL:-customer@example.com}
     depends_on:
       mongo-init: {condition: service_completed_successfully}
       catalog-service: {condition: service_healthy}

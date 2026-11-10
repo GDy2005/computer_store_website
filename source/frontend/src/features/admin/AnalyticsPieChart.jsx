@@ -1,6 +1,6 @@
 import {Box, Stack, Typography} from '@mui/material';
 
-const COLORS = ['#f6ad32', '#242424', '#7b7b76', '#cf8100', '#a8a8a2', '#6a4a16'];
+const COLORS = ['#1f7a5a', '#2563eb', '#f59e0b', '#7c3aed', '#e04f5f', '#0891b2', '#4b5563', '#84cc16'];
 
 export default function AnalyticsPieChart({
   data,

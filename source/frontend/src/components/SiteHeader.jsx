@@ -73,8 +73,8 @@ function StoreLogo({compact = false}) {
           width: compact ? 38 : 44,
           height: compact ? 38 : 44,
           placeItems: 'center',
-          bgcolor: '#151515',
-          color: 'secondary.main',
+          bgcolor: 'primary.main',
+          color: 'common.white',
           fontWeight: 950,
           letterSpacing: -1,
           clipPath: 'polygon(0 0, 82% 0, 100% 18%, 100% 100%, 18% 100%, 0 82%)'
@@ -85,7 +85,7 @@ function StoreLogo({compact = false}) {
       {!compact && (
         <Box>
           <Typography sx={{fontWeight: 950, letterSpacing: 1.3, lineHeight: 1, fontSize: {xs: 14, sm: 17}}}>COMPUTER</Typography>
-          <Typography variant="caption" color="secondary.dark" fontWeight={900} letterSpacing={4}>STORE</Typography>
+          <Typography variant="caption" color="secondary.main" fontWeight={900} letterSpacing={4}>STORE</Typography>
         </Box>
       )}
     </Stack>
@@ -116,7 +116,7 @@ function LanguageSwitch({withLabel = false}) {
               borderRadius: 99,
               px: 0.8,
               py: 0,
-              color: locale === value ? '#151515' : 'text.secondary',
+              color: locale === value ? 'secondary.contrastText' : 'text.secondary',
               bgcolor: locale === value ? 'secondary.main' : 'transparent',
               '&:hover': {bgcolor: locale === value ? 'secondary.dark' : 'action.hover'}
             }}
@@ -142,7 +142,8 @@ function SearchBox({value, onChange, onSubmit, t}) {
         maxWidth: 760,
         height: 48,
         mx: 'auto',
-        borderBottom: '2px solid #151515',
+        borderBottom: '2px solid',
+        borderColor: 'primary.main',
         bgcolor: 'common.white'
       }}
     >
@@ -276,12 +277,13 @@ export default function SiteHeader() {
 
   const navButtonSx = selected => ({
     minHeight: 70,
-    px: 1.3,
+    px: 1.45,
     borderRadius: 0,
     color: 'text.primary',
-    fontSize: 12,
-    fontWeight: 850,
-    letterSpacing: 0.8,
+    fontSize: 12.5,
+    fontWeight: 900,
+    letterSpacing: 1.05,
+    textTransform: 'uppercase',
     borderBottom: '3px solid',
     borderColor: selected ? 'secondary.main' : 'transparent',
     '&:hover': {bgcolor: 'transparent', borderColor: 'secondary.main'}
@@ -316,7 +318,7 @@ export default function SiteHeader() {
           height: 31,
           overflow: 'hidden',
           placeItems: 'center',
-          bgcolor: scrolled ? 'rgba(0,0,0,.88)' : '#000',
+          bgcolor: scrolled ? 'rgba(0,0,0,.9)' : '#000000',
           color: 'common.white',
           transition: 'background-color 220ms ease'
         }}
@@ -329,14 +331,14 @@ export default function SiteHeader() {
           height: 40,
           overflow: 'hidden',
           placeItems: 'center',
-          bgcolor: scrolled ? 'rgba(36,36,36,.9)' : '#242424',
+          bgcolor: scrolled ? 'rgba(30,30,30,.92)' : '#202020',
           color: 'common.white',
           transition: 'background-color 220ms ease'
         }}
       >
         <Stack direction="row" spacing={3} alignItems="center" px={2}>
           <Typography variant="caption" textAlign="center">{t('nav.announcement')}</Typography>
-          <Typography component={Link} to="/products" variant="caption" fontWeight={850} sx={{display: {xs: 'none', sm: 'block'}, color: 'secondary.main'}}>
+          <Typography component={Link} to="/products" variant="caption" fontWeight={850} sx={{display: {xs: 'none', sm: 'block'}, color: '#7fc9aa'}}>
             {t('home.shopNow')} →
           </Typography>
         </Stack>
@@ -399,7 +401,7 @@ export default function SiteHeader() {
                   <Avatar
                     src={user ? (user.avatarUrl || DEFAULT_AVATAR_URL) : undefined}
                     alt={user?.fullName || user?.email || t('nav.guest')}
-                    sx={{width: 38, height: 38, bgcolor: user ? 'secondary.main' : '#151515', color: user ? '#151515' : 'common.white', fontSize: 14, fontWeight: 900}}
+                    sx={{width: 38, height: 38, bgcolor: user ? 'secondary.main' : 'primary.main', color: 'common.white', fontSize: 14, fontWeight: 900}}
                   >
                     {user ? initials(user) : <UiIcon name="user" sx={{fontSize: 21}}/>}
                   </Avatar>
@@ -455,15 +457,15 @@ export default function SiteHeader() {
           <Fade {...TransitionProps} timeout={180}>
             <Box sx={{pt: 1}}>
               <ClickAwayListener onClickAway={() => setAccountAnchor(null)}>
-                <Paper variant="outlined" sx={{width: 320, overflow: 'hidden', borderRadius: 1.5, boxShadow: '0 24px 64px rgba(0,0,0,.2)'}}>
+                <Paper variant="outlined" sx={{width: user ? 320 : 268, overflow: 'hidden', borderRadius: 1.5, boxShadow: '0 24px 64px rgba(0,0,0,.2)'}}>
                   {user ? (
                     <Box sx={{position: 'relative', pb: 1.5}}>
-                      <Box sx={{height: 88, background: 'linear-gradient(135deg,#171717 0%,#173e34 62%,#e8a326 160%)', position: 'relative', overflow: 'hidden', '&::after': {content: '""', position: 'absolute', width: 130, height: 130, border: '1px solid rgba(255,255,255,.13)', borderRadius: '50%', right: -30, top: -55}}}/>
+                      <Box sx={{height: 88, background: 'linear-gradient(135deg,#2b7055 0%,#174b39 62%,#0b2d22 100%)', position: 'relative', overflow: 'hidden', '&::after': {content: '""', position: 'absolute', width: 130, height: 130, border: '1px solid rgba(255,255,255,.14)', borderRadius: '50%', right: -30, top: -55}}}/>
                       <Box sx={{position: 'absolute', top: 48, left: 18}}>
                         <Avatar
                           src={user.avatarUrl || DEFAULT_AVATAR_URL}
                           alt={user.fullName || user.email}
-                          sx={{width: 76, height: 76, bgcolor: 'secondary.main', color: '#151515', fontWeight: 900, border: '4px solid white', boxShadow: '0 8px 22px rgba(0,0,0,.18)'}}
+                          sx={{width: 76, height: 76, bgcolor: 'secondary.main', color: 'common.white', fontWeight: 900, border: '4px solid white', boxShadow: '0 8px 22px rgba(0,0,0,.18)'}}
                         >
                           {initials(user)}
                         </Avatar>
@@ -471,7 +473,7 @@ export default function SiteHeader() {
                           component="label"
                           disabled={uploadingAvatar}
                           aria-label={t('profile.changeAvatar')}
-                          sx={{position: 'absolute', right: -4, bottom: -2, width: 30, height: 30, bgcolor: 'secondary.main', color: '#151515', border: '2px solid white', '&:hover': {bgcolor: 'secondary.dark'}}}
+                          sx={{position: 'absolute', right: -4, bottom: -2, width: 30, height: 30, bgcolor: 'secondary.main', color: 'common.white', border: '2px solid white', '&:hover': {bgcolor: 'secondary.dark'}}}
                         >
                           {uploadingAvatar ? <CircularProgress size={15} color="inherit"/> : <UiIcon name="camera" sx={{fontSize: 16}}/>}
                           <input hidden type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={changeAvatar}/>
@@ -486,9 +488,9 @@ export default function SiteHeader() {
                       </Box>
                     </Box>
                   ) : (
-                    <Stack direction="row" spacing={1.35} alignItems="center" sx={{p: 2, bgcolor: '#171717', color: 'common.white'}}>
-                      <Avatar sx={{width: 50, height: 50, bgcolor: 'secondary.main', color: '#151515'}}><UiIcon name="user"/></Avatar>
-                      <Box><Typography fontWeight={850}>{t('nav.guest')}</Typography><Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}}>{t('nav.login')}</Typography></Box>
+                    <Stack direction="row" spacing={1.1} alignItems="center" sx={{p: 1.4, background: 'linear-gradient(135deg,#2b7055 0%,#174b39 66%,#0b2d22 100%)', color: 'common.white'}}>
+                      <Avatar sx={{width: 42, height: 42, bgcolor: 'rgba(255,255,255,.16)', color: 'common.white'}}><UiIcon name="user" sx={{fontSize: 21}}/></Avatar>
+                      <Box><Typography fontWeight={900} fontSize={14}>{t('nav.guest')}</Typography><Typography variant="caption" sx={{color: 'rgba(255,255,255,.7)'}}>{t('nav.login')}</Typography></Box>
                     </Stack>
                   )}
                   {avatarError && <Alert severity="error" sx={{mx: 1.5, mb: 1}}>{avatarError}</Alert>}
@@ -502,7 +504,7 @@ export default function SiteHeader() {
                         onClick={() => setAccountAnchor(null)}
                         color="inherit"
                         startIcon={<UiIcon name={item.icon} sx={{fontSize: 19}}/>}
-                        sx={{justifyContent: 'flex-start', minHeight: 42}}
+                        sx={{justifyContent: 'flex-start', minHeight: user ? 42 : 38, fontSize: user ? undefined : 13}}
                       >
                         {item.label}
                       </Button>
@@ -532,8 +534,8 @@ export default function SiteHeader() {
             <IconButton onClick={() => setMobileOpen(false)} aria-label="Close"><UiIcon name="close"/></IconButton>
           </Stack>
           {user && (
-            <Stack direction="row" spacing={1.25} alignItems="center" sx={{mx: 1.5, mb: 1, p: 1.5, bgcolor: '#171717', color: 'common.white', borderRadius: 2}}>
-              <Avatar src={user.avatarUrl || DEFAULT_AVATAR_URL} sx={{bgcolor: 'secondary.main', color: '#151515', fontWeight: 900}}>{initials(user)}</Avatar>
+            <Stack direction="row" spacing={1.25} alignItems="center" sx={{mx: 1.5, mb: 1, p: 1.5, bgcolor: 'primary.main', color: 'common.white', borderRadius: 2}}>
+              <Avatar src={user.avatarUrl || DEFAULT_AVATAR_URL} sx={{bgcolor: 'secondary.main', color: 'common.white', fontWeight: 900}}>{initials(user)}</Avatar>
               <Box sx={{minWidth: 0}}>
                 <Typography fontWeight={800} noWrap>{user.fullName || user.email}</Typography>
                 <Typography variant="caption" sx={{color: 'rgba(255,255,255,.62)'}} noWrap>{user.email}</Typography>

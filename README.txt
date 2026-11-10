@@ -69,6 +69,8 @@ Git. Never commit passwords, access keys, or provider secrets.
   FRONTEND_URL=http://localhost
   ADMIN_EMAIL=admin@example.com
   ADMIN_INITIAL_PASSWORD=change-me
+  DEMO_CUSTOMER_EMAIL=customer@example.com
+  DEMO_CUSTOMER_PASSWORD=Customer@123
 
 Replace INTERNAL_SERVICE_SECRET and SESSION_SECRET with two different random
 values. PowerShell can generate one with:
@@ -84,6 +86,17 @@ If the machine has limited memory, use:
 The administrator is seeded only when the identity database is initialized.
 Changing ADMIN_EMAIL or ADMIN_INITIAL_PASSWORD later does not replace an
 administrator that already exists in the MongoDB volume.
+
+The automatic seed also creates a complete customer test account:
+
+  Email:     customer@example.com
+  Password:  Customer@123
+
+This customer has a phone number, two delivery addresses, six sample orders in
+multiple states, and Loyalty points earned from delivered orders. The seed can
+be rerun safely without duplicating the same orders or points. Set
+DEMO_CUSTOMER_EMAIL and DEMO_CUSTOMER_PASSWORD before the first seed run to use
+different demo credentials.
 
 
 3.2. Use a different host port
@@ -235,6 +248,9 @@ With HTTP_PORT=80:
 
 Sign in to the admin dashboard with the ADMIN_EMAIL and
 ADMIN_INITIAL_PASSWORD configured before the first database initialization.
+
+Sign in to the storefront with customer@example.com / Customer@123 to test the
+profile, delivery addresses, cart, checkout, order history, and Loyalty pages.
 
 MongoDB, Kafka, Redis, and Elasticsearch are internal Docker services and do
 not publish ports directly to the host.

@@ -22,14 +22,6 @@ import {
 } from '../features/products/catalogApi.js';
 
 const promotionSlides = [
-  {
-    src: '/banners/omen-valorant.jpg',
-    alt: 'OMEN 35L VALORANT Limited Edition Gaming PC',
-    titleKey: 'home.banner.omenTitle',
-    textKey: 'home.banner.omenText',
-    fit: 'contain',
-    background: '#ff4655'
-  },
   {src: '/banners/halloween-sale.jpg', alt: 'Halloween săn deal build PC cực chill', titleKey: 'home.banner.halloweenTitle', textKey: 'home.banner.halloweenText'},
   {src: '/banners/delta-force.jpg', alt: 'Top cấu hình PC chiến Delta Force', titleKey: 'home.banner.deltaTitle', textKey: 'home.banner.deltaText'},
   {src: '/banners/premium-gaming.jpg', alt: 'PC Premium Gaming tốc độ bứt phá', titleKey: 'home.banner.premiumTitle', textKey: 'home.banner.premiumText'},
@@ -40,11 +32,11 @@ const CAROUSEL_GAP = 10;
 
 const categoryColors = [
   ['#f2f2f0', '#181818'],
-  ['#fff2d5', '#a96500'],
+  ['#e5f2ed', '#1f6b50'],
   ['#eeeeeb', '#181818'],
-  ['#fff6e4', '#9a6100'],
+  ['#edf5f1', '#174b39'],
   ['#ececea', '#181818'],
-  ['#e8f1ff', '#1d4ed8']
+  ['#e6efeb', '#12392c']
 ];
 
 function categoryIconName(slug = '') {
@@ -446,21 +438,28 @@ function TrustStrip() {
     <Paper
       component="section"
       variant="outlined"
-      sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: 'repeat(3, 1fr)'}, overflow: 'hidden', bgcolor: 'secondary.light'}}
+      sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: 'repeat(3, 1fr)'}, overflow: 'hidden', borderTop: '3px solid #151515'}}
     >
       {items.map(([icon, title, text], index) => (
         <Stack
           key={title}
           direction="row"
           spacing={1.5}
-          sx={{p: 2.25, borderRight: {md: index < 2 ? '1px solid' : 0}, borderBottom: {xs: index < 2 ? '1px solid' : 0, md: 0}, borderColor: 'divider'}}
+          sx={{
+            p: 2.25,
+            color: index === 1 ? 'common.white' : 'text.primary',
+            bgcolor: index === 1 ? '#171918' : 'secondary.light',
+            borderRight: {md: index < 2 ? '1px solid' : 0},
+            borderBottom: {xs: index < 2 ? '1px solid' : 0, md: 0},
+            borderColor: index === 1 ? 'rgba(255,255,255,.12)' : 'divider'
+          }}
         >
-          <Box sx={{display: 'grid', placeItems: 'center', width: 42, height: 42, flexShrink: 0, borderRadius: 2, bgcolor: 'common.white', color: 'secondary.main'}}>
+          <Box sx={{display: 'grid', placeItems: 'center', width: 42, height: 42, flexShrink: 0, borderRadius: 2, bgcolor: index === 1 ? 'secondary.main' : '#151515', color: 'common.white'}}>
             <UiIcon name={icon}/>
           </Box>
           <Box>
             <Typography fontWeight={850}>{title}</Typography>
-            <Typography variant="body2" color="text.secondary" mt={0.25}>{text}</Typography>
+            <Typography variant="body2" sx={{color: index === 1 ? 'rgba(255,255,255,.65)' : 'text.secondary'}} mt={0.25}>{text}</Typography>
           </Box>
         </Stack>
       ))}

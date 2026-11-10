@@ -69,6 +69,18 @@ test('demo orders validate against the live model and publish real catalog snaps
     assert.equal(orders.length, 45);
     assert.equal(cancelled, 3);
     assert.equal(confirmedDays.size, 35);
+
+    const customerOrders = orders.filter(order =>
+      order.customer.email === 'customer@example.com'
+    );
+    assert.equal(customerOrders.length, 6);
+    assert.deepEqual(
+      new Set(customerOrders.map(order => order.status)),
+      new Set(['CONFIRMED', 'CANCELLED', 'DELIVERED', 'SHIPPING'])
+    );
+    assert.ok(customerOrders.every(order =>
+      order.userId === '64b000000000000000000001'
+    ));
   } finally {
     await connection.close();
   }

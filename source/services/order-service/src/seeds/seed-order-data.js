@@ -10,11 +10,36 @@ import {signedContext} from '@store/validation';
 import mongoose from 'mongoose';
 
 import {orderEventPayload} from '../events/order.events.js';
+import {getLoyaltyAccountModel} from '../models/LoyaltyAccount.js';
+import {
+  getLoyaltyTransactionModel
+} from '../models/LoyaltyTransaction.js';
 import {getOrderModel} from '../models/Order.js';
+import {createLoyaltyService} from '../services/loyaltyService.js';
 import {seedCoupons} from './seed-coupons.js';
 
 const orderCount = 45;
 const cancelledIndexes = new Set([8, 27, 41]);
+const demoCustomerId = process.env.DEMO_CUSTOMER_ID ||
+  '64b000000000000000000001';
+const demoCustomerEmail = (
+  process.env.DEMO_CUSTOMER_EMAIL || 'customer@example.com'
+).trim().toLowerCase();
+
+const demoCustomer = {
+  userId: demoCustomerId,
+  fullName: 'Demo Customer',
+  email: demoCustomerEmail,
+  phone: '0901234567',
+  shippingAddress: {
+    recipientName: 'Demo Customer',
+    phone: '0901234567',
+    addressLine: '63/52 Nguyen Bieu Street',
+    ward: 'Ward 1',
+    district: 'District 5',
+    province: 'Ho Chi Minh City'
+  }
+};
 
 function getOutboxModel(connection) {
   if (connection.models.Outbox) return connection.models.Outbox;
@@ -172,26 +197,41 @@ export function buildOrder(index, snapshots, now) {
   const usesCard = index % 3 === 0 && status !== 'CANCELLED';
   const sequence = String(index + 1).padStart(6, '0');
   const history = statusHistory(status, confirmedAt);
+  const customerNumber = index % 8 + 1;
+  const usesDemoCustomer = customerNumber === 1;
+  const fullName = usesDemoCustomer
+    ? demoCustomer.fullName
+    : `Demo Customer ${customerNumber}`;
+  const email = usesDemoCustomer
+    ? demoCustomer.email
+    : `demo-customer-${customerNumber}@example.com`;
+  const phone = usesDemoCustomer
+    ? demoCustomer.phone
+    : `09000000${String(customerNumber).padStart(2, '0')}`;
 
   return {
     _id: new mongoose.Types.ObjectId(),
     orderNumber: `ORD-DEMO-${sequence}`,
     checkoutId: `demo-checkout-${sequence}`,
     cartId: new mongoose.Types.ObjectId(),
-    userId: `demo-customer-${String(index % 8 + 1).padStart(2, '0')}`,
+    userId: usesDemoCustomer
+      ? demoCustomer.userId
+      : `demo-customer-${String(customerNumber).padStart(2, '0')}`,
     customer: {
-      fullName: `Demo Customer ${index % 8 + 1}`,
-      email: `demo-customer-${index % 8 + 1}@example.com`,
-      phone: `09000000${String(index % 8 + 1).padStart(2, '0')}`
+      fullName,
+      email,
+      phone
     },
-    shippingAddress: {
-      recipientName: `Demo Customer ${index % 8 + 1}`,
-      phone: `09000000${String(index % 8 + 1).padStart(2, '0')}`,
-      addressLine: `${index + 10} Nguyen Van Linh Street`,
-      ward: 'Tan Phong Ward',
-      district: 'District 7',
-      province: 'Ho Chi Minh City'
-    },
+    shippingAddress: usesDemoCustomer
+      ? demoCustomer.shippingAddress
+      : {
+        recipientName: fullName,
+        phone,
+        addressLine: `${index + 10} Nguyen Van Linh Street`,
+        ward: 'Tan Phong Ward',
+        district: 'District 7',
+        province: 'Ho Chi Minh City'
+      },
     items: [{
       productId: new mongoose.Types.ObjectId(snapshot.productId),
       variantId: new mongoose.Types.ObjectId(snapshot.variantId),
@@ -237,6 +277,58 @@ export function buildOrder(index, snapshots, now) {
     updatedAt: history.at(-1).updatedAt,
     confirmedAt
   };
+}
+
+async function seedDemoCustomerData({
+  connection,
+  Order,
+  LoyaltyAccount,
+  LoyaltyTransaction
+}) {
+  const loyaltyService = createLoyaltyService({
+    LoyaltyAccount,
+    LoyaltyTransaction
+  });
+
+  await connection.transaction(async session => {
+    await Order.updateMany(
+      {userId: 'demo-customer-01'},
+      {
+        $set: {
+          userId: demoCustomer.userId,
+          customer: {
+            fullName: demoCustomer.fullName,
+            email: demoCustomer.email,
+            phone: demoCustomer.phone
+          },
+          shippingAddress: demoCustomer.shippingAddress
+        }
+      },
+      {session}
+    );
+
+    const deliveredOrders = await Order.find({
+      userId: demoCustomer.userId,
+      status: 'DELIVERED'
+    }).sort({createdAt: 1}).session(session);
+
+    for (const order of deliveredOrders) {
+      const transaction = await loyaltyService.earn(order, session);
+      if (transaction) await order.save({session});
+    }
+  });
+
+  const account = await LoyaltyAccount.findOne({
+    userId: demoCustomer.userId
+  }).lean();
+  const orderTotal = await Order.countDocuments({
+    userId: demoCustomer.userId
+  });
+
+  console.log(
+    `Demo customer linked to ${orderTotal} orders with ` +
+    `${account?.pointsBalance || 0} loyalty points`
+  );
 }
 
 function eventAt(topic, options, occurredAt) {
@@ -336,51 +428,65 @@ export async function seedOrderData() {
   try {
     const Order = getOrderModel(connection);
     const Outbox = getOutboxModel(connection);
-    await Promise.all([Order.init(), Outbox.init()]);
+    const LoyaltyAccount = getLoyaltyAccountModel(connection);
+    const LoyaltyTransaction = getLoyaltyTransactionModel(connection);
+    await Promise.all([
+      Order.init(),
+      Outbox.init(),
+      LoyaltyAccount.init(),
+      LoyaltyTransaction.init()
+    ]);
     await seedCoupons(connection);
 
     const existingDemoOrder = await Order.exists({
       orderNumber: /^ORD-DEMO-/
     });
-    if (existingDemoOrder) {
-      console.log('Skipped demo orders because demo orders already exist');
-      return;
-    }
 
-    const snapshots = await loadCatalogSnapshots();
-    const now = new Date();
-    const orders = Array.from(
-      {length: orderCount},
-      (_, index) => buildOrder(index, snapshots, now)
-    );
-
-    await connection.transaction(async session => {
-      const storedOrders = await Order.create(
-        orders.map(({confirmedAt, ...order}) => order),
-        {session, ordered: true}
+    if (!existingDemoOrder) {
+      const snapshots = await loadCatalogSnapshots();
+      const now = new Date();
+      const orders = Array.from(
+        {length: orderCount},
+        (_, index) => buildOrder(index, snapshots, now)
       );
-      const outboxRows = storedOrders.flatMap((order, index) => {
-        const seedOrder = {
-          ...order.toObject(),
-          confirmedAt: orders[index].confirmedAt
-        };
-        return orderEvents(seedOrder).map(({topic, event}) => ({
-          eventId: event.eventId,
-          topic,
-          key: order._id.toString(),
-          payload: event,
-          status: 'PENDING',
-          nextAttemptAt: new Date(),
-          createdAt: new Date(event.occurredAt)
-        }));
+
+      await connection.transaction(async session => {
+        const storedOrders = await Order.create(
+          orders.map(({confirmedAt, ...order}) => order),
+          {session, ordered: true}
+        );
+        const outboxRows = storedOrders.flatMap((order, index) => {
+          const seedOrder = {
+            ...order.toObject(),
+            confirmedAt: orders[index].confirmedAt
+          };
+          return orderEvents(seedOrder).map(({topic, event}) => ({
+            eventId: event.eventId,
+            topic,
+            key: order._id.toString(),
+            payload: event,
+            status: 'PENDING',
+            nextAttemptAt: new Date(),
+            createdAt: new Date(event.occurredAt)
+          }));
+        });
+
+        await Outbox.create(outboxRows, {session, ordered: true});
       });
 
-      await Outbox.create(outboxRows, {session, ordered: true});
-    });
+      console.log(
+        `Seeded ${orders.length} demo orders and their analytics events`
+      );
+    } else {
+      console.log('Skipped demo orders because demo orders already exist');
+    }
 
-    console.log(
-      `Seeded ${orders.length} demo orders and their analytics events`
-    );
+    await seedDemoCustomerData({
+      connection,
+      Order,
+      LoyaltyAccount,
+      LoyaltyTransaction
+    });
   } finally {
     await connection.close();
   }

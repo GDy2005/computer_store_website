@@ -21,12 +21,12 @@ export default function SiteFooter() {
   const {t} = useLanguage();
 
   return (
-    <Box component="footer" sx={{mt:{xs:7,md:10},bgcolor:'#141414',color:'common.white',borderTop:'4px solid',borderColor:'secondary.main'}}>
+    <Box component="footer" sx={{mt:{xs:7,md:10},bgcolor:'primary.dark',color:'common.white',borderTop:'4px solid',borderColor:'secondary.main'}}>
       <Container maxWidth="xl" sx={{py:{xs:5,md:7}}}>
         <Box sx={{display:'grid',gridTemplateColumns:{xs:'1fr',md:'minmax(300px,1.5fr) 1fr 1fr'},gap:{xs:4,md:7}}}>
           <Stack spacing={2.25} maxWidth={500}>
             <Stack direction="row" alignItems="center" spacing={1.2}>
-              <Box sx={{display:'grid',width:42,height:42,placeItems:'center',borderRadius:'10px 10px 10px 3px',bgcolor:'secondary.main',color:'#151515',fontWeight:950}}>CS</Box>
+              <Box sx={{display:'grid',width:42,height:42,placeItems:'center',borderRadius:'10px 10px 10px 3px',bgcolor:'secondary.main',color:'common.white',fontWeight:950}}>CS</Box>
               <Typography variant="h6" fontWeight={950} letterSpacing={1}>COMPUTER STORE</Typography>
             </Stack>
             <Typography color="rgba(255,255,255,.62)" sx={{lineHeight:1.75}}>{t('footer.tagline')}</Typography>

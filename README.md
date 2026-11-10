@@ -87,6 +87,8 @@ INTERNAL_SERVICE_SECRET=replace-with-a-random-secret
 SESSION_SECRET=replace-with-another-random-secret
 ADMIN_EMAIL=admin@example.com
 ADMIN_INITIAL_PASSWORD=change-me
+DEMO_CUSTOMER_EMAIL=customer@example.com
+DEMO_CUSTOMER_PASSWORD=Customer@123
 AI_PROVIDER=fallback
 EMAIL_TRANSPORT=json
 ```
@@ -123,6 +125,24 @@ orders; later restarts do not duplicate them.
 
 If `HTTP_PORT=8080`, replace `http://localhost` with
 `http://localhost:8080` in local URLs and callback settings.
+
+### Demo customer account
+
+Use the seeded customer to test the complete customer journey:
+
+| Field | Value |
+| --- | --- |
+| Email | `customer@example.com` |
+| Password | `Customer@123` |
+| Profile | Active customer with avatar and phone number |
+| Addresses | Home (default) and office |
+| Orders | Six orders across confirmed, shipping, delivered, and cancelled states |
+| Loyalty | Points earned from the seeded delivered orders |
+
+The seed is idempotent: restarting it does not duplicate orders or award the
+same loyalty points twice. Override `DEMO_CUSTOMER_EMAIL` and
+`DEMO_CUSTOMER_PASSWORD` in `source/.env` if different demo credentials are
+needed before the first seed run.
 
 ## Environment integrations
 

@@ -6,20 +6,20 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#151515',
-      dark: '#000000',
-      light: '#f0f0ee',
+      main: '#12392c',
+      dark: '#08251c',
+      light: '#e7f0ec',
       contrastText: '#ffffff'
     },
     secondary: {
-      main: '#f6ad32',
-      dark: '#cf8100',
-      light: '#fff2d5',
-      contrastText: '#151515'
+      main: '#1f6b50',
+      dark: '#154936',
+      light: '#e5f2ed',
+      contrastText: '#ffffff'
     },
     success: {main: '#16875b'},
     warning: {main: '#e58a00'},
-    background: {default: '#f7f7f5', paper: '#ffffff'},
+    background: {default: '#f5f8f6', paper: '#ffffff'},
     text: {primary: '#181818', secondary: '#6b6b68'},
     divider: border
   },
@@ -46,8 +46,8 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         html: {scrollBehavior: 'smooth'},
-        body: {minWidth: 320, backgroundColor: '#f7f7f5'},
-        '::selection': {background: '#f6ad32', color: '#111111'},
+        body: {minWidth: 320, backgroundColor: '#f5f8f6'},
+        '::selection': {background: '#1f6b50', color: '#ffffff'},
         '@media (prefers-reduced-motion: reduce)': {
           '*, *::before, *::after': {
             animationDuration: '0.01ms !important',

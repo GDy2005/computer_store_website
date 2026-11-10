@@ -39,10 +39,10 @@ export function AdminPageHeader({eyebrow, title, description, action}) {
           height: 92,
           right: 115,
           bottom: -72,
-          border: '1px solid rgba(246,173,50,.26)',
+          border: '1px solid rgba(143,205,178,.3)',
           borderRadius: '50%'
         },
-        '& .MuiButton-contained': {bgcolor: 'secondary.main', color: '#171717'},
+        '& .MuiButton-contained': {bgcolor: 'secondary.main', color: 'secondary.contrastText'},
         '& .MuiButton-contained:hover': {bgcolor: 'secondary.dark'},
         '& .MuiButton-text': {color: 'common.white'}
       }}

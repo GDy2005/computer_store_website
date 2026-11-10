@@ -33,7 +33,7 @@ export default function ProductCard({product}) {
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 14px 30px rgba(31,41,55,.12)',
-          borderColor: 'rgba(246,173,50,.72)'
+          borderColor: 'rgba(31,107,80,.68)'
         },
         '&:hover .product-image': {transform: 'scale(1.04)'}
       }}

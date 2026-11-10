@@ -45,11 +45,11 @@ function compactNumber(value, locale = 'vi') {
 function metricCards(summary, t, locale) {
   return [
     {label: t('admin.dashboard.metrics.totalUsers'), value: formatAdminNumber(summary.totalUsers, locale), icon: 'people', color: '#292929', background: '#eeeeeb'},
-    {label: t('admin.dashboard.metrics.newUsers'), value: formatAdminNumber(summary.newUsers, locale), icon: 'user', color: '#9a6100', background: '#fff2d5'},
+    {label: t('admin.dashboard.metrics.newUsers'), value: formatAdminNumber(summary.newUsers, locale), icon: 'user', color: '#1f6b50', background: '#e5f2ed'},
     {label: t('admin.dashboard.metrics.totalOrders'), value: formatAdminNumber(summary.totalOrders, locale), icon: 'receipt', color: '#4d4d49', background: '#f0f0ed'},
-    {label: t('admin.dashboard.metrics.revenue'), value: formatAdminMoney(summary.revenue, locale), icon: 'dashboard', color: '#9a6100', background: '#fff2d5'},
+    {label: t('admin.dashboard.metrics.revenue'), value: formatAdminMoney(summary.revenue, locale), icon: 'dashboard', color: '#1f6b50', background: '#e5f2ed'},
     {label: t('admin.dashboard.metrics.profit'), value: formatAdminMoney(summary.profit, locale), icon: 'coupon', color: '#292929', background: '#eeeeeb'},
-    {label: t('admin.dashboard.metrics.productsSold'), value: formatAdminNumber(summary.productsSold, locale), icon: 'package', color: '#9a6100', background: '#fff6e4'}
+    {label: t('admin.dashboard.metrics.productsSold'), value: formatAdminNumber(summary.productsSold, locale), icon: 'package', color: '#174b39', background: '#edf5f1'}
   ];
 }
 
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
         </Paper>
       )}
 
-      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2.25, sm: 3}, background: 'linear-gradient(120deg, #fffaf0 0%, #fff3d4 100%)', boxShadow: '0 8px 24px rgba(104,72,14,.06)'}}>
+      <Paper component="form" onSubmit={applyPeriod} variant="outlined" sx={{p: {xs: 2.25, sm: 3}, background: 'linear-gradient(120deg, #f4f9f6 0%, #e4f1eb 100%)', boxShadow: '0 8px 24px rgba(18,57,44,.07)'}}>
         <Typography component="h2" variant="h6" fontWeight={850}>{t('admin.dashboard.analytics.title')}</Typography>
         <Stack direction={{xs: 'column', md: 'row'}} spacing={2} alignItems={{md: 'center'}} sx={{mt: 2}}>
           <FormControl sx={{minWidth: 210}}>
@@ -240,8 +240,8 @@ export default function AdminDashboardPage() {
                 title={t('admin.dashboard.charts.revenueProfitAria')}
                 series={analytics.series || []}
                 lines={[
-                  {key: 'revenue', label: t('admin.dashboard.metrics.revenue'), color: '#f6ad32'},
-                  {key: 'profit', label: t('admin.dashboard.metrics.profit'), color: '#202020'}
+                  {key: 'revenue', label: t('admin.dashboard.metrics.revenue'), color: '#1f7a5a'},
+                  {key: 'profit', label: t('admin.dashboard.metrics.profit'), color: '#f59e0b'}
                 ]}
                 valueFormatter={value => compactNumber(value, locale)}
                 emptyLabel={t('admin.dashboard.charts.empty')}
@@ -253,8 +253,8 @@ export default function AdminDashboardPage() {
                 title={t('admin.dashboard.charts.ordersProductsAria')}
                 series={analytics.series || []}
                 lines={[
-                  {key: 'orders', label: t('admin.dashboard.charts.orders'), color: '#6b6b68'},
-                  {key: 'productsSold', label: t('admin.dashboard.charts.products'), color: '#cf8100'}
+                  {key: 'orders', label: t('admin.dashboard.charts.orders'), color: '#2563eb'},
+                  {key: 'productsSold', label: t('admin.dashboard.charts.products'), color: '#7c3aed'}
                 ]}
                 valueFormatter={value => formatAdminNumber(Math.round(value), locale)}
                 emptyLabel={t('admin.dashboard.charts.empty')}
