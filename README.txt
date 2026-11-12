@@ -246,11 +246,29 @@ With HTTP_PORT=80:
   Products API:               http://localhost/api/v1/products?page=1&limit=12
   Search API:                 http://localhost/api/v1/search?search=gaming&page=1&limit=12
 
-Sign in to the admin dashboard with the ADMIN_EMAIL and
-ADMIN_INITIAL_PASSWORD configured before the first database initialization.
+5.1. Demo login accounts
 
-Sign in to the storefront with customer@example.com / Customer@123 to test the
-profile, delivery addresses, cart, checkout, order history, and Loyalty pages.
+Customer account:
+
+  Email:                       customer@example.com
+  Password:                    Customer@123
+  Role:                        CUSTOMER
+  Prepared delivery addresses: Home (default) and Office
+  Prepared order history:      6 orders in multiple statuses
+  Loyalty points:              Earned from seeded delivered orders
+
+Use this account to test the customer profile, address management, product
+catalog, cart, checkout, order history, and Loyalty features.
+
+Administrator account:
+
+  Email:     admin@example.com
+  Password:  change-me
+  Role:      ADMIN
+
+The values above are the defaults. If DEMO_CUSTOMER_EMAIL,
+DEMO_CUSTOMER_PASSWORD, ADMIN_EMAIL, or ADMIN_INITIAL_PASSWORD were changed in
+source/.env before the first seed run, sign in with those configured values.
 
 MongoDB, Kafka, Redis, and Elasticsearch are internal Docker services and do
 not publish ports directly to the host.

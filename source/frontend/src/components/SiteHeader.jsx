@@ -7,12 +7,10 @@ import {
   Box,
   Button,
   CircularProgress,
-  ClickAwayListener,
   Collapse,
   Container,
   Divider,
   Drawer,
-  Fade,
   IconButton,
   InputBase,
   List,
@@ -20,8 +18,7 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Paper,
-  Popper,
+  Popover,
   Stack,
   Toolbar,
   Tooltip,
@@ -181,6 +178,7 @@ export default function SiteHeader() {
   const [avatarError, setAvatarError] = useState('');
   const [avatarMessage, setAvatarMessage] = useState('');
   const scrollFrame = useRef(null);
+  const accountPopoverAction = useRef(null);
 
   useEffect(() => {
     const update = () => {
@@ -188,7 +186,10 @@ export default function SiteHeader() {
       scrollFrame.current = window.requestAnimationFrame(() => {
         const offset = window.scrollY;
         setScrolled(offset > 12);
-        setTopBarsHidden(current => current ? offset > 24 : offset > 92);
+        // The announcement area is 71px tall. Keep a hysteresis band wider
+        // than that height so collapsing it cannot immediately cross the
+        // opposite threshold and create a show/hide loop while scrolling.
+        setTopBarsHidden(current => current ? offset > 8 : offset > 96);
         scrollFrame.current = null;
       });
     };
@@ -199,6 +200,21 @@ export default function SiteHeader() {
       if (scrollFrame.current) window.cancelAnimationFrame(scrollFrame.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!accountAnchor) return undefined;
+
+    const frame = window.requestAnimationFrame(() => accountPopoverAction.current?.updatePosition());
+    const afterHeaderTransition = window.setTimeout(
+      () => accountPopoverAction.current?.updatePosition(),
+      260
+    );
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(afterHeaderTransition);
+    };
+  }, [accountAnchor, topBarsHidden]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -452,20 +468,42 @@ export default function SiteHeader() {
         ))}
       </Menu>
 
-      <Popper open={Boolean(accountAnchor)} anchorEl={accountAnchor} placement="bottom-end" transition sx={{zIndex: theme => theme.zIndex.appBar + 2}}>
-        {({TransitionProps}) => (
-          <Fade {...TransitionProps} timeout={180}>
-            <Box sx={{pt: 1}}>
-              <ClickAwayListener onClickAway={() => setAccountAnchor(null)}>
-                <Paper variant="outlined" sx={{width: user ? 320 : 268, overflow: 'hidden', borderRadius: 1.5, boxShadow: '0 24px 64px rgba(0,0,0,.2)'}}>
+      <Popover
+        open={Boolean(accountAnchor)}
+        anchorEl={accountAnchor}
+        action={accountPopoverAction}
+        onClose={() => setAccountAnchor(null)}
+        disableScrollLock
+        marginThreshold={10}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+        transformOrigin={{vertical: 'top', horizontal: 'center'}}
+        transitionDuration={{enter: 150, exit: 100}}
+        slotProps={{
+          paper: {
+            variant: 'outlined',
+            sx: {
+              mt: 0.75,
+              width: {xs: 'min(276px, calc(100vw - 20px))', sm: 276},
+              maxHeight: topBarsHidden
+                ? 'calc(100dvh - 96px)'
+                : {xs: 'calc(100dvh - 153px)', md: 'calc(100dvh - 175px)'},
+              overflowX: 'hidden',
+              overflowY: 'auto',
+              borderRadius: 1.25,
+              boxShadow: '0 22px 58px rgba(0,0,0,.2)'
+            }
+          }
+        }}
+      >
+        <Box>
                   {user ? (
-                    <Box sx={{position: 'relative', pb: 1.5}}>
-                      <Box sx={{height: 88, background: 'linear-gradient(135deg,#2b7055 0%,#174b39 62%,#0b2d22 100%)', position: 'relative', overflow: 'hidden', '&::after': {content: '""', position: 'absolute', width: 130, height: 130, border: '1px solid rgba(255,255,255,.14)', borderRadius: '50%', right: -30, top: -55}}}/>
-                      <Box sx={{position: 'absolute', top: 48, left: 18}}>
+                    <Box sx={{position: 'relative', pb: 1}}>
+                      <Box sx={{height: 66, background: 'linear-gradient(135deg,#171918 0%,#19372c 58%,#245b44 100%)', position: 'relative', overflow: 'hidden', '&::after': {content: '""', position: 'absolute', width: 110, height: 110, border: '1px solid rgba(255,255,255,.14)', borderRadius: '50%', right: -22, top: -58}}}/>
+                      <Box sx={{position: 'absolute', top: 31, left: '50%', transform: 'translateX(-50%)'}}>
                         <Avatar
                           src={user.avatarUrl || DEFAULT_AVATAR_URL}
                           alt={user.fullName || user.email}
-                          sx={{width: 76, height: 76, bgcolor: 'secondary.main', color: 'common.white', fontWeight: 900, border: '4px solid white', boxShadow: '0 8px 22px rgba(0,0,0,.18)'}}
+                          sx={{width: 68, height: 68, bgcolor: 'secondary.main', color: 'common.white', fontWeight: 900, border: '4px solid white', boxShadow: '0 8px 22px rgba(0,0,0,.18)'}}
                         >
                           {initials(user)}
                         </Avatar>
@@ -479,23 +517,29 @@ export default function SiteHeader() {
                           <input hidden type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={changeAvatar}/>
                         </IconButton>
                       </Box>
-                      <Box sx={{pt: 5.5, px: 2.25}}>
-                        <Typography fontWeight={900} fontSize={17} noWrap>{user.fullName || user.email}</Typography>
-                        <Typography variant="body2" color="text.secondary" noWrap>{user.email}</Typography>
-                        <Typography variant="caption" sx={{display: 'inline-block', mt: 0.8, px: 1, py: 0.25, bgcolor: 'action.hover', fontWeight: 800}}>
+                      <Box sx={{pt: 4.8, px: 1.75, textAlign: 'center'}}>
+                        <Typography fontWeight={900} fontSize={16} noWrap>{user.fullName || user.email}</Typography>
+                        <Typography variant="caption" color="text.secondary" noWrap sx={{display: 'block'}}>{user.email}</Typography>
+                        <Typography variant="caption" sx={{display: 'inline-block', mt: 0.55, px: 0.9, py: 0.15, bgcolor: 'action.hover', fontWeight: 800}}>
                           {user.role === 'ADMIN' ? t('nav.admin') : t('profile.customer')}
                         </Typography>
                       </Box>
                     </Box>
                   ) : (
-                    <Stack direction="row" spacing={1.1} alignItems="center" sx={{p: 1.4, background: 'linear-gradient(135deg,#2b7055 0%,#174b39 66%,#0b2d22 100%)', color: 'common.white'}}>
-                      <Avatar sx={{width: 42, height: 42, bgcolor: 'rgba(255,255,255,.16)', color: 'common.white'}}><UiIcon name="user" sx={{fontSize: 21}}/></Avatar>
-                      <Box><Typography fontWeight={900} fontSize={14}>{t('nav.guest')}</Typography><Typography variant="caption" sx={{color: 'rgba(255,255,255,.7)'}}>{t('nav.login')}</Typography></Box>
-                    </Stack>
+                    <Box sx={{position: 'relative', pb: 0.8}}>
+                      <Box sx={{height: 58, background: 'linear-gradient(135deg,#171918 0%,#19372c 58%,#245b44 100%)'}}/>
+                      <Avatar sx={{position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)', width: 60, height: 60, bgcolor: 'secondary.main', color: 'common.white', border: '4px solid white', boxShadow: '0 8px 20px rgba(0,0,0,.18)'}}>
+                        <UiIcon name="user" sx={{fontSize: 27}}/>
+                      </Avatar>
+                      <Box sx={{pt: 4.4, px: 1.5, textAlign: 'center'}}>
+                        <Typography fontWeight={900} fontSize={15}>{t('nav.guest')}</Typography>
+                        <Typography variant="caption" color="text.secondary">{t('nav.login')}</Typography>
+                      </Box>
+                    </Box>
                   )}
-                  {avatarError && <Alert severity="error" sx={{mx: 1.5, mb: 1}}>{avatarError}</Alert>}
-                  {avatarMessage && <Alert severity="success" sx={{mx: 1.5, mb: 1}}>{avatarMessage}</Alert>}
-                  <Stack sx={{p: 1}}>
+                  {avatarError && <Alert severity="error" sx={{mx: 1, mb: 0.7, py: 0}}>{avatarError}</Alert>}
+                  {avatarMessage && <Alert severity="success" sx={{mx: 1, mb: 0.7, py: 0}}>{avatarMessage}</Alert>}
+                  <Stack sx={{px: 0.8, pb: 0.7}}>
                     {accountNavigation.map(item => (
                       <Button
                         key={item.to}
@@ -504,28 +548,24 @@ export default function SiteHeader() {
                         onClick={() => setAccountAnchor(null)}
                         color="inherit"
                         startIcon={<UiIcon name={item.icon} sx={{fontSize: 19}}/>}
-                        sx={{justifyContent: 'flex-start', minHeight: user ? 42 : 38, fontSize: user ? undefined : 13}}
+                        sx={{justifyContent: 'flex-start', minHeight: 36, px: 1.2, fontSize: 13}}
                       >
                         {item.label}
                       </Button>
                     ))}
                   </Stack>
                   <Divider/>
-                  <Box sx={{p: 1.4}}><LanguageSwitch withLabel/></Box>
+                  <Box sx={{p: 1}}><LanguageSwitch withLabel/></Box>
                   {user && (
                     <>
                       <Divider/>
-                      <Button onClick={signOut} color="error" fullWidth sx={{justifyContent: 'flex-start', borderRadius: 0, px: 2, py: 1.25}}>
+                      <Button onClick={signOut} color="error" fullWidth sx={{justifyContent: 'center', borderRadius: 0, px: 2, py: 0.85, fontSize: 13}}>
                         {t('nav.logout')}
                       </Button>
                     </>
                   )}
-                </Paper>
-              </ClickAwayListener>
-            </Box>
-          </Fade>
-        )}
-      </Popper>
+        </Box>
+      </Popover>
 
       <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
         <Box sx={{width: {xs: 300, sm: 360}}} role="presentation">
