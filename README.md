@@ -11,7 +11,8 @@ administration dashboard, real-time catalog feedback, loyalty points, grounded
 AI product recommendations, and a local simulated-card checkout.
 
 > This repository is intended for development, demonstrations, and academic
-> evaluation. Payment integrations use sandbox credentials only.
+> evaluation. Card payment is a fixed local simulation and must not be used
+> with real card information.
 
 ## Highlights
 
@@ -46,6 +47,22 @@ AI product recommendations, and a local simulated-card checkout.
 
 Only Nginx publishes a host port. Databases, brokers, and application services
 remain inside the private Docker network.
+
+## Bonus features — 2.0 points claimed
+
+The project claims the four bonus areas defined by the assignment, worth up to
+2.0 points in total:
+
+| Bonus area | Project implementation |
+| --- | --- |
+| CI/CD pipeline | GitHub Actions runs lint, unit tests, the frontend build, Docker builds, and integration tests, then uploads a redacted evidence artifact. |
+| Microservices architecture | Seven backend services communicate through the API Gateway and Kafka, using database-per-service ownership, Outbox events, idempotent consumers, retries, and dead-letter handling. |
+| AI-related feature | The product assistant recommends real catalog items grounded by Search Service results and provides a deterministic fallback when no external AI provider is configured. |
+| Elasticsearch Product Search | Search Service maintains the `products_v1` index and supports catalog keyword search, filters, sorting, and pagination. |
+
+Implementation references and the evidence checklist are documented in
+[Bonus/README.md](Bonus/README.md). Verified screenshots should be stored in
+[`Bonus/evidence`](Bonus/evidence/README.md) before the final submission.
 
 ## Quick start
 

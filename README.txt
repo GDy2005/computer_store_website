@@ -370,3 +370,16 @@ normally.
   - The fixed simulated card is test data only. Never enter a real card.
   - A production deployment requires a stable domain, HTTPS, rotated secrets,
     monitoring, backups, and provider-approved production credentials.
+
+
+BONUS FEATURES - 2.0 POINTS CLAIMED
+-----------------------------------
+
+1. GitHub Actions CI/CD pipeline.
+2. Microservices architecture with Kafka-based asynchronous communication.
+3. Search-grounded AI product assistant.
+4. Elasticsearch-powered product search.
+
+Implementation references and the runtime-evidence checklist are available in:
+  Bonus/README.md
+  Bonus/evidence/README.md

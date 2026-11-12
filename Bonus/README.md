@@ -13,12 +13,24 @@ credentials, personal data, or unredacted secrets in screenshots or logs.
 | --- | --- | --- |
 | CI/CD | `.github/workflows/ci.yml` | Separate lint, unit-test, frontend-build, and Docker-integration jobs; the integration job uploads the `ci-evidence` artifact |
 | Microservices and Kafka | `source/docker-compose.yml`, `source/services/`, `source/packages/event-contracts/` | Smoke and integration tests exercise real Kafka events, MongoDB transactions, outbox processing, idempotency, retry, and DLQ handling |
-| Horizontal scaling and Nginx | `source/docker-compose.yml`, `source/infra/nginx/nginx.conf` | `source/scripts/system-integration.js` verifies two DNS addresses for Gateway and every backend service, plus traffic across both Gateway instances |
-| Kafka consumer groups | `source/packages/service-runtime/index.js` | System integration verifies at least two active members in every required Kafka consumer group |
-| Socket.IO with Redis | `source/api-gateway/src/services/realtime.service.js` | System integration sends a realtime event between two Socket.IO servers through the Redis adapter |
 | Elasticsearch search | `source/services/search-service/` | System integration verifies the `products_v1` index contains at least 40 products and returns searchable catalog data |
 | Grounded AI assistant | `source/services/ai-service/` | Unit and system tests verify recommendations use real Search Service product IDs, prices, and canonical URLs, with a fallback when the provider is unavailable |
-| Automated QA | `source/tests/`, `source/scripts/*-integration.js` | `npm run lint`, `npm test`, `npm run build`, smoke tests, and service/system integration tests |
+
+These are the four bonus areas claimed by the project (maximum 2.0 points).     
+
+## Submission evidence
+
+The implementation references above are present in the repository. Runtime
+proof must come from a real successful execution and should be stored under
+[`evidence/`](evidence/README.md). Do not fabricate screenshots or commit
+screenshots that expose secrets. At minimum, the final submission should show:
+
+| Bonus area | Required proof |
+| --- | --- |
+| CI/CD | A green GitHub Actions workflow showing all four jobs, plus the downloadable `ci-evidence` artifact |
+| Microservices and Kafka | Running Compose services/replicas and a Kafka consumer-group description with active members |
+| Elasticsearch | A non-zero `products_v1` document count and a successful search response or search UI result |
+| Grounded AI | A chatbot recommendation containing real product cards/URLs and grounded response metadata |
 
 ## CI evidence artifact
 
