@@ -16,7 +16,17 @@ credentials, personal data, or unredacted secrets in screenshots or logs.
 | Elasticsearch search | `source/services/search-service/` | System integration verifies the `products_v1` index contains at least 40 products and returns searchable catalog data |
 | Grounded AI assistant | `source/services/ai-service/` | Unit and system tests verify recommendations use real Search Service product IDs, prices, and canonical URLs, with a fallback when the provider is unavailable |
 
-These are the four bonus areas claimed by the project (maximum 2.0 points).     
+These are the four bonus areas claimed by the project (maximum 2.0 points).
+
+### Supporting implementation evidence
+
+- **Kafka consumer groups:** demonstrate asynchronous service decoupling and
+  multiple active consumers for the Microservices bonus.
+- **Horizontal scaling and Nginx:** demonstrate replicated services and traffic
+  distribution, as required by the main project architecture.
+- **Socket.IO with Redis:** demonstrates cross-instance realtime delivery.
+- **Automated QA:** verifies these capabilities through unit and integration
+  tests but is counted under the CI/CD bonus rather than as a separate claim.
 
 ## Submission evidence
 
