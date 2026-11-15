@@ -16,6 +16,14 @@ function invalidCredentials() {
   );
 }
 
+function accountBanned() {
+  return new AppError(
+    403,
+    'ACCOUNT_BANNED',
+    'This account has been banned'
+  );
+}
+
 function actionUrl(path, token) {
   const base = process.env.FRONTEND_URL || 'http://localhost';
 
@@ -151,12 +159,7 @@ export function createAuthService({
       {select: '+passwordHash'}
     );
 
-    if (
-      !user ||
-      !user.passwordHash ||
-      user.accountStatus !== 'ACTIVE' ||
-      user.isBanned
-    ) {
+    if (!user || !user.passwordHash) {
       throw invalidCredentials();
     }
 
@@ -166,6 +169,14 @@ export function createAuthService({
     );
 
     if (!valid) {
+      throw invalidCredentials();
+    }
+
+    if (user.isBanned) {
+      throw accountBanned();
+    }
+
+    if (user.accountStatus !== 'ACTIVE') {
       throw invalidCredentials();
     }
 
@@ -188,7 +199,11 @@ export function createAuthService({
       );
 
       if (user) {
-        if (user.isBanned || user.accountStatus !== 'ACTIVE') {
+        if (user.isBanned) {
+          throw accountBanned();
+        }
+
+        if (user.accountStatus !== 'ACTIVE') {
           throw new AppError(
             403,
             'ACCOUNT_DISABLED',
@@ -209,11 +224,7 @@ export function createAuthService({
 
       if (user) {
         if (user.isBanned) {
-          throw new AppError(
-            403,
-            'ACCOUNT_DISABLED',
-            'This account is not available'
-          );
+          throw accountBanned();
         }
 
         const linkedGoogle = user.socialAccounts.find(

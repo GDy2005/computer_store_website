@@ -40,7 +40,12 @@ export default function LoginPage() {
           : requestedPath || '/profile';
       navigate(destination, {replace:true});
     } catch (requestError) {
-      setError(getApiMessage(requestError, t('auth.loginError')));
+      const errorCode = requestError.response?.data?.error?.code;
+      setError(
+        errorCode === 'ACCOUNT_BANNED'
+          ? t('auth.accountBanned')
+          : getApiMessage(requestError, t('auth.loginError'))
+      );
     } finally {
       setSubmitting(false);
     }
@@ -50,6 +55,9 @@ export default function LoginPage() {
     <AuthCard title={t('auth.loginTitle')} description={t('auth.loginDescription')}>
       {searchParams.get('oauth') === 'failed' && (
         <Alert severity="error">{t('auth.googleFailed')}</Alert>
+      )}
+      {searchParams.get('oauth') === 'banned' && (
+        <Alert severity="error">{t('auth.accountBanned')}</Alert>
       )}
       {error && <Alert severity="error">{error}</Alert>}
       <Stack component="form" spacing={2} onSubmit={submit}>

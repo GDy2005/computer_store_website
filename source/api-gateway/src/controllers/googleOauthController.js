@@ -97,6 +97,10 @@ export function createGoogleOAuthRouter(identityClient) {
                 : '/profile?oauth=success'
             );
           } catch (identityError) {
+            if (identityError.code === 'ACCOUNT_BANNED') {
+              return res.redirect('/login?oauth=banned');
+            }
+
             return next(identityError);
           }
         }

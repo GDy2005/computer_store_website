@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import bcrypt from 'bcryptjs';
 import {createAuthController} from '../api-gateway/src/controllers/authController.js';
 import {normalizeGoogleProfile} from '../api-gateway/src/controllers/googleOauthController.js';
 import {createPasswordTokenService} from '../services/identity-service/src/services/passwordTokenService.js';
@@ -9,6 +10,7 @@ import {parseAddressInput} from '../services/identity-service/src/validations/ad
 import {enqueueUserCreated} from '../services/identity-service/src/events/user.events.js';
 import {toUserResponseDTO} from '../services/identity-service/src/dto/response/UserResponseDTO.js';
 import {createAddressService} from '../services/identity-service/src/services/addressService.js';
+import {createAuthService} from '../services/identity-service/src/services/authService.js';
 
 const DEFAULT_AVATAR_URL =
   'https://res.cloudinary.com/ipc-media/image/upload/v1794128471/hcibhstn0zhnhzfxyipw.webp';
@@ -24,6 +26,54 @@ test('identity login validation preserves password whitespace', async () => {
   await runMiddleware(validateLogin, req);
   assert.equal(req.body.email, 'user@example.com');
   assert.equal(req.body.password, '  secret value  ');
+});
+
+test('correct credentials for a banned account return a dedicated error', async () => {
+  const passwordHash = await bcrypt.hash('correct-password', 4);
+  const authService = createAuthService({
+    userRepository: {
+      async findByEmail() {
+        return {
+          _id: {toString: () => 'user-1'},
+          role: 'CUSTOMER',
+          accountStatus: 'ACTIVE',
+          isBanned: true,
+          passwordHash
+        };
+      }
+    }
+  });
+
+  await assert.rejects(
+    authService.verifyCredentials({
+      email: 'customer@example.com',
+      password: 'correct-password'
+    }),
+    error => error.status === 403 && error.code === 'ACCOUNT_BANNED'
+  );
+});
+
+test('wrong password does not reveal that an account is banned', async () => {
+  const passwordHash = await bcrypt.hash('correct-password', 4);
+  const authService = createAuthService({
+    userRepository: {
+      async findByEmail() {
+        return {
+          accountStatus: 'ACTIVE',
+          isBanned: true,
+          passwordHash
+        };
+      }
+    }
+  });
+
+  await assert.rejects(
+    authService.verifyCredentials({
+      email: 'customer@example.com',
+      password: 'wrong-password'
+    }),
+    error => error.status === 401 && error.code === 'INVALID_CREDENTIALS'
+  );
 });
 
 test('profile validation rejects null fullName and allows clearing phone', async () => {
