@@ -35,7 +35,12 @@ test('Nginx and realtime Gateway are configured for horizontal scaling', () => {
   const realtime = read('../api-gateway/src/services/realtimeService.js');
 
   assert.match(nginx, /resolver 127\.0\.0\.11/);
-  assert.match(nginx, /server gateway:5000 resolve/);
+  assert.match(
+    nginx,
+    /server gateway:5000 resolve max_fails=1 fail_timeout=2s/
+  );
+  assert.match(nginx, /proxy_next_upstream .*http_502.*http_503.*http_504/);
+  assert.match(nginx, /proxy_next_upstream_tries 2/);
   assert.match(nginx, /proxy_set_header Upgrade \$http_upgrade/);
   assert.match(realtime, /createAdapter\(publisher, subscriber\)/);
   assert.match(realtime, /groupId: 'realtime-gateway-group'/);

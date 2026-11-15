@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useState} from 'react';
 import axios from 'axios';
-import {Alert,Box,Button,Chip,CircularProgress,Paper,Stack,TextField,Typography} from '@mui/material';
+import {Alert,Box,Button,Chip,CircularProgress,Paper,Stack,TextField,Tooltip,Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 import {getApiMessage} from '../../features/auth/AuthContext.jsx';
 import {formatAddress} from '../../features/address/addressFormat.js';
@@ -109,7 +109,11 @@ export default function AddressesPage() {
                   <Stack direction="row" gap={1} flexWrap="wrap" pt={0.5}>
                     <Button size="small" disabled={!addressId(address)} onClick={() => edit(address)}>{t('address.edit')}</Button>
                     {!address.isDefault && <Button size="small" disabled={!addressId(address)} onClick={() => run(() => axios.patch(`/api/v1/users/me/addresses/${encodeURIComponent(addressId(address))}/default`), t('address.defaultError'))}>{t('address.setDefault')}</Button>}
-                    <Button color="error" size="small" disabled={!addressId(address)} onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${encodeURIComponent(addressId(address))}`), t('address.deleteError'))}>{t('address.delete')}</Button>
+                    <Tooltip title={addresses.length === 1 ? t('address.lastRequired') : ''}>
+                      <span>
+                        <Button color="error" size="small" disabled={!addressId(address) || addresses.length === 1} onClick={() => run(() => axios.delete(`/api/v1/users/me/addresses/${encodeURIComponent(addressId(address))}`), t('address.deleteError'))}>{t('address.delete')}</Button>
+                      </span>
+                    </Tooltip>
                   </Stack>
                 </Stack>
               </Stack>

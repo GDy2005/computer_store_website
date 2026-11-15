@@ -70,6 +70,14 @@ export function createAddressService({
       );
     }
 
+    if (user.addresses.length === 1) {
+      throw new AppError(
+        409,
+        'LAST_ADDRESS_REQUIRED',
+        'At least one delivery address is required'
+      );
+    }
+
     const wasDefault = address.isDefault;
     address.deleteOne();
 

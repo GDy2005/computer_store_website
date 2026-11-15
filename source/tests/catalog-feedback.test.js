@@ -9,6 +9,28 @@ import {
 import {
   createRatingService
 } from '../services/catalog-service/src/services/ratingService.js';
+import {
+  validateCommentBody
+} from '../services/catalog-service/src/validations/commentValidation.js';
+
+test('catalog comment validation ignores guest identity restored with a signed-in session', () => {
+  const req = {
+    context: {userId: 'user-1'},
+    body: {
+      guestName: 'Stale guest name',
+      guestEmail: 'stale@example.com',
+      content: 'Authenticated comment'
+    }
+  };
+  let forwardedError;
+
+  validateCommentBody(req, {}, error => {
+    forwardedError = error;
+  });
+
+  assert.equal(forwardedError, undefined);
+  assert.deepEqual(req.body, {content: 'Authenticated comment'});
+});
 
 test('catalog guest comment is sanitized, keeps email private and writes an event', async () => {
   const productId = '507f1f77bcf86cd799439011';

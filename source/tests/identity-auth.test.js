@@ -8,6 +8,7 @@ import {validateUpdateProfile} from '../services/identity-service/src/validation
 import {parseAddressInput} from '../services/identity-service/src/validations/addressValidation.js';
 import {enqueueUserCreated} from '../services/identity-service/src/events/user.events.js';
 import {toUserResponseDTO} from '../services/identity-service/src/dto/response/UserResponseDTO.js';
+import {createAddressService} from '../services/identity-service/src/services/addressService.js';
 
 const DEFAULT_AVATAR_URL =
   'https://res.cloudinary.com/ipc-media/image/upload/v1794128471/hcibhstn0zhnhzfxyipw.webp';
@@ -40,6 +41,71 @@ test('address validation rejects client-controlled default flag', () => {
     () => parseAddressInput({recipientName: 'User', phone: '0900', addressLine: '1 Main', ward: 'Ward', district: 'District', province: 'Province', isDefault: true}),
     error => error.code === 'VALIDATION_ERROR'
   );
+});
+
+test('address service keeps the final delivery address', async () => {
+  const onlyAddress = {
+    _id: {toString: () => 'address-1'},
+    isDefault: true,
+    deleteOne() {
+      assert.fail('The final address must not be deleted');
+    }
+  };
+  const addresses = [onlyAddress];
+  addresses.id = id => id === 'address-1' ? onlyAddress : null;
+  const service = createAddressService({
+    userRepository: {
+      async findAvailableById() {
+        return {addresses};
+      },
+      async save() {
+        assert.fail('A rejected deletion must not be saved');
+      }
+    }
+  });
+
+  await assert.rejects(
+    service.remove('user-1', 'address-1'),
+    error => error.status === 409 && error.code === 'LAST_ADDRESS_REQUIRED'
+  );
+});
+
+test('deleting a default address promotes a remaining address', async () => {
+  let saved = false;
+  const home = {
+    _id: {toString: () => 'home'},
+    isDefault: true,
+    deleteOne() {
+      addresses.splice(addresses.indexOf(this), 1);
+    }
+  };
+  const office = {
+    _id: {toString: () => 'office'},
+    isDefault: false,
+    deleteOne() {
+      addresses.splice(addresses.indexOf(this), 1);
+    }
+  };
+  const addresses = [home, office];
+  addresses.id = id => addresses.find(
+    address => address._id.toString() === id
+  ) || null;
+  const service = createAddressService({
+    userRepository: {
+      async findAvailableById() {
+        return {addresses};
+      },
+      async save() {
+        saved = true;
+      }
+    }
+  });
+
+  await service.remove('user-1', 'home');
+
+  assert.equal(saved, true);
+  assert.equal(addresses.length, 1);
+  assert.equal(office.isDefault, true);
 });
 
 test('identity user response supplies the configured default avatar', () => {

@@ -44,7 +44,15 @@ export function validateCommentBody(req, res, next) {
     assertObject(body);
 
     if (req.context?.userId) {
-      allowOnly(body, ['content', 'parentCommentId']);
+      // The browser can briefly render the guest form while an existing
+      // server session is being restored. Accept guest identity fields in
+      // that race, but deliberately discard them for authenticated comments.
+      allowOnly(body, [
+        'guestName',
+        'guestEmail',
+        'content',
+        'parentCommentId'
+      ]);
 
       req.body = {
         content: requiredText(
