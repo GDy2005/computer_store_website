@@ -38,10 +38,10 @@ const emptyForm = {
 };
 
 function slugify(value) {
-  return value.normalize('NFD')
+  return String(value || '')
+    .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
+    .replace(/[đĐ]/g, 'd')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
@@ -58,6 +58,7 @@ export default function AdminCategoriesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [slugEdited, setSlugEdited] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pendingDeactivate, setPendingDeactivate] = useState(null);
 
@@ -83,6 +84,7 @@ export default function AdminCategoriesPage() {
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
+    setSlugEdited(false);
     setFormOpen(true);
   }
 
@@ -96,6 +98,7 @@ export default function AdminCategoriesPage() {
       isFeatured: Boolean(category.isFeatured),
       isActive: category.isActive !== false
     });
+    setSlugEdited(true);
     setFormOpen(true);
   }
 
@@ -105,7 +108,7 @@ export default function AdminCategoriesPage() {
     setError('');
     const payload = {
       name: form.name.trim(),
-      slug: form.slug.trim().toLowerCase(),
+      slug: slugify(form.slug || form.name),
       description: form.description.trim(),
       imageUrl: form.imageUrl.trim(),
       isFeatured: form.isFeatured,
@@ -181,10 +184,45 @@ export default function AdminCategoriesPage() {
           <DialogTitle>{editing ? t('admin.categories.editTitle') : t('admin.categories.add')}</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{pt: 1}}>
-              <TextField label={t('admin.categories.name')} value={form.name} onChange={event => setForm(current => ({...current, name: event.target.value}))} required inputProps={{maxLength: 100}}/>
+              <TextField
+                label={t('admin.categories.name')}
+                value={form.name}
+                onChange={event => {
+                  const name = event.target.value;
+                  setForm(current => ({
+                    ...current,
+                    name,
+                    slug: slugEdited ? current.slug : slugify(name)
+                  }));
+                }}
+                required
+                inputProps={{maxLength: 100}}
+              />
               <Stack direction="row" spacing={1}>
-                <TextField label="Slug" value={form.slug} onChange={event => setForm(current => ({...current, slug: event.target.value}))} required fullWidth inputProps={{maxLength: 100}}/>
-                <Button type="button" variant="outlined" onClick={() => setForm(current => ({...current, slug: slugify(current.name)}))}>{t('admin.categories.generateSlug')}</Button>
+                <TextField
+                  label="Slug"
+                  value={form.slug}
+                  onChange={event => {
+                    setSlugEdited(true);
+                    setForm(current => ({
+                      ...current,
+                      slug: slugify(event.target.value)
+                    }));
+                  }}
+                  required
+                  fullWidth
+                  inputProps={{maxLength: 100}}
+                />
+                <Button
+                  type="button"
+                  variant="outlined"
+                  onClick={() => {
+                    setSlugEdited(false);
+                    setForm(current => ({...current, slug: slugify(current.name)}));
+                  }}
+                >
+                  {t('admin.categories.generateSlug')}
+                </Button>
               </Stack>
               <TextField label={t('admin.categories.descriptionField')} value={form.description} onChange={event => setForm(current => ({...current, description: event.target.value}))} required multiline minRows={4} inputProps={{maxLength: 500}}/>
               <TextField label={t('admin.categories.imageUrl')} value={form.imageUrl} onChange={event => setForm(current => ({...current, imageUrl: event.target.value}))} type="url" inputProps={{maxLength: 1000}}/>

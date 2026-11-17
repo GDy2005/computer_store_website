@@ -21,11 +21,13 @@ export function parseFeatured(value) {
 }
 
 function parseSlug(value) {
-  const slug = requiredText(
-    value,
-    'slug',
-    100
-  ).toLowerCase();
+  const slug = requiredText(value, 'slug', 100)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw validationError('Invalid slug');

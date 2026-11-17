@@ -3,7 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createCategoryController} from '../services/catalog-service/src/controllers/categoryController.js';
 import {createCategoryService} from '../services/catalog-service/src/services/categoryService.js';
-import {parseFeatured,validateCategoryList} from '../services/catalog-service/src/validations/categoryValidation.js';
+import {
+  parseFeatured,
+  validateCategoryList,
+  validateCreateCategory
+} from '../services/catalog-service/src/validations/categoryValidation.js';
 
 test('category seed contains six unique active featured computer categories', () => {
   const categories = JSON.parse(readFileSync(new URL('../services/catalog-service/src/seeds/data/categories.json', import.meta.url), 'utf8'));
@@ -18,6 +22,27 @@ test('featured query accepts only true or false', () => {
   assert.equal(parseFeatured('true'), true);
   assert.equal(parseFeatured('false'), false);
   assert.throws(() => parseFeatured('yes'), error => error.status === 400 && error.code === 'VALIDATION_ERROR');
+});
+
+test('category validation normalizes Vietnamese and manually entered slugs', () => {
+  const req = {
+    body: {
+      name: 'Thiết bị mạng',
+      slug: 'Thiết bị mạng / Wi-Fi',
+      description: 'Thiết bị mạng gia đình và văn phòng',
+      imageUrl: '',
+      isFeatured: true,
+      isActive: true
+    }
+  };
+  let receivedError;
+
+  validateCreateCategory(req, {}, error => {
+    receivedError = error;
+  });
+
+  assert.equal(receivedError, undefined);
+  assert.equal(req.body.slug, 'thiet-bi-mang-wi-fi');
 });
 
 test('category listing filters active records and projects public fields', async () => {
