@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 
 import {
   getUserModel
@@ -23,6 +24,31 @@ const demoCustomerEmail = (
 ).trim().toLowerCase();
 const demoCustomerPassword = process.env.DEMO_CUSTOMER_PASSWORD ||
   'Customer@123';
+
+function demoCustomerAddresses() {
+  return [
+    {
+      _id: new mongoose.Types.ObjectId(
+        '64b000000000000000000011'
+      ),
+      label: 'HOME',
+      recipientName: 'Demo Customer',
+      phone: '0901234567',
+      ...VIETNAM_DEMO_ADDRESSES.CHO_QUAN,
+      isDefault: true
+    },
+    {
+      _id: new mongoose.Types.ObjectId(
+        '64b000000000000000000012'
+      ),
+      label: 'OFFICE',
+      recipientName: 'Demo Customer',
+      phone: '0901234567',
+      ...VIETNAM_DEMO_ADDRESSES.TAN_HUNG,
+      isDefault: false
+    }
+  ];
+}
 
 if (!process.env.MONGODB_URI) {
   throw new Error('MONGODB_URI is required');
@@ -151,67 +177,22 @@ try {
             role: 'CUSTOMER',
             accountStatus: 'ACTIVE',
             isBanned: false,
-            addresses: [
-              {
-                _id: new mongoose.Types.ObjectId(
-                  '64b000000000000000000011'
-                ),
-                label: 'HOME',
-                recipientName: 'Demo Customer',
-                phone: '0901234567',
-                addressLine: '63/52 Nguyen Bieu Street',
-                ward: 'Phường Chợ Quán',
-                wardCode: '27301',
-                province: 'Thành phố Hồ Chí Minh',
-                provinceCode: '79',
-                isDefault: true
-              },
-              {
-                _id: new mongoose.Types.ObjectId(
-                  '64b000000000000000000012'
-                ),
-                label: 'OFFICE',
-                recipientName: 'Demo Customer',
-                phone: '0901234567',
-                addressLine: '19 Nguyen Huu Tho Street',
-                ward: 'Phường Tân Hưng',
-                wardCode: '27475',
-                province: 'Thành phố Hồ Chí Minh',
-                provinceCode: '79',
-                isDefault: false
-              }
-            ]
+            addresses: demoCustomerAddresses()
           }
         ],
         {session}
       );
       customerCreated = true;
     } else {
-      let changed = false;
       if (!customer.passwordHash) {
         customer.passwordHash = await bcrypt.hash(demoCustomerPassword, 12);
-        changed = true;
       }
-      if (customer.accountStatus !== 'ACTIVE' || customer.isBanned) {
-        customer.accountStatus = 'ACTIVE';
-        customer.isBanned = false;
-        changed = true;
-      }
-      if (customer.addresses.length === 0) {
-        customer.addresses.push({
-          label: 'HOME',
-          recipientName: customer.fullName,
-          phone: customer.phone || '0901234567',
-          addressLine: '63/52 Nguyen Bieu Street',
-          ward: 'Phường Chợ Quán',
-          wardCode: '27301',
-          province: 'Thành phố Hồ Chí Minh',
-          provinceCode: '79',
-          isDefault: true
-        });
-        changed = true;
-      }
-      if (changed) await customer.save({session});
+      customer.fullName = 'Demo Customer';
+      customer.phone = '0901234567';
+      customer.accountStatus = 'ACTIVE';
+      customer.isBanned = false;
+      customer.addresses = demoCustomerAddresses();
+      await customer.save({session});
     }
 
     const customerEventExists = await SeedOutbox.exists({

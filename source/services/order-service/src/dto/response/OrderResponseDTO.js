@@ -19,6 +19,18 @@ function publicItem(item, includeCost = false) {
   };
 }
 
+function publicShippingAddress(address = {}) {
+  return {
+    recipientName: address.recipientName,
+    phone: address.phone,
+    addressLine: address.addressLine,
+    ward: address.ward,
+    wardCode: address.wardCode,
+    province: address.province,
+    provinceCode: address.provinceCode
+  };
+}
+
 export class OrderResponseDTO {
   static customer(order, {detail = false} = {}) {
     const result = {
@@ -49,7 +61,7 @@ export class OrderResponseDTO {
     return {
       ...result,
       customer: order.customer,
-      shippingAddress: order.shippingAddress,
+      shippingAddress: publicShippingAddress(order.shippingAddress),
       items: order.items.map(item => publicItem(item)),
       coupon: order.coupon
         ? {
@@ -105,7 +117,7 @@ export class OrderResponseDTO {
 
     return {
       ...result,
-      shippingAddress: order.shippingAddress,
+      shippingAddress: publicShippingAddress(order.shippingAddress),
       items: order.items.map(item => publicItem(item, true)),
       loyalty: order.loyalty,
       loyaltyCredited: order.loyaltyCredited,

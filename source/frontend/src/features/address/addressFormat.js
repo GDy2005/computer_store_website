@@ -13,9 +13,6 @@ export function formatAddress(address = {}, locale = 'vi') {
         'Ward',
         /^(ward|commune|special zone|phường|xã|đặc khu)\b/iu
       ),
-      address.district
-        ? withPrefix(address.district, 'District', /^district\b/i)
-        : '',
       address.province
     ].filter(Boolean).join(', ');
   }
@@ -27,13 +24,6 @@ export function formatAddress(address = {}, locale = 'vi') {
       'Phường/Xã',
       /^(phường|xã|đặc khu|phường\/xã)\b/iu
     ),
-    address.district
-      ? withPrefix(
-          address.district,
-          'Quận/Huyện',
-          /^(quận|huyện|quận\/huyện)\b/iu
-        )
-      : '',
     address.province
   ].filter(Boolean).join(', ');
 }

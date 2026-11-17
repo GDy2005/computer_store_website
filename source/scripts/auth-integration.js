@@ -1,7 +1,10 @@
 import {randomUUID} from 'node:crypto';
 import {resolve4} from 'node:dns/promises';
 import mongoose from 'mongoose';
-import {signedContext} from '@store/validation';
+import {
+  signedContext,
+  VIETNAM_DEMO_ADDRESSES
+} from '@store/validation';
 
 const email = process.env.AUTH_TEST_EMAIL || `auth-${randomUUID()}@example.invalid`;
 const oauthEmail = `auth-google-${randomUUID()}@example.invalid`;
@@ -122,10 +125,7 @@ try {
         label: 'Home',
         recipientName: 'Phase Two Test',
         phone: '0900000000',
-        addressLine: '1 Integration Street',
-        ward: 'Test Ward',
-        district: 'Test District',
-        province: 'Test Province'
+        ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
       }
     }
   });
@@ -164,10 +164,7 @@ try {
       label: 'Office',
       recipientName: 'Phase Two Updated',
       phone: '0911111111',
-      addressLine: '2 Integration Street',
-      ward: 'Test Ward',
-      district: 'Test District',
-      province: 'Test Province'
+      ...VIETNAM_DEMO_ADDRESSES.TAN_HUNG
     }
   });
   const addressId = createdAddress.payload.data.id || createdAddress.payload.data._id;

@@ -114,8 +114,7 @@ export function normalizeAddressForm(address = {}) {
     provinceCode,
     province: getProvince(provinceCode)?.name || address.province || '',
     wardCode,
-    ward: getWard(wardCode)?.name || address.ward || '',
-    district: address.district || ''
+    ward: getWard(wardCode)?.name || address.ward || ''
   };
 }
 
@@ -130,10 +129,7 @@ export function toAddressPayload(address = {}, {includeLabel = true} = {}) {
     provinceCode: normalized.provinceCode,
     province: normalized.province,
     wardCode: normalized.wardCode,
-    ward: normalized.ward,
-    // Sending null deliberately removes a district left by the former
-    // three-level address form when an address is edited.
-    district: normalized.district.trim() || null
+    ward: normalized.ward
   };
 
   if (includeLabel) {

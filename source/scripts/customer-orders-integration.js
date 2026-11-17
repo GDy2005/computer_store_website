@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import mongoose from 'mongoose';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 
 const baseUrl = process.env.APP_BASE_URL || 'http://nginx';
 const guestToken = randomUUID();
@@ -98,8 +99,7 @@ try {
       customer: {fullName: 'Phase Five Guest', email, phone: '0900000000'},
       shippingAddress: {
         recipientName: 'Phase Five Guest', phone: '0900000000',
-        addressLine: '5 Integration Street', ward: 'Test Ward',
-        district: 'Test District', province: 'Test Province'
+        ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
       }
     }
   })).data;

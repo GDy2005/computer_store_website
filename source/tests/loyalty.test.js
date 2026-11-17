@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 import {createLoyaltyService} from '../services/order-service/src/services/loyaltyService.js';
 import {createCheckoutService} from '../services/order-service/src/services/checkoutService.js';
 import {validatePlaceOrder, validatePreview} from '../services/order-service/src/validations/orderValidation.js';
@@ -30,7 +31,11 @@ test('customer loyalty input accepts only bounded non-negative integer points', 
     checkoutId: '550e8400-e29b-41d4-a716-446655440000',
     pointsToRedeem: -1,
     customer: {fullName: 'User', email: 'user@example.com', phone: '0900000000'},
-    shippingAddress: {recipientName: 'User', phone: '0900000000', addressLine: '1 Main', ward: 'Ward', district: 'District', province: 'HCM'}
+    shippingAddress: {
+      recipientName: 'User',
+      phone: '0900000000',
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
+    }
   };
   await assert.rejects(runMiddleware(validatePlaceOrder, validOrder), /Invalid pointsToRedeem/);
 });

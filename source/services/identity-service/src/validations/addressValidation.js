@@ -15,7 +15,6 @@ const addressFields = [
   'addressLine',
   'ward',
   'wardCode',
-  'district',
   'province',
   'provinceCode'
 ];
@@ -68,18 +67,12 @@ export function parseAddressInput(value, options = {}) {
     result.ward = requiredText(value.ward, 'ward', 100);
   }
 
-  if (value.wardCode !== undefined) {
+  if (!partial || value.wardCode !== undefined) {
     result.wardCode = administrativeCode(
       value.wardCode,
       'wardCode',
       5
     );
-  }
-
-  if (value.district !== undefined) {
-    result.district = value.district === null || String(value.district).trim() === ''
-      ? null
-      : requiredText(value.district, 'district', 100);
   }
 
   if (!partial || value.province !== undefined) {
@@ -90,7 +83,7 @@ export function parseAddressInput(value, options = {}) {
     );
   }
 
-  if (value.provinceCode !== undefined) {
+  if (!partial || value.provinceCode !== undefined) {
     result.provinceCode = administrativeCode(
       value.provinceCode,
       'provinceCode',

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import bcrypt from 'bcryptjs';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 import {createAuthController} from '../api-gateway/src/controllers/authController.js';
 import {normalizeGoogleProfile} from '../api-gateway/src/controllers/googleOauthController.js';
 import {createPasswordTokenService} from '../services/identity-service/src/services/passwordTokenService.js';
@@ -88,7 +89,12 @@ test('profile validation rejects null fullName and allows clearing phone', async
 
 test('address validation rejects client-controlled default flag', () => {
   assert.throws(
-    () => parseAddressInput({recipientName: 'User', phone: '0900', addressLine: '1 Main', ward: 'Ward', district: 'District', province: 'Province', isDefault: true}),
+    () => parseAddressInput({
+      recipientName: 'User',
+      phone: '0900',
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH,
+      isDefault: true
+    }),
     error => error.code === 'VALIDATION_ERROR'
   );
 });
@@ -98,11 +104,7 @@ test('address validation accepts current two-level administrative codes', () => 
     label: 'HOME',
     recipientName: 'User',
     phone: '0900000000',
-    addressLine: '63/52 Nguyễn Biểu',
-    ward: 'Phường Chợ Quán',
-    wardCode: '27301',
-    province: 'Thành phố Hồ Chí Minh',
-    provinceCode: '79'
+    ...VIETNAM_DEMO_ADDRESSES.CHO_QUAN
   });
 
   assert.equal(result.wardCode, '27301');
@@ -110,13 +112,14 @@ test('address validation accepts current two-level administrative codes', () => 
   assert.equal(result.district, undefined);
 });
 
-test('address update validation can clear a legacy district', () => {
-  const result = parseAddressInput(
-    {district: null},
-    {partial: true}
+test('address validation rejects the removed district field', () => {
+  assert.throws(
+    () => parseAddressInput(
+      {district: 'Quận 1'},
+      {partial: true}
+    ),
+    error => error.code === 'VALIDATION_ERROR'
   );
-
-  assert.equal(result.district, null);
 });
 
 test('address service keeps the final delivery address', async () => {

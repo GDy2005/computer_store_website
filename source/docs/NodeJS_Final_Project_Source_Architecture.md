@@ -510,10 +510,11 @@ Các đoạn dưới đây là cấu trúc dữ liệu định hướng. Khi tri
       label: "Nha rieng",
       recipientName: "Nguyen Van A",
       phone: "0901234567",
-      addressLine: "19 Nguyen Huu Tho",
-      ward: "Tan Phong",
-      district: "Quan 7",
-      province: "TP. Ho Chi Minh",
+      addressLine: "19 Nguyễn Hữu Thọ",
+      ward: "Phường Tân Hưng",
+      wardCode: "27475",
+      province: "Thành phố Hồ Chí Minh",
+      provinceCode: "79",
       isDefault: true
     }
   ],
@@ -677,10 +678,11 @@ Quy tắc:
   shippingAddress: {
     recipientName: "Nguyen Van A",
     phone: "0901234567",
-    addressLine: "19 Nguyen Huu Tho",
-    ward: "Tan Phong",
-    district: "Quan 7",
-    province: "TP. Ho Chi Minh"
+    addressLine: "19 Nguyễn Hữu Thọ",
+    ward: "Phường Tân Hưng",
+    wardCode: "27475",
+    province: "Thành phố Hồ Chí Minh",
+    provinceCode: "79"
   },
   items: [
     {

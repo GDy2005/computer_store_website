@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 import {createCustomerOrderService} from '../services/order-service/src/services/customerOrderService.js';
 import {validateOrderListQuery} from '../services/order-service/src/validations/orderValidation.js';
 
@@ -20,7 +21,11 @@ function order(overrides = {}) {
     status: 'CONFIRMED',
     workflowStatus: 'CONFIRMED',
     customer: {fullName: 'Nguyen Van A', email: 'a@example.com', phone: '0900000000'},
-    shippingAddress: {recipientName: 'Nguyen Van A', phone: '0900000000', addressLine: '1 Main', ward: 'Ward 1', district: 'District 1', province: 'HCM'},
+    shippingAddress: {
+      recipientName: 'Nguyen Van A',
+      phone: '0900000000',
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
+    },
     items: [{productId: 'product-1', variantId: 'variant-1', sku: 'SKU-1', productName: 'Keyboard', variantName: 'Black', imageUrl: 'https://example.com/a.jpg', brand: 'Brand', categoryName: 'Keyboard', quantity: 2, unitPrice: 1000000, unitCost: 600000, lineTotal: 2000000}],
     pricing: {subtotal: 2000000, discountAmount: 200000, shippingFee: 50000, total: 1850000, totalCost: 1200000, profit: 600000},
     coupon: {code: 'HELLO', discountAmount: 200000, status: 'APPLIED'},

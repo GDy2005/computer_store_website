@@ -46,8 +46,7 @@ function optionalText(value, name, maximum = 255) {
 }
 
 function administrativeCode(value, name, length) {
-  const result = optionalText(value, name, length);
-  if (result === null) return null;
+  const result = text(value, name, length);
 
   if (!new RegExp(`^\\d{${length}}$`).test(result)) {
     fail(`Invalid ${name}`);
@@ -180,7 +179,6 @@ export const validatePlaceOrder = middleware(body => {
     'addressLine',
     'ward',
     'wardCode',
-    'district',
     'province',
     'provinceCode'
   ]);
@@ -272,11 +270,6 @@ export const validatePlaceOrder = middleware(body => {
         body.shippingAddress.wardCode,
         'wardCode',
         5
-      ),
-      district: optionalText(
-        body.shippingAddress.district,
-        'district',
-        100
       ),
       province: text(body.shippingAddress.province, 'province', 100),
       provinceCode: administrativeCode(

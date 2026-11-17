@@ -6,7 +6,10 @@ import {
   createEvent,
   validateEvent
 } from '@store/event-contracts';
-import {signedContext} from '@store/validation';
+import {
+  signedContext,
+  VIETNAM_DEMO_ADDRESSES
+} from '@store/validation';
 import mongoose from 'mongoose';
 
 import {orderEventPayload} from '../events/order.events.js';
@@ -34,11 +37,7 @@ const demoCustomer = {
   shippingAddress: {
     recipientName: 'Demo Customer',
     phone: '0901234567',
-    addressLine: '63/52 Nguyen Bieu Street',
-    ward: 'Phường Chợ Quán',
-    wardCode: '27301',
-    province: 'Thành phố Hồ Chí Minh',
-    provinceCode: '79'
+    ...VIETNAM_DEMO_ADDRESSES.CHO_QUAN
   }
 };
 
@@ -228,11 +227,8 @@ export function buildOrder(index, snapshots, now) {
       : {
         recipientName: fullName,
         phone,
-        addressLine: `${index + 10} Nguyen Van Linh Street`,
-        ward: 'Phường Tân Mỹ',
-        wardCode: '27487',
-        province: 'Thành phố Hồ Chí Minh',
-        provinceCode: '79'
+        ...VIETNAM_DEMO_ADDRESSES.TAN_MY,
+        addressLine: `${index + 10} Nguyễn Văn Linh`
       },
     items: [{
       productId: new mongoose.Types.ObjectId(snapshot.productId),
@@ -308,6 +304,40 @@ async function seedDemoCustomerData({
       },
       {session}
     );
+
+    const demoOrders = await Order.find({
+      orderNumber: /^ORD-DEMO-/
+    }).session(session);
+
+    if (demoOrders.length > 0) {
+      await Order.bulkWrite(
+        demoOrders.map(order => {
+          const isDemoCustomer =
+            order.userId === demoCustomer.userId ||
+            order.customer.email === demoCustomer.email;
+          const sequence = Math.max(
+            0,
+            Number(order.orderNumber.split('-').at(-1)) - 1
+          );
+          const shippingAddress = isDemoCustomer
+            ? demoCustomer.shippingAddress
+            : {
+                recipientName: order.customer.fullName,
+                phone: order.customer.phone,
+                ...VIETNAM_DEMO_ADDRESSES.TAN_MY,
+                addressLine: `${sequence + 10} Nguyễn Văn Linh`
+              };
+
+          return {
+            updateOne: {
+              filter: {_id: order._id},
+              update: {$set: {shippingAddress}}
+            }
+          };
+        }),
+        {session}
+      );
+    }
 
     const deliveredOrders = await Order.find({
       userId: demoCustomer.userId,

@@ -37,8 +37,7 @@ export default function AddressFormFields({
       provinceCode: code,
       province: province?.name || '',
       wardCode: '',
-      ward: '',
-      district: ''
+      ward: ''
     }));
   }
 

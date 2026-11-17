@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 
 import {validateEvent} from '@store/event-contracts';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 
 import {
   validatePlaceOrder
@@ -76,11 +77,7 @@ test('place-order validation normalizes checkout input', async () => {
     shippingAddress: {
       recipientName: ' Nguyen Van A ',
       phone: '0900000000',
-      addressLine: '1 Nguyen Hue',
-      ward: 'Phường Bến Thành',
-      wardCode: '26743',
-      province: 'Thành phố Hồ Chí Minh',
-      provinceCode: '79'
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
     }
   });
 
@@ -91,7 +88,7 @@ test('place-order validation normalizes checkout input', async () => {
   assert.equal(body.paymentCard, null);
   assert.equal(body.shippingAddress.wardCode, '26743');
   assert.equal(body.shippingAddress.provinceCode, '79');
-  assert.equal(body.shippingAddress.district, null);
+  assert.equal(Object.hasOwn(body.shippingAddress, 'district'), false);
 });
 
 test('place-order validation normalizes a simulated card', async () => {
@@ -112,10 +109,7 @@ test('place-order validation normalizes a simulated card', async () => {
     shippingAddress: {
       recipientName: 'Nguyen Van A',
       phone: '0900000000',
-      addressLine: '1 Nguyen Hue',
-      ward: 'Ben Nghe',
-      district: 'Quan 1',
-      province: 'TP HCM'
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
     }
   });
 
@@ -138,10 +132,7 @@ test('place-order validation requires card fields only for simulated payment', a
     shippingAddress: {
       recipientName: 'User',
       phone: '0900000000',
-      addressLine: '1 Main Street',
-      ward: 'Ward 1',
-      district: 'District 1',
-      province: 'HCM'
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
     }
   };
 
@@ -179,10 +170,7 @@ test('place-order validation rejects unknown fields and malformed UUIDs', async 
     shippingAddress: {
       recipientName: 'User',
       phone: '0900000000',
-      addressLine: '1 Main Street',
-      ward: 'Ward 1',
-      district: 'District 1',
-      province: 'HCM'
+      ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
     }
   };
 

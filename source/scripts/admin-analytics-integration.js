@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {VIETNAM_DEMO_ADDRESSES} from '@store/validation';
 
 const baseUrl = process.env.APP_BASE_URL || 'http://localhost';
 const guestToken = randomUUID();
@@ -172,10 +173,7 @@ const placed = (
       shippingAddress: {
         recipientName: 'Phase Seven Customer',
         phone: '0900000007',
-        addressLine: '7 Integration Street',
-        ward: 'Test Ward',
-        district: 'Test District',
-        province: 'Test Province'
+        ...VIETNAM_DEMO_ADDRESSES.BEN_THANH
       }
     }
   })
