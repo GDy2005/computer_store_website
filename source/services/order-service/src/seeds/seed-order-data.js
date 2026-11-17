@@ -35,9 +35,10 @@ const demoCustomer = {
     recipientName: 'Demo Customer',
     phone: '0901234567',
     addressLine: '63/52 Nguyen Bieu Street',
-    ward: 'Ward 1',
-    district: 'District 5',
-    province: 'Ho Chi Minh City'
+    ward: 'Phường Chợ Quán',
+    wardCode: '27301',
+    province: 'Thành phố Hồ Chí Minh',
+    provinceCode: '79'
   }
 };
 
@@ -228,9 +229,10 @@ export function buildOrder(index, snapshots, now) {
         recipientName: fullName,
         phone,
         addressLine: `${index + 10} Nguyen Van Linh Street`,
-        ward: 'Tan Phong Ward',
-        district: 'District 7',
-        province: 'Ho Chi Minh City'
+        ward: 'Phường Tân Mỹ',
+        wardCode: '27487',
+        province: 'Thành phố Hồ Chí Minh',
+        provinceCode: '79'
       },
     items: [{
       productId: new mongoose.Types.ObjectId(snapshot.productId),

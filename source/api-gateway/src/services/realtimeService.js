@@ -3,6 +3,7 @@ import {validateEvent} from '@store/event-contracts';
 import {kafkaClient} from '@store/kafka-client';
 import {log} from '@store/logger';
 import {Server} from 'socket.io';
+import {createSocketCorsConfig} from '../config/corsConfig.js';
 
 const realtimeTopics = [
   'comments.created.v1',
@@ -65,10 +66,12 @@ export function createRealtimeService({
     `realtime-${gatewayInstance}`
   )
 }) {
+  const socketCors = createSocketCorsConfig();
   const io = new Server(server, {
     path: '/socket.io',
     serveClient: false,
-    transports: ['websocket']
+    transports: ['websocket'],
+    ...socketCors
   });
   const publisher = redis.duplicate();
   const subscriber = redis.duplicate();

@@ -34,17 +34,29 @@ const addressSchema = new Schema(
       trim: true,
       maxlength: 100
     },
+    wardCode: {
+      type: String,
+      trim: true,
+      match: /^\d{5}$/,
+      default: null
+    },
     district: {
       type: String,
-      required: true,
       trim: true,
-      maxlength: 100
+      maxlength: 100,
+      default: null
     },
     province: {
       type: String,
       required: true,
       trim: true,
       maxlength: 100
+    },
+    provinceCode: {
+      type: String,
+      trim: true,
+      match: /^\d{2}$/,
+      default: null
     },
     isDefault: {
       type: Boolean,

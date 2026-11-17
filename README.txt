@@ -82,6 +82,7 @@ IMPORTANT - COMPLETE FEATURE CONFIGURATION:
   NODE_ENV=development
   SERVICE_REPLICAS=2
   FRONTEND_URL=http://localhost
+  CORS_ALLOWED_ORIGINS=http://localhost
   ADMIN_EMAIL=admin@example.com
   ADMIN_INITIAL_PASSWORD=change-me
   DEMO_CUSTOMER_ID=64b000000000000000000001
@@ -121,6 +122,7 @@ If port 80 is busy, for example use port 8080:
 
   HTTP_PORT=8080
   FRONTEND_URL=http://localhost:8080
+  CORS_ALLOWED_ORIGINS=http://localhost:8080
   GOOGLE_CALLBACK_URL=http://localhost:8080/api/v1/auth/google/callback
 
 The website will then be available at http://localhost:8080.
@@ -543,6 +545,7 @@ QUAN TRỌNG - CẤU HÌNH ĐẦY ĐỦ TÍNH NĂNG:
   FOUNDATION_PROBES_ENABLED=true
   SERVICE_REPLICAS=2
   FRONTEND_URL=http://localhost
+  CORS_ALLOWED_ORIGINS=http://localhost
   PASSWORD_TOKEN_TTL_MINUTES=30
   ADMIN_EMAIL=admin@example.com
   ADMIN_INITIAL_PASSWORD=change-me
@@ -572,6 +575,7 @@ Nếu cổng 80 bận, ví dụ dùng 8080:
 
   HTTP_PORT=8080
   FRONTEND_URL=http://localhost:8080
+  CORS_ALLOWED_ORIGINS=http://localhost:8080
   GOOGLE_CALLBACK_URL=http://localhost:8080/api/v1/auth/google/callback
 
 Khi đó website nằm tại http://localhost:8080. Phải cập nhật cùng cổng trong

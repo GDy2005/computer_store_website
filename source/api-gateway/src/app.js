@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import {randomUUID} from 'node:crypto';
 import session from 'express-session';
 import {RedisStore} from 'connect-redis';
@@ -8,6 +9,7 @@ import {sendSuccess} from '@store/http-response';
 import {createAuthController} from './controllers/authController.js';
 import {createGoogleOAuthRouter} from './controllers/googleOauthController.js';
 import {createIdentityClient} from './services/identityClientService.js';
+import {createHttpCorsOptions} from './config/corsConfig.js';
 export const serviceUrls = {
   ...Object.fromEntries(
     ['identity', 'catalog', 'order', 'notification', 'analytics']
@@ -59,6 +61,7 @@ export function buildApp(redis, {isRealtimeReady = () => true} = {}) {
   const app = express();
   app.set('trust proxy', 1);
   app.use((req, res, next) => { req.requestId = randomUUID(); res.set('x-request-id', req.requestId); res.set('x-gateway-instance', gatewayInstance); next(); });
+  app.use(cors(createHttpCorsOptions()));
   app.get('/health/live', (req, res) => sendSuccess(res, {
     message: 'Gateway is live',
     data: {live: true}

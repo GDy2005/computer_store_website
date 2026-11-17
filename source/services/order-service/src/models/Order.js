@@ -26,8 +26,10 @@ const shippingSchema = new Schema(
     phone: {type: String, required: true},
     addressLine: {type: String, required: true},
     ward: {type: String, required: true},
-    district: {type: String, required: true},
-    province: {type: String, required: true}
+    wardCode: {type: String, match: /^\d{5}$/, default: null},
+    district: {type: String, default: null},
+    province: {type: String, required: true},
+    provinceCode: {type: String, match: /^\d{2}$/, default: null}
   },
   {_id: false}
 );

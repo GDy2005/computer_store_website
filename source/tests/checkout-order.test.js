@@ -77,9 +77,10 @@ test('place-order validation normalizes checkout input', async () => {
       recipientName: ' Nguyen Van A ',
       phone: '0900000000',
       addressLine: '1 Nguyen Hue',
-      ward: 'Ben Nghe',
-      district: 'Quan 1',
-      province: 'TP HCM'
+      ward: 'Phường Bến Thành',
+      wardCode: '26743',
+      province: 'Thành phố Hồ Chí Minh',
+      provinceCode: '79'
     }
   });
 
@@ -88,6 +89,9 @@ test('place-order validation normalizes checkout input', async () => {
   assert.equal(body.customer.email, 'user@example.com');
   assert.equal(body.customer.fullName, 'Nguyen Van A');
   assert.equal(body.paymentCard, null);
+  assert.equal(body.shippingAddress.wardCode, '26743');
+  assert.equal(body.shippingAddress.provinceCode, '79');
+  assert.equal(body.shippingAddress.district, null);
 });
 
 test('place-order validation normalizes a simulated card', async () => {

@@ -100,6 +100,7 @@ At minimum, review these values in `source/.env`:
 HTTP_PORT=80
 SERVICE_REPLICAS=2
 FRONTEND_URL=http://localhost
+CORS_ALLOWED_ORIGINS=http://localhost
 INTERNAL_SERVICE_SECRET=replace-with-a-random-secret
 SESSION_SECRET=replace-with-another-random-secret
 ADMIN_EMAIL=admin@example.com
@@ -141,7 +142,9 @@ orders; later restarts do not duplicate them.
 | Search API | <http://localhost/api/v1/search?search=gaming&page=1&limit=12> |
 
 If `HTTP_PORT=8080`, replace `http://localhost` with
-`http://localhost:8080` in local URLs and callback settings.
+`http://localhost:8080` in `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS`, local URLs,
+and callback settings. Multiple permitted browser origins can be separated by
+commas; do not use `*` because authentication uses session cookies.
 
 ### Demo customer account
 

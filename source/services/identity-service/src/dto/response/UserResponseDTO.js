@@ -14,8 +14,10 @@ export function toAddressResponseDTO(value) {
     phone: address.phone,
     addressLine: address.addressLine,
     ward: address.ward,
+    wardCode: address.wardCode || null,
     district: address.district,
     province: address.province,
+    provinceCode: address.provinceCode || null,
     isDefault: address.isDefault,
     createdAt: address.createdAt,
     updatedAt: address.updatedAt

@@ -37,6 +37,25 @@ function text(value, name, maximum = 255) {
   return value.trim();
 }
 
+function optionalText(value, name, maximum = 255) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    return null;
+  }
+
+  return text(value, name, maximum);
+}
+
+function administrativeCode(value, name, length) {
+  const result = optionalText(value, name, length);
+  if (result === null) return null;
+
+  if (!new RegExp(`^\\d{${length}}$`).test(result)) {
+    fail(`Invalid ${name}`);
+  }
+
+  return result;
+}
+
 function email(value) {
   const result = text(value, 'email', 254).toLowerCase();
 
@@ -160,8 +179,10 @@ export const validatePlaceOrder = middleware(body => {
     'phone',
     'addressLine',
     'ward',
+    'wardCode',
     'district',
-    'province'
+    'province',
+    'provinceCode'
   ]);
 
   if (
@@ -247,8 +268,22 @@ export const validatePlaceOrder = middleware(body => {
         255
       ),
       ward: text(body.shippingAddress.ward, 'ward', 100),
-      district: text(body.shippingAddress.district, 'district', 100),
-      province: text(body.shippingAddress.province, 'province', 100)
+      wardCode: administrativeCode(
+        body.shippingAddress.wardCode,
+        'wardCode',
+        5
+      ),
+      district: optionalText(
+        body.shippingAddress.district,
+        'district',
+        100
+      ),
+      province: text(body.shippingAddress.province, 'province', 100),
+      provinceCode: administrativeCode(
+        body.shippingAddress.provinceCode,
+        'provinceCode',
+        2
+      )
     }
   };
 });

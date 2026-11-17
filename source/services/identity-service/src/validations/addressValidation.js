@@ -14,9 +14,21 @@ const addressFields = [
   'phone',
   'addressLine',
   'ward',
+  'wardCode',
   'district',
-  'province'
+  'province',
+  'provinceCode'
 ];
+
+function administrativeCode(value, field, length) {
+  const result = requiredText(value, field, length);
+
+  if (!new RegExp(`^\\d{${length}}$`).test(result)) {
+    throw validationError(`Invalid ${field}`);
+  }
+
+  return result;
+}
 
 export function parseAddressInput(value, options = {}) {
   const {partial = false} = options;
@@ -56,12 +68,18 @@ export function parseAddressInput(value, options = {}) {
     result.ward = requiredText(value.ward, 'ward', 100);
   }
 
-  if (!partial || value.district !== undefined) {
-    result.district = requiredText(
-      value.district,
-      'district',
-      100
+  if (value.wardCode !== undefined) {
+    result.wardCode = administrativeCode(
+      value.wardCode,
+      'wardCode',
+      5
     );
+  }
+
+  if (value.district !== undefined) {
+    result.district = value.district === null || String(value.district).trim() === ''
+      ? null
+      : requiredText(value.district, 'district', 100);
   }
 
   if (!partial || value.province !== undefined) {
@@ -69,6 +87,14 @@ export function parseAddressInput(value, options = {}) {
       value.province,
       'province',
       100
+    );
+  }
+
+  if (value.provinceCode !== undefined) {
+    result.provinceCode = administrativeCode(
+      value.provinceCode,
+      'provinceCode',
+      2
     );
   }
 

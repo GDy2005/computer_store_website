@@ -25,15 +25,18 @@ import {useCart} from '../../features/cart/CartContext.jsx';
 import {formatVnd} from '../../features/products/productFormat.js';
 import {fetchLoyalty} from '../../features/loyalty/loyaltyApi.js';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
+import AddressFormFields from '../../features/address/AddressFormFields.jsx';
+import {
+  emptyAddressForm,
+  normalizeAddressForm,
+  toAddressPayload
+} from '../../features/address/administrativeUnits.js';
 
 const emptyForm = {
   fullName: '',
   email: '',
   phone: '',
-  addressLine: '',
-  ward: '',
-  district: '',
-  province: '',
+  ...emptyAddressForm,
   paymentMethod: 'COD',
   cardHolderName: '',
   cardNumber: '',
@@ -61,13 +64,6 @@ export default function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState('');
   const [couponMessage, setCouponMessage] = useState('');
-  const addressFields = [
-    ['addressLine', t('address.street')],
-    ['ward', t('address.ward')],
-    ['district', t('address.district')],
-    ['province', t('address.province')]
-  ];
-
   useEffect(() => {
     if (!user) return;
 
@@ -77,13 +73,11 @@ export default function CheckoutPage() {
 
     setForm(current => ({
       ...current,
+      ...normalizeAddressForm(defaultAddress),
       fullName: current.fullName || user.fullName || '',
       email: current.email || user.email || '',
       phone: current.phone || user.phone || defaultAddress?.phone || '',
-      addressLine: current.addressLine || defaultAddress?.addressLine || '',
-      ward: current.ward || defaultAddress?.ward || '',
-      district: current.district || defaultAddress?.district || '',
-      province: current.province || defaultAddress?.province || ''
+      addressLine: current.addressLine || defaultAddress?.addressLine || ''
     }));
   }, [user]);
 
@@ -203,14 +197,13 @@ export default function CheckoutPage() {
           email: form.email,
           phone: form.phone
         },
-        shippingAddress: {
-          recipientName: form.fullName,
-          phone: form.phone,
-          addressLine: form.addressLine,
-          ward: form.ward,
-          district: form.district,
-          province: form.province
-        }
+        shippingAddress: toAddressPayload(
+          {
+            ...form,
+            recipientName: form.fullName
+          },
+          {includeLabel: false}
+        )
       });
 
       const [result] = await Promise.all([
@@ -326,18 +319,12 @@ export default function CheckoutPage() {
               <Typography component="h2" variant="h6" fontWeight={850}>
                 {t('address.title')}
               </Typography>
-              <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: '1fr 1fr'}, gap: 2}}>
-                {addressFields.map(([field, label], index) => (
-                  <TextField
-                    key={field}
-                    label={label}
-                    required
-                    value={form[field]}
-                    onChange={change(field)}
-                    sx={index === 0 ? {gridColumn: {sm: '1 / -1'}} : undefined}
-                  />
-                ))}
-              </Box>
+              <AddressFormFields
+                value={form}
+                setValue={setForm}
+                showLabel={false}
+                showContact={false}
+              />
             </Stack>
           </Paper>
 

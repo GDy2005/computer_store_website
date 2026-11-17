@@ -93,6 +93,32 @@ test('address validation rejects client-controlled default flag', () => {
   );
 });
 
+test('address validation accepts current two-level administrative codes', () => {
+  const result = parseAddressInput({
+    label: 'HOME',
+    recipientName: 'User',
+    phone: '0900000000',
+    addressLine: '63/52 Nguyễn Biểu',
+    ward: 'Phường Chợ Quán',
+    wardCode: '27301',
+    province: 'Thành phố Hồ Chí Minh',
+    provinceCode: '79'
+  });
+
+  assert.equal(result.wardCode, '27301');
+  assert.equal(result.provinceCode, '79');
+  assert.equal(result.district, undefined);
+});
+
+test('address update validation can clear a legacy district', () => {
+  const result = parseAddressInput(
+    {district: null},
+    {partial: true}
+  );
+
+  assert.equal(result.district, null);
+});
+
 test('address service keeps the final delivery address', async () => {
   const onlyAddress = {
     _id: {toString: () => 'address-1'},

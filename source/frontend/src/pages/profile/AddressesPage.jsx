@@ -1,13 +1,18 @@
 import {useCallback,useEffect,useState} from 'react';
 import axios from 'axios';
-import {Alert,Box,Button,Chip,CircularProgress,Paper,Stack,TextField,Tooltip,Typography} from '@mui/material';
+import {Alert,Box,Button,Chip,CircularProgress,Paper,Stack,Tooltip,Typography} from '@mui/material';
 import {Link} from 'react-router-dom';
 import {getApiMessage} from '../../features/auth/AuthContext.jsx';
 import {formatAddress} from '../../features/address/addressFormat.js';
+import AddressFormFields from '../../features/address/AddressFormFields.jsx';
+import {
+  addressLabelText,
+  emptyAddressForm,
+  normalizeAddressForm,
+  toAddressPayload
+} from '../../features/address/administrativeUnits.js';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 import UiIcon from '../../components/UiIcon.jsx';
-
-const emptyForm = {label:'Nhà',recipientName:'',phone:'',addressLine:'',ward:'',district:'',province:''};
 
 function addressId(address) {
   return address?.id || address?._id || '';
@@ -16,7 +21,7 @@ function addressId(address) {
 export default function AddressesPage() {
   const {locale, t} = useLanguage();
   const [addresses,setAddresses] = useState([]);
-  const [form,setForm] = useState(emptyForm);
+  const [form,setForm] = useState(emptyAddressForm);
   const [editingId,setEditingId] = useState('');
   const [loading,setLoading] = useState(true);
   const [submitting,setSubmitting] = useState(false);
@@ -38,12 +43,12 @@ export default function AddressesPage() {
 
   function edit(address) {
     setEditingId(addressId(address));
-    setForm(Object.fromEntries(Object.keys(emptyForm).map(key => [key,address[key] || ''])));
+    setForm(normalizeAddressForm(address));
   }
 
   function resetForm() {
     setEditingId('');
-    setForm(emptyForm);
+    setForm(emptyAddressForm);
   }
 
   async function submit(event) {
@@ -52,10 +57,7 @@ export default function AddressesPage() {
     try {
       setSubmitting(true);
       setError('');
-      const payload = {
-        ...form,
-        ...(form.label.trim() ? {} : {label: undefined})
-      };
+      const payload = toAddressPayload(form);
       if (editingId) {
         await axios.patch(`/api/v1/users/me/addresses/${encodeURIComponent(editingId)}`, payload);
       } else {
@@ -101,7 +103,7 @@ export default function AddressesPage() {
                 </Box>
                 <Stack spacing={1.15} flexGrow={1}>
                   <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
-                    <Typography fontWeight={900}>{address.label || t('address.fallbackLabel')}</Typography>
+                    <Typography fontWeight={900}>{addressLabelText(address.label, t)}</Typography>
                     {address.isDefault && <Chip size="small" color="primary" label={t('address.default')}/>}
                   </Stack>
                   <Typography fontWeight={650}>{address.recipientName} · {address.phone}</Typography>
@@ -124,11 +126,7 @@ export default function AddressesPage() {
       <Paper component="form" variant="outlined" sx={{p:{xs:3,sm:4},bgcolor:'rgba(255,255,255,.9)'}} onSubmit={submit}>
         <Stack spacing={2}>
           <Typography variant="h5" fontWeight={900}>{editingId ? t('address.editTitle') : t('address.addTitle')}</Typography>
-          <Box sx={{display:'grid',gridTemplateColumns:{xs:'1fr',sm:'repeat(2,minmax(0,1fr))'},gap:2}}>
-            {Object.entries({label:t('address.label'),recipientName:t('address.recipient'),phone:t('address.phone'),addressLine:t('address.street'),ward:t('address.ward'),district:t('address.district'),province:t('address.province')}).map(([name,label]) => (
-              <TextField key={name} label={label} required={name !== 'label'} value={form[name]} onChange={event => setForm({...form,[name]:event.target.value})} sx={name === 'addressLine' || name === 'province' ? {gridColumn:{sm:'1 / -1'}} : undefined}/>
-            ))}
-          </Box>
+          <AddressFormFields value={form} setValue={setForm}/>
           <Stack direction="row" gap={1}>
             <Button type="submit" variant="contained" disabled={submitting}>{submitting ? t('address.saving') : editingId ? t('address.save') : t('address.add')}</Button>
             {editingId && <Button onClick={resetForm}>{t('address.cancel')}</Button>}

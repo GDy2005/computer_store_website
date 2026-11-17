@@ -156,26 +156,28 @@ try {
                 _id: new mongoose.Types.ObjectId(
                   '64b000000000000000000011'
                 ),
-                label: 'Home',
+                label: 'HOME',
                 recipientName: 'Demo Customer',
                 phone: '0901234567',
                 addressLine: '63/52 Nguyen Bieu Street',
-                ward: 'Ward 1',
-                district: 'District 5',
-                province: 'Ho Chi Minh City',
+                ward: 'Phường Chợ Quán',
+                wardCode: '27301',
+                province: 'Thành phố Hồ Chí Minh',
+                provinceCode: '79',
                 isDefault: true
               },
               {
                 _id: new mongoose.Types.ObjectId(
                   '64b000000000000000000012'
                 ),
-                label: 'Office',
+                label: 'OFFICE',
                 recipientName: 'Demo Customer',
                 phone: '0901234567',
                 addressLine: '19 Nguyen Huu Tho Street',
-                ward: 'Tan Hung Ward',
-                district: 'District 7',
-                province: 'Ho Chi Minh City',
+                ward: 'Phường Tân Hưng',
+                wardCode: '27475',
+                province: 'Thành phố Hồ Chí Minh',
+                provinceCode: '79',
                 isDefault: false
               }
             ]
@@ -197,13 +199,14 @@ try {
       }
       if (customer.addresses.length === 0) {
         customer.addresses.push({
-          label: 'Home',
+          label: 'HOME',
           recipientName: customer.fullName,
           phone: customer.phone || '0901234567',
           addressLine: '63/52 Nguyen Bieu Street',
-          ward: 'Ward 1',
-          district: 'District 5',
-          province: 'Ho Chi Minh City',
+          ward: 'Phường Chợ Quán',
+          wardCode: '27301',
+          province: 'Thành phố Hồ Chí Minh',
+          provinceCode: '79',
           isDefault: true
         });
         changed = true;
