@@ -1,9 +1,10 @@
 import {useState} from 'react';
 import axios from 'axios';
-import {Alert,Button,Stack,TextField,Typography} from '@mui/material';
+import {Alert,Button,Stack,Typography} from '@mui/material';
 import {Link,useSearchParams} from 'react-router-dom';
 import {getApiMessage} from '../../features/auth/AuthContext.jsx';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
+import PasswordField from '../../components/PasswordField.jsx';
 import AuthCard from './AuthCard.jsx';
 
 export default function PasswordActionPage({activation=false}) {
@@ -49,8 +50,8 @@ export default function PasswordActionPage({activation=false}) {
       {error && <Alert severity="error">{error}</Alert>}
       {!changed && token && (
         <Stack component="form" spacing={2} onSubmit={submit}>
-          <TextField label={t('auth.newPassword')} type="password" autoComplete="new-password" required value={password} onChange={event => setPassword(event.target.value)}/>
-          <TextField label={t('auth.confirmPassword')} type="password" autoComplete="new-password" required value={confirmation} onChange={event => setConfirmation(event.target.value)}/>
+          <PasswordField label={t('auth.newPassword')} autoComplete="new-password" required value={password} onChange={event => setPassword(event.target.value)}/>
+          <PasswordField label={t('auth.confirmPassword')} autoComplete="new-password" required value={confirmation} onChange={event => setConfirmation(event.target.value)}/>
           <Button type="submit" variant="contained" disabled={submitting}>
             {submitting ? t('auth.saving') : t('auth.savePassword')}
           </Button>

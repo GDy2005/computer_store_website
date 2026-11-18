@@ -5,6 +5,7 @@ import {Link,useSearchParams} from 'react-router-dom';
 import {DEFAULT_AVATAR_URL,getApiMessage,useAuth} from '../../features/auth/AuthContext.jsx';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
 import UiIcon from '../../components/UiIcon.jsx';
+import PasswordField from '../../components/PasswordField.jsx';
 
 export default function ProfilePage() {
   const {t} = useLanguage();
@@ -119,8 +120,8 @@ export default function ProfilePage() {
         <Paper component="form" variant="outlined" sx={{p:{xs:2.5,sm:3},boxShadow:'0 10px 28px rgba(0,0,0,.05)'}} onSubmit={changePassword}>
           <Stack spacing={2}>
             <Typography variant="h6" fontWeight={800}>{t('profile.changePassword')}</Typography>
-            <TextField label={t('profile.currentPassword')} type="password" autoComplete="current-password" required value={passwords.currentPassword} onChange={event => setPasswords({...passwords,currentPassword:event.target.value})}/>
-            <TextField label={t('auth.newPassword')} type="password" autoComplete="new-password" required value={passwords.newPassword} onChange={event => setPasswords({...passwords,newPassword:event.target.value})}/>
+            <PasswordField label={t('profile.currentPassword')} autoComplete="current-password" required value={passwords.currentPassword} onChange={event => setPasswords({...passwords,currentPassword:event.target.value})}/>
+            <PasswordField label={t('auth.newPassword')} autoComplete="new-password" required value={passwords.newPassword} onChange={event => setPasswords({...passwords,newPassword:event.target.value})}/>
             <Button type="submit" variant="contained" sx={{alignSelf:'flex-start',bgcolor:'#151515','&:hover':{bgcolor:'#000000'}}}>{t('profile.changePassword')}</Button>
           </Stack>
         </Paper>

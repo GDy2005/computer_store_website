@@ -3,6 +3,7 @@ import {Alert,Button,Divider,Stack,SvgIcon,TextField,Typography} from '@mui/mate
 import {Link,useLocation,useNavigate,useSearchParams} from 'react-router-dom';
 import {getApiMessage,useAuth} from '../../features/auth/AuthContext.jsx';
 import {useLanguage} from '../../features/i18n/LanguageContext.jsx';
+import PasswordField from '../../components/PasswordField.jsx';
 import AuthCard from './AuthCard.jsx';
 
 function GoogleIcon(props) {
@@ -69,9 +70,8 @@ export default function LoginPage() {
           value={form.email}
           onChange={event => setForm({...form,email:event.target.value})}
         />
-        <TextField
+        <PasswordField
           label={t('auth.password')}
-          type="password"
           autoComplete="current-password"
           required
           value={form.password}
