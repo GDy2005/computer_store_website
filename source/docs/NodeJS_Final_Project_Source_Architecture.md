@@ -1952,3 +1952,10 @@ Source được xem là sẵn sàng khi:
 ## 22. Ghi chú cuối
 
 Tài liệu này mô tả kiến trúc mục tiêu. Kafka và microservices phải xuất hiện từ Phase 1, nhưng vẫn nên hoàn thành theo từng vertical slice chạy được, tránh tạo hàng loạt service rỗng. Mỗi slice cần có API, local database, event contract, producer/consumer, test và giao diện tương ứng trước khi mở rộng tiếp.
+
+Một số lưu ý khi triển khai:
+
+- Thống nhất API và event contract giữa các service trước khi tích hợp; thay đổi contract phải có version và cập nhật consumer liên quan.
+- Dùng environment variables cho cấu hình theo môi trường; không đưa secret hoặc dữ liệu cá nhân thật vào source, log hay dữ liệu demo.
+- Khi demo luồng bất đồng bộ, cần thể hiện trạng thái xử lý và cách retry/khôi phục khi service hoặc broker tạm thời không sẵn sàng.
+- Sau mỗi vertical slice, cập nhật tài liệu và bằng chứng để phản ánh đúng hành vi đang chạy của source code.
